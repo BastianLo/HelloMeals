@@ -1,8 +1,4 @@
 import os
-import uuid
-from tempfile import NamedTemporaryFile
-from urllib.request import urlopen
-
 import requests
 from ...models import *
 from isodate import parse_duration
@@ -164,6 +160,25 @@ def create_tags(recipe_json, recipe):
         )
 
 
+def create_work_steps(recipe_json, recipe):
+    for step_json in recipe_json["steps"]:
+        step = WorkSteps.objects.update_or_create(
+            id=recipe.helloFreshId + str(step_json["index"]),
+            defaults={
+                "relatedRecipe": recipe,
+                "index": step_json["index"],
+                "description": step_json["instructions"],
+            }
+        )[0]
+        if (not (step.image and step.image.file)) and (len(step_json["images"]) > 0):
+            try:
+                step.image.save(str(uuid.uuid4()) + ".png", get_image(
+                    "https://img.hellofresh.com/q_40,w_480,f_auto,c_limit,fl_lossy/hellofresh_s3" +
+                    step_json["images"][0]["path"]))
+            except:
+                print(f"Could not save process-step-image for step {step}")
+
+
 def scrape(index):
     headers = {
         'authorization': f'Bearer {bearer()}',
@@ -178,3 +193,4 @@ def scrape(index):
         create_nutrients(recipeJson, recipe)
         create_cuisine(recipeJson, recipe)
         create_tags(recipeJson, recipe)
+        create_work_steps(recipeJson, recipe)
