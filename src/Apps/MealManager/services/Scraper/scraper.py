@@ -37,37 +37,38 @@ def get_image(url):
     return img
 
 
-def scrape():
-    for i in range(1):
-        headers = {
-            'authorization': f'Bearer {bearer()}',
+def create_recipe(recipe_json):
+    recipe = Recipe.objects.update_or_create(
+        helloFreshId=recipe_json["id"],
+        defaults={
+            "name": recipe_json["name"],
+            "headline": recipe_json["headline"],
+            "description": recipe_json["description"],
+            "cardLink": recipe_json["cardLink"],
+            "websiteLink": recipe_json["canonicalLink"],
+            "prepTime": parse_duration(recipe_json["prepTime"]) if recipe_json["prepTime"] else None,
+            "totalTime": parse_duration(recipe_json["totalTime"]) if recipe_json["totalTime"] else None,
+            "difficulty": recipe_json["difficulty"],
+            "createdAt": recipe_json["createdAt"],
+            "updatedAt": recipe_json["updatedAt"],
+            "favoritesCount": recipe_json["favoritesCount"],
+            "averageRating": recipe_json["averageRating"],
+            "ratingCount": recipe_json["ratingsCount"],
+            "servings": recipe_json["yields"][-1]["yields"],
         }
+    )[0]
+    if not (recipe.image and recipe.image.file):
+        recipe.image.save(str(uuid.uuid4()) + ".png", get_image(
+            "https://img.hellofresh.com/q_40,w_720,f_auto,c_limit,fl_lossy/hellofresh_s3" + recipe_json[
+                "imagePath"]))
 
-        response = requests.request("GET", HELLO_FRESH_URL + str(i), headers=headers)
 
-        items = response.json()["items"]
+def scrape(index):
+    headers = {
+        'authorization': f'Bearer {bearer()}',
+    }
+    response = requests.request("GET", HELLO_FRESH_URL + str(index), headers=headers)
+    items = response.json()["items"]
 
-        for recipeJson in items:
-            recipe = Recipe.objects.update_or_create(
-                helloFreshId=recipeJson["id"],
-                defaults={
-                    "name": recipeJson["name"],
-                    "headline": recipeJson["headline"],
-                    "description": recipeJson["description"],
-                    "cardLink": recipeJson["cardLink"],
-                    "websiteLink": recipeJson["canonicalLink"],
-                    "prepTime": parse_duration(recipeJson["prepTime"]) if recipeJson["prepTime"] else None,
-                    "totalTime": parse_duration(recipeJson["totalTime"]) if recipeJson["totalTime"] else None,
-                    "difficulty": recipeJson["difficulty"],
-                    "createdAt": recipeJson["createdAt"],
-                    "updatedAt": recipeJson["updatedAt"],
-                    "favoritesCount": recipeJson["favoritesCount"],
-                    "averageRating": recipeJson["averageRating"],
-                    "ratingCount": recipeJson["ratingsCount"],
-                    "servings": recipeJson["yields"][-1]["yields"],
-                }
-            )[0]
-            if not (recipe.image and recipe.image.file):
-                recipe.image.save(str(uuid.uuid4()) + ".png",get_image(
-                    "https://img.hellofresh.com/q_40,w_720,f_auto,c_limit,fl_lossy/hellofresh_s3" + recipeJson[
-                        "imagePath"]))
+    for recipeJson in items:
+        create_recipe(recipeJson)
