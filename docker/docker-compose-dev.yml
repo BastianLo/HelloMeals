@@ -1,0 +1,20 @@
+version: '3.3'
+services:
+    hello-meals:
+        container_name: hello-meals
+        environment:
+            - USERNAME=${USERNAME}
+            - PASSWORD=${PASSWORD}
+            - EMAIL=${EMAIL}
+            - DEBUG=False
+            - APP_URL=${APP_URL}
+            - TZ=${TIMEZONE}
+            - POSTGRES_USER=${POSTGRES_USER}
+            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+            - POSTGRES_HOST=${POSTGRES_HOST}
+            - POSTGRES_PORT=${POSTGRES_PORT}
+        ports:
+            - '6753:6753'
+        image: 'hellomeals:localdev'
+        volumes:
+            - ../dev_container_data:/HelloMeals/src/data
