@@ -108,6 +108,7 @@ def create_utensil(recipe_json, recipe):
             }
         )
 
+
 def create_nutrients(recipe_json, recipe):
     nutrient_json = recipe_json["nutrition"]
     nutrient = Nutrients.objects.update_or_create(
@@ -127,6 +128,23 @@ def create_nutrients(recipe_json, recipe):
     recipe.save()
 
 
+def create_cuisine(recipe_json, recipe):
+    for cuisine_json in recipe_json["cuisines"]:
+        cuisine = Cuisine.objects.update_or_create(
+            helloFreshId=cuisine_json["id"],
+            defaults={
+                "name": cuisine_json["name"],
+                "type": cuisine_json["type"],
+            }
+        )[0]
+        recipe_cuisine = RecipeCuisine.objects.update_or_create(
+            id=recipe.helloFreshId + cuisine.helloFreshId,
+            defaults={
+                "recipe": recipe,
+                "cuisine": cuisine,
+            }
+        )
+
 
 def scrape(index):
     headers = {
@@ -140,3 +158,4 @@ def scrape(index):
         create_ingredients(recipeJson, recipe)
         create_utensil(recipeJson, recipe)
         create_nutrients(recipeJson, recipe)
+        create_cuisine(recipeJson, recipe)
