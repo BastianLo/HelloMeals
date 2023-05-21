@@ -12,11 +12,17 @@ class Ingredient(models.Model):
     name = models.CharField(max_length=255)
     image = models.ImageField(upload_to="images/ingredients")
 
+    def __str__(self):
+        return f"{self.name} ({self.helloFreshId})"
+
 
 class Utensil(models.Model):
     helloFreshId = models.TextField(primary_key=True, max_length=255, unique=True)
     type = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.name} ({self.helloFreshId})"
 
 
 class Nutrients(models.Model):
@@ -30,17 +36,26 @@ class Nutrients(models.Model):
     protein = models.IntegerField()
     salt = models.IntegerField()
 
+    def __str__(self):
+        return self.id
+
 
 class Cuisine(models.Model):
     helloFreshId = models.TextField(primary_key=True, max_length=255, unique=True)
     type = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
 
+    def __str__(self):
+        return f"{self.name} ({self.helloFreshId})"
+
 
 class Tag(models.Model):
     helloFreshId = models.TextField(primary_key=True, max_length=255, unique=True)
     type = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.name} ({self.helloFreshId})"
 
 
 class Recipe(models.Model):
@@ -64,38 +79,56 @@ class Recipe(models.Model):
     servings = models.IntegerField(blank=True, null=True)
     image = models.ImageField(upload_to="images/recipes", null=True)
 
+    def __str__(self):
+        return f"{self.name} ({self.helloFreshId})"
+
 
 class WorkSteps(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.TextField(primary_key=True, max_length=255, unique=True)
     relatedRecipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
 
     index = models.IntegerField()
     description = models.CharField(max_length=1000)
     image = models.ImageField(upload_to="images/workSteps")
 
+    def __str__(self):
+        return self.id
+
 
 class RecipeIngredient(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.TextField(primary_key=True, max_length=255, unique=True)
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
 
-    amount = models.DecimalField(max_digits=7, decimal_places=1)
-    unit = models.CharField(max_length=255)
+    amount = models.DecimalField(max_digits=7, decimal_places=1, null=True, blank=True)
+    unit = models.CharField(max_length=255, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.ingredient} ({self.recipe})"
 
 
 class RecipeTag(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.TextField(primary_key=True, max_length=255, unique=True)
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f"{self.recipe} ({self.tag})"
+
 
 class RecipeCuisine(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.TextField(primary_key=True, max_length=255, unique=True)
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     cuisine = models.ForeignKey(Cuisine, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f"{self.recipe} ({self.cuisine})"
+
 
 class RecipeUtensil(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.TextField(primary_key=True, max_length=255, unique=True)
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     utensil = models.ForeignKey(Utensil, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.recipe} ({self.utensil})"

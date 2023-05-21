@@ -4,7 +4,7 @@ from tempfile import NamedTemporaryFile
 from urllib.request import urlopen
 
 import requests
-from ...models import Recipe
+from ...models import *
 from isodate import parse_duration
 from django.core.files.base import File
 
@@ -61,6 +61,52 @@ def create_recipe(recipe_json):
         recipe.image.save(str(uuid.uuid4()) + ".png", get_image(
             "https://img.hellofresh.com/q_40,w_720,f_auto,c_limit,fl_lossy/hellofresh_s3" + recipe_json[
                 "imagePath"]))
+    return recipe
+
+
+def create_ingredients(recipe_json, recipe):
+    yields = recipe_json["yields"][-1]["ingredients"]
+    for ingredient_json in recipe_json["ingredients"]:
+        ingredient = Ingredient.objects.update_or_create(
+            helloFreshId=ingredient_json["id"],
+            defaults={
+                "name": ingredient_json["name"]
+            }
+        )[0]
+        if not (ingredient.image and ingredient.image.file):
+            ingredient.image.save(str(uuid.uuid4()) + ".png", get_image(
+                "https://img.hellofresh.com/q_40,w_480,f_auto,c_limit,fl_lossy/hellofresh_s3" + ingredient_json[
+                    "imagePath"]))
+        # Create RecipeIngredient
+        ingredient_id = ingredient_json["id"]
+        ingredient_yield = [y for y in yields if y["id"] == ingredient_id][0]
+        recipe_ingredient = RecipeIngredient.objects.update_or_create(
+            id=ingredient_id + recipe.helloFreshId,
+            defaults={
+                "recipe": recipe,
+                "ingredient": ingredient,
+                "amount": ingredient_yield["amount"],
+                "unit": ingredient_yield["unit"],
+            }
+        )[0]
+
+
+def create_utensil(recipe_json, recipe):
+    for utensil_json in recipe_json["utensils"]:
+        utensil = Utensil.objects.update_or_create(
+            helloFreshId=utensil_json["id"],
+            defaults={
+                "name": utensil_json["name"],
+                "type": utensil_json["type"],
+            }
+        )[0]
+        recipe_utensil = RecipeUtensil.objects.update_or_create(
+            id=recipe.helloFreshId + utensil.helloFreshId,
+            defaults={
+                "recipe": recipe,
+                "utensil": utensil,
+            }
+        )
 
 
 def scrape(index):
@@ -71,4 +117,6 @@ def scrape(index):
     items = response.json()["items"]
 
     for recipeJson in items:
-        create_recipe(recipeJson)
+        recipe = create_recipe(recipeJson)
+        create_ingredients(recipeJson, recipe)
+        create_utensil(recipeJson, recipe)
