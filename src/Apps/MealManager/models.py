@@ -1,16 +1,20 @@
+from tempfile import NamedTemporaryFile
+from urllib.request import urlopen
+from django.core.files.base import File
+
 from django.db import models
 import uuid
 
 
 class Ingredient(models.Model):
-    helloFreshId = models.CharField(primary_key=True, max_length=255)
+    helloFreshId = models.TextField(primary_key=True, max_length=255, unique=True)
 
     name = models.CharField(max_length=255)
     image = models.ImageField(upload_to="images/ingredients")
 
 
 class Utensil(models.Model):
-    helloFreshId = models.CharField(primary_key=True, max_length=255)
+    helloFreshId = models.TextField(primary_key=True, max_length=255, unique=True)
     type = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
 
@@ -28,37 +32,37 @@ class Nutrients(models.Model):
 
 
 class Cuisine(models.Model):
-    helloFreshId = models.CharField(primary_key=True, max_length=255)
+    helloFreshId = models.TextField(primary_key=True, max_length=255, unique=True)
     type = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
 
 
 class Tag(models.Model):
-    helloFreshId = models.CharField(primary_key=True, max_length=255)
+    helloFreshId = models.TextField(primary_key=True, max_length=255, unique=True)
     type = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
 
 
 class Recipe(models.Model):
-    helloFreshId = models.CharField(primary_key=True, max_length=255)
+    helloFreshId = models.TextField(primary_key=True, max_length=255, unique=True)
 
-    nutrients = models.ForeignKey(Nutrients, on_delete=models.CASCADE)
+    nutrients = models.ForeignKey(Nutrients, on_delete=models.CASCADE, blank=True, null=True)
 
     name = models.CharField(max_length=255)
-    headline = models.CharField(max_length=255)
-    description = models.CharField(max_length=2000)
-    cardLink = models.CharField(max_length=2000)
-    websiteLink = models.CharField(max_length=2000)
-    prepTime = models.DurationField()
-    totalTime = models.DurationField()
-    difficulty = models.IntegerField()
-    createdAt = models.DateTimeField()
-    updatedAt = models.DateTimeField()
-    favoritesCount = models.IntegerField()
-    averageRating = models.DecimalField(max_digits=5, decimal_places=2)
-    ratingCount = models.IntegerField()
-    servings = models.IntegerField()
-    image = models.ImageField(upload_to="images/recipes")
+    headline = models.CharField(max_length=255, blank=True, null=True)
+    description = models.CharField(max_length=2000, blank=True, null=True)
+    cardLink = models.CharField(max_length=2000, blank=True, null=True)
+    websiteLink = models.CharField(max_length=2000, blank=True, null=True)
+    prepTime = models.DurationField(blank=True, null=True)
+    totalTime = models.DurationField(blank=True, null=True)
+    difficulty = models.IntegerField(blank=True, null=True)
+    createdAt = models.DateTimeField(blank=True, null=True)
+    updatedAt = models.DateTimeField(blank=True, null=True)
+    favoritesCount = models.IntegerField(blank=True, null=True)
+    averageRating = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    ratingCount = models.IntegerField(blank=True, null=True)
+    servings = models.IntegerField(blank=True, null=True)
+    image = models.ImageField(upload_to="images/recipes", null=True)
 
 
 class WorkSteps(models.Model):
