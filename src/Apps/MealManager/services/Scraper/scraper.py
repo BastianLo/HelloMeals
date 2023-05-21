@@ -1,15 +1,71 @@
+import json
 import os
+import threading
+
 import requests
+from src.HelloMeals import settings
 from ...models import *
 from isodate import parse_duration
 from django.core.files.base import File
 
 
+class ScrapeConfig:
+    def __init__(self):
+        self.path = str(settings.MEDIA_ROOT) + "/config/scraper.json"
+        if os.path.exists(self.path):
+            with open(self.path, "r") as f:
+                self.config_data = json.load(f)
+        else:
+            self.config_data = {}
+        self.start_index = self.config_data["start_index"] if "start_index" in self.config_data else 0
+        self.max_recipes = self.config_data["max_recipes"] if "max_recipes" in self.config_data else 1000000
+
+    def set_start_index(self, start_index):
+        self.start_index = start_index
+        self.save_file()
+
+    def set_max_recipes(self, max_recipes):
+        self.max_recipes = max_recipes
+        self.save_file()
+
+    def save_file(self):
+        if not os.path.exists(os.path.dirname(self.path)):
+            os.mkdir(os.path.dirname(self.path))
+        with open(self.path, "w") as f:
+            json.dump({
+                "start_index": self.start_index,
+                "max_recipes": self.max_recipes,
+            }, f)
+
+
 class Scraper:
     def __init__(self):
+        self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
+        self.config = ScrapeConfig()
+        self.active = False
         self.country = os.getenv('COUNTRY') if os.getenv('COUNTRY') else "DE"
         self.HELLO_FRESH_URL = f"https://www.hellofresh.de/gw/api/recipes?country={self.country}&order=-favorites&take=1&skip="
         self.bearer_token = None
+
+    def work(self):
+        while self.active and self.config.start_index < self.config.max_recipes:
+            self.scrape(self.config.start_index)
+            self.config.set_start_index(self.config.start_index + 1)
+            print(self.config.start_index)
+
+    def start(self):
+        self.active = True
+        if self.is_running():
+            return
+        self.work_thread.start()
+
+    def stop(self):
+        self.active = False
+        self.work_thread.join()
+        self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
+
+    def is_running(self):
+        return self.work_thread.is_alive()
 
     def bearer(self):
         if self.bearer_token is not None:
@@ -176,7 +232,7 @@ class Scraper:
         }
         response = requests.request("GET", self.HELLO_FRESH_URL + str(index), headers=headers)
         items = response.json()["items"]
-
+        self.config.set_max_recipes(response.json()["total"])
         for recipeJson in items:
             recipe = self.create_recipe(recipeJson)
             self.create_ingredients(recipeJson, recipe)
