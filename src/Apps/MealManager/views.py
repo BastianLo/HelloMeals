@@ -1,10 +1,9 @@
-from django.shortcuts import render
 from django.http import HttpResponse
-from .services.Scraper import scraper
+from .services.Scraper.scraper import get_scraper
 # Create your views here.
 
 
 def index(request):
-    for i in range(1):
-        scraper.scrape(i)
+    for i in range(10):
+        get_scraper().scrape(i)
     return HttpResponse("return this string")
