@@ -1,16 +1,15 @@
 from django.db import models
 import uuid
 
+
 class Ingredient(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    helloFreshId = models.CharField(max_length=255)
+    helloFreshId = models.CharField(primary_key=True, max_length=255)
 
     name = models.CharField(max_length=255)
     image = models.ImageField(upload_to="images/ingredients")
 
 
 class Utensil(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     helloFreshId = models.CharField(primary_key=True, max_length=255)
     type = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
@@ -29,22 +28,19 @@ class Nutrients(models.Model):
 
 
 class Cuisine(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    helloFreshId = models.CharField(max_length=255)
+    helloFreshId = models.CharField(primary_key=True, max_length=255)
     type = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
 
 
 class Tag(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    helloFreshId = models.CharField(max_length=255)
+    helloFreshId = models.CharField(primary_key=True, max_length=255)
     type = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
 
 
 class Recipe(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    helloFreshId = models.CharField(max_length=255)
+    helloFreshId = models.CharField(primary_key=True, max_length=255)
 
     nutrients = models.ForeignKey(Nutrients, on_delete=models.CASCADE)
 
