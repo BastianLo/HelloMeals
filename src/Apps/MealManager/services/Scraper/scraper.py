@@ -108,6 +108,25 @@ def create_utensil(recipe_json, recipe):
             }
         )
 
+def create_nutrients(recipe_json, recipe):
+    nutrient_json = recipe_json["nutrition"]
+    nutrient = Nutrients.objects.update_or_create(
+        id=recipe.helloFreshId + "nutrients",
+        defaults={
+            "energyKj": [n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b30530d"][0],
+            "energyKcal": [n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b305304"][0],
+            "fat": [n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b305307"][0],
+            "fatSaturated": [n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b305308"][0],
+            "carbs": [n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b305305"][0],
+            "sugar": [n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b305306"][0],
+            "protein": [n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b305309"][0],
+            "salt": [n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b30530b"][0],
+        }
+    )[0]
+    recipe.nutrients = nutrient
+    recipe.save()
+
+
 
 def scrape(index):
     headers = {
@@ -120,3 +139,4 @@ def scrape(index):
         recipe = create_recipe(recipeJson)
         create_ingredients(recipeJson, recipe)
         create_utensil(recipeJson, recipe)
+        create_nutrients(recipeJson, recipe)

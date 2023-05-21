@@ -5,6 +5,6 @@ from .services.Scraper import scraper
 
 
 def index(request):
-    for i in range(10):
+    for i in range(1):
         scraper.scrape(i)
     return HttpResponse("return this string")

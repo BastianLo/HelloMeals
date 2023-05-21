@@ -26,7 +26,7 @@ class Utensil(models.Model):
 
 
 class Nutrients(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.TextField(primary_key=True, max_length=255, unique=True)
     energyKj = models.IntegerField()
     energyKcal = models.IntegerField()
     fat = models.IntegerField()

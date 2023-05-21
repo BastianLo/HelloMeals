@@ -3,6 +3,7 @@ from .models import *
 # Register your models here.
 
 admin.site.register(Recipe)
+admin.site.register(Nutrients)
 admin.site.register(Ingredient)
 admin.site.register(Utensil)
 admin.site.register(Cuisine)
