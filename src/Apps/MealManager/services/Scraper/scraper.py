@@ -146,6 +146,24 @@ def create_cuisine(recipe_json, recipe):
         )
 
 
+def create_tags(recipe_json, recipe):
+    for tag_json in recipe_json["tags"]:
+        tag = Tag.objects.update_or_create(
+            helloFreshId=tag_json["id"],
+            defaults={
+                "name": tag_json["name"],
+                "type": tag_json["type"],
+            }
+        )[0]
+        recipe_tag = RecipeTag.objects.update_or_create(
+            id=recipe.helloFreshId + tag.helloFreshId,
+            defaults={
+                "recipe": recipe,
+                "tag": tag,
+            }
+        )
+
+
 def scrape(index):
     headers = {
         'authorization': f'Bearer {bearer()}',
@@ -159,3 +177,4 @@ def scrape(index):
         create_utensil(recipeJson, recipe)
         create_nutrients(recipeJson, recipe)
         create_cuisine(recipeJson, recipe)
+        create_tags(recipeJson, recipe)
