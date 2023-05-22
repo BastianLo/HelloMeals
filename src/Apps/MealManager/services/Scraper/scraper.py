@@ -75,6 +75,8 @@ class Scraper:
         self.work_thread.start()
 
     def stop(self):
+        if not self.active:
+            return
         self.active = False
         self.work_thread.join()
         self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
@@ -185,14 +187,14 @@ class Scraper:
         nutrient = Nutrients.objects.update_or_create(
             id=recipe.helloFreshId + "nutrients",
             defaults={
-                "energyKj": [n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b30530d"][0],
-                "energyKcal": [n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b305304"][0],
-                "fat": [n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b305307"][0],
-                "fatSaturated": [n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b305308"][0],
-                "carbs": [n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b305305"][0],
-                "sugar": [n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b305306"][0],
-                "protein": [n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b305309"][0],
-                "salt": [n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b30530b"][0],
+                "energyKj": next(iter([n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b30530d"]), 0),
+                "energyKcal": next(iter([n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b305304"]), 0),
+                "fat": next(iter([n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b305307"]), 0),
+                "fatSaturated": next(iter([n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b305308"]), 0),
+                "carbs": next(iter([n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b305305"]), 0),
+                "sugar": next(iter([n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b305306"]), 0),
+                "protein": next(iter([n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b305309"]), 0),
+                "salt": next(iter([n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b30530b"]), 0),
             }
         )[0]
         recipe.nutrients = nutrient
