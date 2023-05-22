@@ -56,16 +56,9 @@ class Scraper:
         }
 
     def work(self):
-        print("Work thread started")
         while self.active and self.config.start_index < self.config.max_recipes:
             self.scrape(self.config.start_index)
             self.config.set_start_index(self.config.start_index + 1)
-            print("Work thread executed")
-        print("Work thread stopped")
-        print(self.active)
-        print(self.config.start_index)
-        print(self.config.max_recipes)
-
 
     def start(self):
         self.active = True

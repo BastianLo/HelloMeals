@@ -23,4 +23,4 @@ python manage.py collectstatic --noinput && python manage.py migrate
 create-superuser ${USERNAME} ${EMAIL} ${PASSWORD}
 django-admin compilemessages > /dev/null 2>&1
 echo 'Starting application'
-gunicorn --bind :6734 --workers 3 --preload HelloMeals.wsgi
+gunicorn --bind :6734 --workers 1 --preload HelloMeals.wsgi
