@@ -40,6 +40,7 @@ class ScrapeConfig:
 
 class Scraper:
     def __init__(self):
+        self.exception = None
         self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
         self.config = ScrapeConfig()
         self.active = False
@@ -52,15 +53,22 @@ class Scraper:
         return {
             "max_recipes": self.config.max_recipes,
             "start_index": self.config.start_index,
-            "running": self.is_running()
+            "running": self.is_running(),
+            "exception": self.exception
         }
 
     def work(self):
-        while self.active and self.config.start_index < self.config.max_recipes:
-            self.scrape(self.config.start_index)
-            self.config.set_start_index(self.config.start_index + 1)
-
+        try:
+            while self.active and self.config.start_index < self.config.max_recipes:
+                self.scrape(self.config.start_index)
+                self.config.set_start_index(self.config.start_index + 1)
+        except Exception as e:
+            self.exception = str(e)
+            self.active = False
+            self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
+            raise e
     def start(self):
+        self.exception = None
         self.active = True
         if self.is_running():
             return
@@ -86,6 +94,8 @@ class Scraper:
         return bearer_token
 
     def get_image(self, url):
+        if url is None:
+            return None
         img_tmp = NamedTemporaryFile(delete=True)
         with urlopen(url) as uo:
             assert uo.status == 200
@@ -124,8 +134,11 @@ class Scraper:
     def create_ingredients(self, recipe_json, recipe):
         yields = recipe_json["yields"][-1]["ingredients"]
         for ingredient_json in recipe_json["ingredients"]:
-            image_url = "https://img.hellofresh.com/q_40,w_480,f_auto,c_limit,fl_lossy/hellofresh_s3" + ingredient_json[
-                        "imagePath"]
+            if "imagePath" in ingredient_json and ingredient_json["imagePath"] is not None:
+                image_url = "https://img.hellofresh.com/q_40,w_480,f_auto,c_limit,fl_lossy/hellofresh_s3" + ingredient_json[
+                            "imagePath"]
+            else:
+                image_url = None
             ingredient = Ingredient.objects.update_or_create(
                 helloFreshId=ingredient_json["id"],
                 defaults={
@@ -134,7 +147,9 @@ class Scraper:
                 }
             )[0]
             if (not (ingredient.image and ingredient.image.file)) and self.download_images:
-                ingredient.image.save(str(uuid.uuid4()) + ".png", self.get_image(image_url))
+                image = self.get_image(image_url)
+                if image is not None:
+                    ingredient.image.save(str(uuid.uuid4()) + ".png", image)
             # Create RecipeIngredient
             ingredient_id = ingredient_json["id"]
             ingredient_yield = [y for y in yields if y["id"] == ingredient_id][0]
