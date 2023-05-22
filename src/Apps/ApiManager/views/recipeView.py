@@ -1,9 +1,7 @@
-from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import rest_framework as filters
 from rest_framework import generics
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
-import rest_framework.filters as rest_filters
 
 from Apps.MealManager.serializers import RecipeFullSerializer, RecipeBaseSerializer, CuisineBaseSerializer
 from Apps.MealManager.models import Recipe, Cuisine
