@@ -68,6 +68,7 @@ class Scraper:
             self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
             raise e
     def start(self):
+        self.bearer_token = None
         self.exception = None
         self.active = True
         if self.is_running():
