@@ -3,6 +3,7 @@ from django.views.generic import RedirectView
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
+import os
 
 from .views import scraperView, recipeView
 
@@ -14,6 +15,7 @@ schema_view = get_schema_view(
         contact=openapi.Contact(url="https://github.com/BastianLo/HelloMeals"),
         license=openapi.License(name="Apache-2.0 license "),
     ),
+    url=os.getenv("APP_URL", "http://127.0.0.1"),
     public=True,
     permission_classes=[permissions.AllowAny, ],
 )
