@@ -23,9 +23,9 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    path("", RedirectView.as_view(url='/MealManager')),
+    path("", RedirectView.as_view(url='/client')),
     path("api/", include("Apps.ApiManager.urls")),
-    path('MealManager/', include("Apps.MealManager.urls")),
+    path('client/', include("Apps.ClientManager.urls")),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
