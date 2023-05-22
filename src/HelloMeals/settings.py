@@ -58,7 +58,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
 
-    'Apps.MealManager'
+    'Apps.MealManager',
+    'Apps.ClientManager',
 ]
 
 MIDDLEWARE = [

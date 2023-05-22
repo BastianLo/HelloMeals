@@ -1,4 +1,6 @@
 from django.http import HttpResponse
+from django.shortcuts import render, redirect
 
 def index(request):
-    return HttpResponse("return this string")
+    context = {}
+    return render(request, "ClientManager/base.html", context)
