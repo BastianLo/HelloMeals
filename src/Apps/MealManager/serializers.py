@@ -2,7 +2,11 @@ from rest_framework import serializers
 
 from .models import *
 
-
+### Cuisine ###
+class CuisineBaseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cuisine
+        fields = "__all__"
 
 ### Ingredient ###
 

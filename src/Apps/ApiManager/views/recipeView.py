@@ -3,10 +3,13 @@ from django_filters import rest_framework as filters
 from rest_framework import generics
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
+import rest_framework.filters as rest_filters
 
-from Apps.MealManager.serializers import RecipeFullSerializer, RecipeBaseSerializer
-from Apps.MealManager.models import Recipe
-from Apps.MealManager.filters import RecipeFilters
+from Apps.MealManager.serializers import RecipeFullSerializer, RecipeBaseSerializer, CuisineBaseSerializer
+from Apps.MealManager.models import Recipe, Cuisine
+from Apps.MealManager.filters import RecipeFilters, CuisineFilters
+
+from util.pagination import RqlPagination
 
 
 ### Filter Sets ###
@@ -27,6 +30,7 @@ class RecipeFullList(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     rql_filter_class = RecipeFilters
     filterset_class = RecipeFilterSet
+    pagination_class = RqlPagination
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
@@ -52,6 +56,7 @@ class RecipeBaseList(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     rql_filter_class = RecipeFilters
     filterset_class = RecipeFilterSet
+    pagination_class = RqlPagination
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
@@ -70,3 +75,18 @@ class RecipeBaseDetail(generics.RetrieveAPIView):
 
     def get_queryset(self):
         return Recipe.objects.all()
+
+
+@permission_classes([IsAuthenticated])
+class CuisineList(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    rql_filter_class = CuisineFilters
+    pagination_class = RqlPagination
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return CuisineBaseSerializer
+        return CuisineBaseSerializer
+
+    def get_queryset(self):
+        return Cuisine.objects.all()
