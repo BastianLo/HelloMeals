@@ -99,13 +99,16 @@ class Scraper:
     def get_image(self, url):
         if url is None:
             return None
-        img_tmp = NamedTemporaryFile(delete=True)
-        with urlopen(url) as uo:
-            assert uo.status == 200
-            img_tmp.write(uo.read())
-            img_tmp.flush()
-        img = File(img_tmp)
-        return img
+        try:
+            img_tmp = NamedTemporaryFile(delete=True)
+            with urlopen(url) as uo:
+                assert uo.status == 200
+                img_tmp.write(uo.read())
+                img_tmp.flush()
+            img = File(img_tmp)
+            return img
+        except:
+            return None
 
     def create_recipe(self, recipe_json):
         image_url = "https://img.hellofresh.com/q_40,w_720,f_auto,c_limit,fl_lossy/hellofresh_s3" + recipe_json[
@@ -131,7 +134,9 @@ class Scraper:
             }
         )[0]
         if (not (recipe.image and recipe.image.file)) and self.download_images:
-            recipe.image.save(str(uuid.uuid4()) + ".png", self.get_image(image_url))
+            image = self.get_image(image_url)
+            if image is not None:
+                recipe.image.save(str(uuid.uuid4()) + ".png", image)
         return recipe
 
     def create_ingredients(self, recipe_json, recipe):
