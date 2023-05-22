@@ -11,6 +11,7 @@ class Ingredient(models.Model):
 
     name = models.CharField(max_length=255)
     image = models.ImageField(upload_to="images/ingredients")
+    HelloFreshImageUrl = models.CharField(max_length=255, null=True)
 
     def __str__(self):
         return f"{self.name} ({self.helloFreshId})"
@@ -78,6 +79,7 @@ class Recipe(models.Model):
     ratingCount = models.IntegerField(blank=True, null=True)
     servings = models.IntegerField(blank=True, null=True)
     image = models.ImageField(upload_to="images/recipes", null=True)
+    HelloFreshImageUrl = models.CharField(max_length=255, null=True)
 
     def __str__(self):
         return f"{self.name} ({self.helloFreshId})"
@@ -90,6 +92,7 @@ class WorkSteps(models.Model):
     index = models.IntegerField()
     description = models.CharField(max_length=1000)
     image = models.ImageField(upload_to="images/workSteps")
+    HelloFreshImageUrl = models.CharField(max_length=255, null=True)
 
     def __str__(self):
         return self.id

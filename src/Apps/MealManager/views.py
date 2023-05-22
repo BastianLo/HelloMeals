@@ -4,6 +4,4 @@ from .services.Scraper.scraper import get_scraper
 
 
 def index(request):
-    for i in range(10):
-        get_scraper().scrape(i)
     return HttpResponse("return this string")

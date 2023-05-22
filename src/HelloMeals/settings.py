@@ -53,6 +53,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'drf_yasg',
+    'rql_filter',
+    'rest_framework',
+    'django_filters',
+
     'Apps.MealManager'
 ]
 
@@ -65,6 +70,12 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ['dj_rql.drf.RQLFilterBackend', 'django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20,
+}
 
 ROOT_URLCONF = 'HelloMeals.urls'
 
@@ -89,7 +100,7 @@ WSGI_APPLICATION = 'HelloMeals.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
+print(os.getenv("POSTGRES_USER"))
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -97,7 +108,7 @@ DATABASES = {
         'USER': os.getenv("POSTGRES_USER", "root"),
         'PASSWORD': os.getenv("POSTGRES_PASSWORD", "root"),
         'HOST': os.getenv("POSTGRES_HOST", "127.0.0.1"),
-        'PORT': os.getenv("POSTGRES_PORT", "5432"),
+        'PORT': "5432",
     }
 }
 

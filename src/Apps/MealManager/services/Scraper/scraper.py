@@ -1,15 +1,80 @@
+import json
 import os
+import threading
+
 import requests
+from HelloMeals import settings
 from ...models import *
 from isodate import parse_duration
 from django.core.files.base import File
 
 
+class ScrapeConfig:
+    def __init__(self):
+        self.path = str(settings.BASE_DIR) + "/data/config/scraper.json"
+        if os.path.exists(self.path):
+            with open(self.path, "r") as f:
+                self.config_data = json.load(f)
+        else:
+            self.config_data = {}
+        self.start_index = self.config_data["start_index"] if "start_index" in self.config_data else 0
+        self.max_recipes = self.config_data["max_recipes"] if "max_recipes" in self.config_data else 1000000
+
+    def set_start_index(self, start_index):
+        self.start_index = start_index
+        self.save_file()
+
+    def set_max_recipes(self, max_recipes):
+        self.max_recipes = max_recipes
+        self.save_file()
+
+    def save_file(self):
+        if not os.path.exists(os.path.dirname(self.path)):
+            os.mkdir(os.path.dirname(self.path))
+        with open(self.path, "w") as f:
+            json.dump({
+                "start_index": self.start_index,
+                "max_recipes": self.max_recipes,
+            }, f)
+
+
 class Scraper:
     def __init__(self):
+        self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
+        self.config = ScrapeConfig()
+        self.active = False
         self.country = os.getenv('COUNTRY') if os.getenv('COUNTRY') else "DE"
         self.HELLO_FRESH_URL = f"https://www.hellofresh.de/gw/api/recipes?country={self.country}&order=-favorites&take=1&skip="
         self.bearer_token = None
+        self.download_images = os.getenv('DOWNLOAD_IMAGES') if os.getenv('DOWNLOAD_IMAGES') else True
+        print(self.download_images)
+
+    def get_status(self):
+        return {
+            "max_recipes": self.config.max_recipes,
+            "start_index": self.config.start_index,
+            "running": self.is_running()
+        }
+
+    def work(self):
+        while self.active and self.config.start_index < self.config.max_recipes:
+            self.scrape(self.config.start_index)
+            self.config.set_start_index(self.config.start_index + 1)
+            print(self.config.start_index)
+
+    def start(self):
+        self.active = True
+        if self.is_running():
+            return
+        self.work_thread.start()
+
+    def stop(self):
+        self.active = False
+        self.work_thread.join()
+        self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
+
+    def is_running(self):
+        return self.work_thread.is_alive()
 
     def bearer(self):
         if self.bearer_token is not None:
@@ -32,6 +97,8 @@ class Scraper:
         return img
 
     def create_recipe(self, recipe_json):
+        image_url = "https://img.hellofresh.com/q_40,w_720,f_auto,c_limit,fl_lossy/hellofresh_s3" + recipe_json[
+                    "imagePath"]
         recipe = Recipe.objects.update_or_create(
             helloFreshId=recipe_json["id"],
             defaults={
@@ -49,27 +116,27 @@ class Scraper:
                 "averageRating": recipe_json["averageRating"],
                 "ratingCount": recipe_json["ratingsCount"],
                 "servings": recipe_json["yields"][-1]["yields"],
+                "HelloFreshImageUrl": image_url
             }
         )[0]
-        if not (recipe.image and recipe.image.file):
-            recipe.image.save(str(uuid.uuid4()) + ".png", self.get_image(
-                "https://img.hellofresh.com/q_40,w_720,f_auto,c_limit,fl_lossy/hellofresh_s3" + recipe_json[
-                    "imagePath"]))
+        if (not (recipe.image and recipe.image.file)) and self.download_images:
+            recipe.image.save(str(uuid.uuid4()) + ".png", self.get_image(image_url))
         return recipe
 
     def create_ingredients(self, recipe_json, recipe):
         yields = recipe_json["yields"][-1]["ingredients"]
         for ingredient_json in recipe_json["ingredients"]:
+            image_url = "https://img.hellofresh.com/q_40,w_480,f_auto,c_limit,fl_lossy/hellofresh_s3" + ingredient_json[
+                        "imagePath"]
             ingredient = Ingredient.objects.update_or_create(
                 helloFreshId=ingredient_json["id"],
                 defaults={
-                    "name": ingredient_json["name"]
+                    "name": ingredient_json["name"],
+                    "HelloFreshImageUrl": image_url
                 }
             )[0]
-            if not (ingredient.image and ingredient.image.file):
-                ingredient.image.save(str(uuid.uuid4()) + ".png", self.get_image(
-                    "https://img.hellofresh.com/q_40,w_480,f_auto,c_limit,fl_lossy/hellofresh_s3" + ingredient_json[
-                        "imagePath"]))
+            if (not (ingredient.image and ingredient.image.file)) and self.download_images:
+                ingredient.image.save(str(uuid.uuid4()) + ".png", self.get_image(image_url))
             # Create RecipeIngredient
             ingredient_id = ingredient_json["id"]
             ingredient_yield = [y for y in yields if y["id"] == ingredient_id][0]
@@ -154,19 +221,22 @@ class Scraper:
 
     def create_work_steps(self, recipe_json, recipe):
         for step_json in recipe_json["steps"]:
+            if (len(step_json["images"]) > 0):
+                image_url = "https://img.hellofresh.com/q_40,w_480,f_auto,c_limit,fl_lossy/hellofresh_s3" + step_json["images"][0]["path"]
+            else:
+                image_url = None
             step = WorkSteps.objects.update_or_create(
                 id=recipe.helloFreshId + str(step_json["index"]),
                 defaults={
                     "relatedRecipe": recipe,
                     "index": step_json["index"],
                     "description": step_json["instructions"],
+                    "HelloFreshImageUrl": image_url
                 }
             )[0]
-            if (not (step.image and step.image.file)) and (len(step_json["images"]) > 0):
+            if (not (step.image and step.image.file)) and (len(step_json["images"]) > 0) and self.download_images:
                 try:
-                    step.image.save(str(uuid.uuid4()) + ".png", self.get_image(
-                        "https://img.hellofresh.com/q_40,w_480,f_auto,c_limit,fl_lossy/hellofresh_s3" +
-                        step_json["images"][0]["path"]))
+                    step.image.save(str(uuid.uuid4()) + ".png", self.get_image(image_url))
                 except:
                     print(f"Could not save process-step-image for step {step}")
 
@@ -176,7 +246,7 @@ class Scraper:
         }
         response = requests.request("GET", self.HELLO_FRESH_URL + str(index), headers=headers)
         items = response.json()["items"]
-
+        self.config.set_max_recipes(response.json()["total"])
         for recipeJson in items:
             recipe = self.create_recipe(recipeJson)
             self.create_ingredients(recipeJson, recipe)
