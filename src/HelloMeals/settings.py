@@ -55,6 +55,8 @@ INSTALLED_APPS = [
 
     'drf_yasg',
     'rql_filter',
+    'rest_framework',
+    'django_filters',
 
     'Apps.MealManager'
 ]
@@ -70,9 +72,9 @@ MIDDLEWARE = [
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_FILTER_BACKENDS': ['dj_rql.drf.RQLFilterBackend'],
+    'DEFAULT_FILTER_BACKENDS': ['dj_rql.drf.RQLFilterBackend', 'django_filters.rest_framework.DjangoFilterBackend'],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10,  # Number of items per page
+    'PAGE_SIZE': 10,
 }
 
 ROOT_URLCONF = 'HelloMeals.urls'
