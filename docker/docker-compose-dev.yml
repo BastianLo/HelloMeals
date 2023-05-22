@@ -1,7 +1,7 @@
 version: '3.3'
 services:
     hello-meals:
-        container_name: hello-meals
+        container_name: hello-meals-dev
         environment:
             - USERNAME=${USERNAME}
             - PASSWORD=${PASSWORD}
