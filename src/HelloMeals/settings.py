@@ -100,7 +100,6 @@ WSGI_APPLICATION = 'HelloMeals.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-print(os.getenv("POSTGRES_USER"))
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',

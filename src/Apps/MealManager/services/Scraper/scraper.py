@@ -47,7 +47,6 @@ class Scraper:
         self.HELLO_FRESH_URL = f"https://www.hellofresh.de/gw/api/recipes?country={self.country}&order=-favorites&take=1&skip="
         self.bearer_token = None
         self.download_images = os.getenv('DOWNLOAD_IMAGES') if os.getenv('DOWNLOAD_IMAGES') else True
-        print(self.download_images)
 
     def get_status(self):
         return {
@@ -60,7 +59,6 @@ class Scraper:
         while self.active and self.config.start_index < self.config.max_recipes:
             self.scrape(self.config.start_index)
             self.config.set_start_index(self.config.start_index + 1)
-            print(self.config.start_index)
 
     def start(self):
         self.active = True
