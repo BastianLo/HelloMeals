@@ -15,7 +15,7 @@ schema_view = get_schema_view(
         contact=openapi.Contact(url="https://github.com/BastianLo/HelloMeals"),
         license=openapi.License(name="Apache-2.0 license "),
     ),
-    url=os.getenv("APP_URL", "http://127.0.0.1"),
+    url=os.getenv("APP_URL", "http://127.0.0.1:8000"),
     public=True,
     permission_classes=[permissions.AllowAny, ],
 )
