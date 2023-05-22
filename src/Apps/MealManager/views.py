@@ -4,8 +4,11 @@ from .services.Scraper.scraper import get_scraper
 
 
 def index(request):
-    if get_scraper().is_running():
-        get_scraper().stop()
+    if False:
+        if get_scraper().is_running():
+            get_scraper().stop()
+        else:
+            get_scraper().start()
     else:
-        get_scraper().start()
+        get_scraper().scrape(0)
     return HttpResponse("return this string")
