@@ -24,6 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     path("", RedirectView.as_view(url='/MealManager')),
+    path("api/", include("Apps.ApiManager.urls")),
     path('MealManager/', include("Apps.MealManager.urls")),
 ]
 

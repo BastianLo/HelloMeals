@@ -49,6 +49,13 @@ class Scraper:
         self.download_images = os.getenv('DOWNLOAD_IMAGES') if os.getenv('DOWNLOAD_IMAGES') else True
         print(self.download_images)
 
+    def get_status(self):
+        return {
+            "max_recipes": self.config.max_recipes,
+            "start_index": self.config.start_index,
+            "running": self.is_running()
+        }
+
     def work(self):
         while self.active and self.config.start_index < self.config.max_recipes:
             self.scrape(self.config.start_index)
@@ -214,7 +221,10 @@ class Scraper:
 
     def create_work_steps(self, recipe_json, recipe):
         for step_json in recipe_json["steps"]:
-            image_url = "https://img.hellofresh.com/q_40,w_480,f_auto,c_limit,fl_lossy/hellofresh_s3" + step_json["images"][0]["path"]
+            if (len(step_json["images"]) > 0):
+                image_url = "https://img.hellofresh.com/q_40,w_480,f_auto,c_limit,fl_lossy/hellofresh_s3" + step_json["images"][0]["path"]
+            else:
+                image_url = None
             step = WorkSteps.objects.update_or_create(
                 id=recipe.helloFreshId + str(step_json["index"]),
                 defaults={
