@@ -19,9 +19,13 @@ from django.urls import include, path
 from django.views.generic.base import RedirectView
 from . import settings
 from django.conf.urls.static import static
+from django.views.i18n import set_language, JavaScriptCatalog
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('set-language/', set_language, name='set_language'),
+    path('jsi18n/', JavaScriptCatalog.as_view(), name='javascript-catalog'),
 
     path("", RedirectView.as_view(url='/client')),
     path("api/", include("Apps.ApiManager.urls")),

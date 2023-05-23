@@ -70,6 +70,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
 ]
 
 REST_FRAMEWORK = {
@@ -143,6 +144,12 @@ USE_I18N = True
 
 USE_TZ = True
 
+LANGUAGES = [('en', 'English'), ('de', 'Deutsch')]
+
+
+LOCALE_PATHS = (
+    os.path.join(BASE_DIR, 'Apps/ClientManager', 'locale'),
+)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
