@@ -113,6 +113,8 @@ class Scraper:
     def create_recipe(self, recipe_json):
         image_url = "https://img.hellofresh.com/q_40,w_720,f_auto,c_limit,fl_lossy/hellofresh_s3" + recipe_json[
                     "imagePath"]
+        if recipe_json["yields"] is None or len(recipe_json["yields"]) == 0:
+            return None
         recipe = Recipe.objects.update_or_create(
             helloFreshId=recipe_json["id"],
             defaults={
@@ -270,6 +272,8 @@ class Scraper:
         self.config.set_max_recipes(response.json()["total"])
         for recipeJson in items:
             recipe = self.create_recipe(recipeJson)
+            if recipe is None:
+                continue
             self.create_ingredients(recipeJson, recipe)
             self.create_utensil(recipeJson, recipe)
             self.create_nutrients(recipeJson, recipe)
