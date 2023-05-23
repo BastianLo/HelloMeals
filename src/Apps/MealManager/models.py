@@ -19,7 +19,7 @@ class Ingredient(models.Model):
 
 class Utensil(models.Model):
     helloFreshId = models.TextField(primary_key=True, max_length=255, unique=True)
-    type = models.CharField(max_length=255)
+    type = models.CharField(max_length=255, null=True, blank=True)
     name = models.CharField(max_length=255)
 
     def __str__(self):
