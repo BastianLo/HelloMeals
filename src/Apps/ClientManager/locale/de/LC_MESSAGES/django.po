@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-23 18:21+0200\n"
+"POT-Creation-Date: 2023-05-23 22:49+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,19 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: templates/ClientManager/components/base/FootNavigation.html:10
+msgid "base.recipes"
+msgstr "Rezepte"
+
+#: templates/ClientManager/components/base/FootNavigation.html:17
+msgid "base.planner"
+msgstr "Planer"
+
+#: templates/ClientManager/components/base/FootNavigation.html:23
+msgid "base.settings"
+msgstr "Einstellungen"
+
 #: templates/ClientManager/components/base/FootNavigation.html:29
-msgid "profile"
+msgid "base.profile"
 msgstr "Profil"
