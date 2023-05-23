@@ -34,9 +34,10 @@
             <ul x-show="isOpen" @click.away="isOpen = false"
                 class="absolute right-0 z-50 w-48 py-2 mt-2 font-medium text-base bg-white rounded-lg shadow dark:bg-gray-700">
                 <li>
-                    <a href="#"
-                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
-                       role="menuitem">
+                    <button hx-get="" hx-swap="outerHTML" hx-target="#body" hx-trigger="click" hx-ext="true"
+                            onclick="setDjangoLanguage('en')"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
+                            role="menuitem">
                         <div class="inline-flex items-center">
                             <svg aria-hidden="true" class="h-3.5 w-3.5 rounded-full mr-2"
                                  xmlns="http://www.w3.org/2000/svg" id="flag-icon-css-us" viewBox="0 0 512 512">
@@ -57,12 +58,13 @@
                             </svg>
                             English
                         </div>
-                    </a>
+                        </button>
                 </li>
                 <li>
-                    <a href="#"
-                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
-                       role="menuitem">
+                    <button hx-get="" hx-swap="outerHTML" hx-target="#body" hx-trigger="click" hx-ext="true"
+                            onclick="setDjangoLanguage('de')"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
+                            role="menuitem">
                         <div class="inline-flex items-center">
                             <svg class="h-3.5 w-3.5 rounded-full mr-2" aria-hidden="true"
                                  xmlns="http://www.w3.org/2000/svg" id="flag-icon-css-de" viewBox="0 0 512 512">
@@ -72,25 +74,14 @@
                             </svg>
                             Deutsch
                         </div>
-                    </a>
+                    </button>
                 </li>
-                <!-- Add more language options here -->
             </ul>
         </div>
     </div>
 </nav>
-
-			<!-- Language changer -->
-			<form class="navbar-content" action="{% url 'set_language' %}" method="post">{% csrf_token %}
-				<input name="next" type="hidden" value="{{ request.get_full_path }}">
-				<select class="form-control form-control-sm" name="language" onchange="this.form.submit()">
-					{% get_current_language as LANGUAGE_CODE %}
-					{% get_available_languages as LANGUAGES %}
-					{% get_language_info_list for LANGUAGES as languages %}
-					{% for language in languages %}
-						<option value="{{ language.code }}" {% if language.code == LANGUAGE_CODE %} selected{% endif %}>
-							{{ language.name_local }} ({{ language.code }})
-						</option>
-					{% endfor %}
-				</select>
-			</form>
+<script>
+    function setDjangoLanguage(language) {
+        document.cookie = `django_language=${language}; path=/;`;
+    }
+</script>
