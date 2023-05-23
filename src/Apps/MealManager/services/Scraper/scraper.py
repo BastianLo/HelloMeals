@@ -244,7 +244,7 @@ class Scraper:
 
     def create_work_steps(self, recipe_json, recipe):
         for step_json in recipe_json["steps"]:
-            if (len(step_json["images"]) > 0):
+            if (len(step_json["images"]) > 0) and step_json["images"][0]["link"] is not None:
                 image_url = "https://img.hellofresh.com/q_40,w_480,f_auto,c_limit,fl_lossy/hellofresh_s3" + step_json["images"][0]["path"]
             else:
                 image_url = None
