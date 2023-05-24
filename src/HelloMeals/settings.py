@@ -99,7 +99,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'HelloMeals.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 DATABASES = {
@@ -112,7 +111,6 @@ DATABASES = {
         'PORT': "5432",
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -132,7 +130,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -145,7 +142,6 @@ USE_I18N = True
 USE_TZ = True
 
 LANGUAGES = [('en', 'English'), ('de', 'Deutsch')]
-
 
 LOCALE_PATHS = (
     os.path.join(BASE_DIR, 'Apps/ClientManager', 'locale'),
@@ -162,3 +158,61 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "basic": {
+            "format": "{levelname} {asctime}: {module} - {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": BASE_DIR / 'data' / 'log.log',
+            "formatter": "basic",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["file"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+        'django.utils.autoreload': {
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'django.db': {
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'urllib3': {
+            'handlers': [],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'http.server': {
+            'handlers': [],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        "http.client": {
+            "handlers": [],
+            "level": "WARNING",
+            "propagate": False,
+        },
+        "Basehttp": {
+            "handlers": [],
+            "level": "WARNING",
+            "propagate": False,
+        },
+    },
+    'root': {
+        'handlers': ['file'],
+        'level': 'DEBUG',
+    }
+}

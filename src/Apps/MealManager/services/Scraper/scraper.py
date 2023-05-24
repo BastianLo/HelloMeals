@@ -1,13 +1,14 @@
 import json
 import os
 import threading
-
+import logging
 import requests
 from HelloMeals import settings
 from ...models import *
 from isodate import parse_duration
 from django.core.files.base import File
 import re
+
 
 def is_valid_iso_duration(duration_str):
     pattern = r'^P(?:\d+Y)?(?:\d+M)?(?:\d+W)?(?:\d+D)?(?:T(?:\d+H)?(?:\d+M)?(?:\d+S)?)?$'
@@ -49,6 +50,7 @@ class ScrapeConfig:
 class Scraper:
     def __init__(self):
         self.exception = None
+        self.last_error = False
         self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
         self.config = ScrapeConfig()
         self.active = False
@@ -279,15 +281,26 @@ class Scraper:
         items = response.json()["items"]
         self.config.set_max_recipes(response.json()["total"])
         for recipeJson in items:
-            recipe = self.create_recipe(recipeJson)
-            if recipe is None:
-                continue
-            self.create_ingredients(recipeJson, recipe)
-            self.create_utensil(recipeJson, recipe)
-            self.create_nutrients(recipeJson, recipe)
-            self.create_cuisine(recipeJson, recipe)
-            self.create_tags(recipeJson, recipe)
-            self.create_work_steps(recipeJson, recipe)
+            try:
+                recipe = self.create_recipe(recipeJson)
+                if recipe is None:
+                    continue
+                self.create_ingredients(recipeJson, recipe)
+                self.create_utensil(recipeJson, recipe)
+                self.create_nutrients(recipeJson, recipe)
+                self.create_cuisine(recipeJson, recipe)
+                self.create_tags(recipeJson, recipe)
+                self.create_work_steps(recipeJson, recipe)
+                self.last_error = False
+            except Exception as e:
+                print(self.last_error)
+                if not self.last_error:
+                    logging.warning(f"Recipe with skip '{index}' failed. Skipping... - Error: {e}")
+                    self.last_error = True
+                else:
+                    logging.error(f"Recipe with skip '{index}' failed second time. Canceling")
+                    raise e
+
 
 
 s = Scraper()
