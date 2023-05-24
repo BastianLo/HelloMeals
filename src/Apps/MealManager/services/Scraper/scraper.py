@@ -55,7 +55,7 @@ class Scraper:
         self.config = ScrapeConfig()
         self.active = False
         self.country = os.getenv('COUNTRY') if os.getenv('COUNTRY') else "DE"
-        self.HELLO_FRESH_URL = f"https://www.hellofresh.de/gw/api/recipes?country={self.country}&order=-favorites&take=1&skip="
+        self.HELLO_FRESH_URL = f"https://www.hellofresh.de/gw/api/recipes?country={self.country}&order=-date&take=1&skip="
         self.bearer_token = None
         self.download_images = os.getenv('DOWNLOAD_IMAGES') if os.getenv('DOWNLOAD_IMAGES') else True
 
