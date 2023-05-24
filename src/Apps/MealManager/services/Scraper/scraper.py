@@ -298,7 +298,7 @@ class Scraper:
                 print(self.last_error)
                 if not self.last_error:
                     logging.warning(f"Recipe with skip '{index}' failed. Skipping... - Error: {e}")
-                    self.last_error = True
+                    #self.last_error = True
                 else:
                     logging.error(f"Recipe with skip '{index}' failed second time. Canceling")
                     raise e
