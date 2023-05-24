@@ -129,6 +129,7 @@ class Scraper:
             helloFreshId=recipe_json["id"],
             defaults={
                 "name": recipe_json["name"],
+                "helloFreshActive": recipe_json["active"],
                 "headline": recipe_json["headline"],
                 "description": recipe_json["description"],
                 "cardLink": recipe_json["cardLink"],
@@ -282,15 +283,16 @@ class Scraper:
         self.config.set_max_recipes(response.json()["total"])
         for recipeJson in items:
             try:
-                recipe = self.create_recipe(recipeJson)
-                if recipe is None:
-                    continue
-                self.create_ingredients(recipeJson, recipe)
-                self.create_utensil(recipeJson, recipe)
-                self.create_nutrients(recipeJson, recipe)
-                self.create_cuisine(recipeJson, recipe)
-                self.create_tags(recipeJson, recipe)
-                self.create_work_steps(recipeJson, recipe)
+                recipe_id = recipeJson["id"]
+                url = f"https://www.hellofresh.de/gw/recipes/recipes/{recipe_id}"
+                new_recipe_json = requests.get(url, headers=headers).json()
+                recipe = self.create_recipe(new_recipe_json)
+                self.create_ingredients(new_recipe_json, recipe)
+                self.create_utensil(new_recipe_json, recipe)
+                self.create_nutrients(new_recipe_json, recipe)
+                self.create_cuisine(new_recipe_json, recipe)
+                self.create_tags(new_recipe_json, recipe)
+                self.create_work_steps(new_recipe_json, recipe)
                 self.last_error = False
             except Exception as e:
                 print(self.last_error)

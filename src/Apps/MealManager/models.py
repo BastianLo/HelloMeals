@@ -65,6 +65,7 @@ class Recipe(models.Model):
     nutrients = models.ForeignKey(Nutrients, on_delete=models.CASCADE, blank=True, null=True)
 
     name = models.CharField(max_length=255)
+    helloFreshActive = models.BooleanField(default=True)
     headline = models.CharField(max_length=255, blank=True, null=True)
     description = models.CharField(max_length=2000, blank=True, null=True)
     cardLink = models.CharField(max_length=2000, blank=True, null=True)
