@@ -13,6 +13,13 @@
     <title>HelloMeals</title>
     {% block header %}
     {% endblock %}
+    <script>
+        document.addEventListener('touchmove', function (event) {
+            if (event.scale !== 1) {
+                event.preventDefault();
+            }
+        }, false);
+    </script>
 </head>
 <body x-data class="dark:bg-slate-900" id="body">
 {% include 'ClientManager/components/base/TopBar.html' %}
