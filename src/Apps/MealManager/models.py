@@ -67,7 +67,7 @@ class Recipe(models.Model):
     name = models.CharField(max_length=255)
     helloFreshActive = models.BooleanField(default=True)
     headline = models.CharField(max_length=255, blank=True, null=True)
-    description = models.CharField(max_length=2000, blank=True, null=True)
+    description = models.CharField(max_length=10000, blank=True, null=True)
     cardLink = models.CharField(max_length=2000, blank=True, null=True)
     websiteLink = models.CharField(max_length=2000, blank=True, null=True)
     prepTime = models.DurationField(blank=True, null=True)
