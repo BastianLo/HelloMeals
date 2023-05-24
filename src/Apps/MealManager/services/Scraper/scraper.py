@@ -7,6 +7,11 @@ from HelloMeals import settings
 from ...models import *
 from isodate import parse_duration
 from django.core.files.base import File
+import re
+
+def is_valid_iso_duration(duration_str):
+    pattern = r'^P(?:\d+Y)?(?:\d+M)?(?:\d+W)?(?:\d+D)?(?:T(?:\d+H)?(?:\d+M)?(?:\d+S)?)?$'
+    return re.match(pattern, duration_str) is not None
 
 
 class ScrapeConfig:
@@ -38,6 +43,9 @@ class ScrapeConfig:
             }, f)
 
 
+#TODO: for scraper functionality:
+#eg: functionality to redownload images (to improve quality)
+#Possibly increase recipe quality compared to other images
 class Scraper:
     def __init__(self):
         self.exception = None
@@ -123,8 +131,8 @@ class Scraper:
                 "description": recipe_json["description"],
                 "cardLink": recipe_json["cardLink"],
                 "websiteLink": recipe_json["canonicalLink"],
-                "prepTime": parse_duration(recipe_json["prepTime"]) if recipe_json["prepTime"] and recipe_json["prepTime"] != "0" else None,
-                "totalTime": parse_duration(recipe_json["totalTime"]) if recipe_json["totalTime"] and recipe_json["totalTime"] != "0" else None,
+                "prepTime": parse_duration(recipe_json["prepTime"]) if recipe_json["prepTime"] and is_valid_iso_duration(recipe_json["prepTime"]) and recipe_json["prepTime"] != "0" else None,
+                "totalTime": parse_duration(recipe_json["totalTime"]) if recipe_json["totalTime"] and is_valid_iso_duration(recipe_json["totalTime"]) and recipe_json["totalTime"] != "0" else None,
                 "difficulty": recipe_json["difficulty"],
                 "createdAt": recipe_json["createdAt"],
                 "updatedAt": recipe_json["updatedAt"],
