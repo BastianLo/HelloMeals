@@ -13,7 +13,8 @@ class RqlPagination(PageNumberPagination):
             'count': self.page.paginator.count,
             'start': start,
             'end': end,
-            'next': self.get_next_link(),
-            'previous': self.get_previous_link(),
+            #TODO: fix Weird workaround to remove = , which is added to drf filter - e.g. http://127.0.0.1:8000/api/Recipe?ilike(name,*hä*)=
+            'next': self.get_next_link().replace("%29=", "%29") if self.get_next_link() is not None else None,
+            'previous': self.get_previous_link().replace("%29=", "%29") if self.get_previous_link() is not None else None,
             'results': data
         })

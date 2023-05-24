@@ -13,7 +13,7 @@
         delete this.nav.results
     },
     async init() { await this.makeRequest('/api/Recipe')  },
-    async search(text){if (text === ''){await this.init()} else {await this.makeRequest(`/api/Recipe?null=null&ilike(name,*${text}*)`)}},
+    async search(text){if (text === ''){await this.init()} else {await this.makeRequest(`/api/Recipe?ilike(name,*${text}*)`)}},
     async next() {if (this.nav.next){await this.makeRequest(this.nav.next)}},
     async previous() {if (this.nav.previous){await this.makeRequest(this.nav.previous)}},
 
