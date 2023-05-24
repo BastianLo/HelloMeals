@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'rql_filter',
     'rest_framework',
     'django_filters',
+    'widget_tweaks',
     'pwa',
 
     'Apps.MealManager',
@@ -85,7 +86,7 @@ ROOT_URLCONF = 'HelloMeals.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "Apps" / "ClientManager" / "templates" / "ClientManager" / "pages"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

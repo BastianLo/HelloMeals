@@ -27,6 +27,7 @@ urlpatterns = [
     path('set-language/', set_language, name='set_language'),
     path('jsi18n/', JavaScriptCatalog.as_view(), name='javascript-catalog'),
     path('', include('pwa.urls')),  # You MUST use an empty string as the URL prefix
+    path("accounts/", include("django.contrib.auth.urls")),  # new
 
     path("", RedirectView.as_view(url='/Home/')),
     path("api/", include("Apps.ApiManager.urls")),
