@@ -142,7 +142,7 @@ class Scraper:
                 "favoritesCount": recipe_json["favoritesCount"],
                 "averageRating": recipe_json["averageRating"],
                 "ratingCount": recipe_json["ratingsCount"],
-                "servings": recipe_json["yields"][-1]["yields"] if len(recipe_json["yields"] > 0) else None,
+                "servings": recipe_json["yields"][-1]["yields"] if len(recipe_json["yields"]) > 0 else None,
                 "HelloFreshImageUrl": image_url
             }
         )[0]
