@@ -20,7 +20,7 @@
             <ul x-show="isOpen" @click.away="isOpen = false"
                 class="absolute right-0 z-50 w-48 py-2 mt-2 font-medium text-base bg-white rounded-lg shadow dark:bg-gray-700">
                 <li>
-                    <button hx-get="/" hx-swap="outerHTML" hx-replace-url="true" hx-target="#body" hx-trigger="click" hx-ext="true"
+                    <button hx-get="/Home/" hx-boost="no-cache" hx-swap="outerHTML" hx-replace-url="true" hx-target="#body" hx-trigger="click" hx-ext="true"
                             onclick="setDjangoLanguage('en')"
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
                             role="menuitem">
@@ -32,7 +32,7 @@
                     </button>
                 </li>
                 <li>
-                    <button hx-get="" hx-swap="outerHTML" hx-target="#body" hx-trigger="click" hx-ext="true"
+                    <button hx-get="/Home/" hx-boost="no-store" hx-swap="outerHTML" hx-target="#body" hx-trigger="click" hx-ext="true"
                             onclick="setDjangoLanguage('de')"
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
                             role="menuitem">

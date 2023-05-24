@@ -1,8 +1,11 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+from django.views.decorators.cache import cache_control
+
 
 def get_base_context():
     return {}
+
 
 def index(request):
     context = get_base_context()
@@ -10,7 +13,4 @@ def index(request):
 
 def recipe_overview(request):
     context = get_base_context()
-    if 'HTTP_HX_REQUEST' in request.META:
-        return render(request, "ClientManager/components/pageComponents/RecipeOverview.html", context)
-    else:
-        return render(request, "ClientManager/pages/Recipes/RecipeOverview.html", context)
+    return render(request, "ClientManager/pages/Recipes/RecipeOverview.html", context)

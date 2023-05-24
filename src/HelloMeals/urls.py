@@ -27,7 +27,7 @@ urlpatterns = [
     path('set-language/', set_language, name='set_language'),
     path('jsi18n/', JavaScriptCatalog.as_view(), name='javascript-catalog'),
 
-    path("", RedirectView.as_view(url='/Home')),
+    path("", RedirectView.as_view(url='/Home/')),
     path("api/", include("Apps.ApiManager.urls")),
     path('Home/', include("Apps.ClientManager.urls")),
 ]
