@@ -91,7 +91,7 @@ class WorkSteps(models.Model):
     relatedRecipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
 
     index = models.IntegerField()
-    description = models.CharField(max_length=1000)
+    description = models.CharField(max_length=10000)
     image = models.ImageField(upload_to="images/workSteps")
     HelloFreshImageUrl = models.CharField(max_length=255, null=True)
 
