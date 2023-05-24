@@ -4,6 +4,6 @@ from django.views.generic.base import RedirectView
 from . import views
 
 urlpatterns = [
-    path("", RedirectView.as_view(url='recipe')),
-    path("recipe/", views.index, name="recipe_index"),
+    path("", views.index, name="recipe_index"),
+    path("Recipe/", views.recipe_overview),
 ]

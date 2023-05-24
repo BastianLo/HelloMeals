@@ -8,13 +8,16 @@
     <script type="text/javascript" src="{% static 'modules/tailwindcss/3.3.1.js' %}"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width">
-    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
     <title>HelloMeals</title>
 </head>
 <body x-data class="dark:bg-slate-900" id="body">
 {% include 'ClientManager/components/base/TopBar.html' %}
-{% block content %}
-{% endblock %}
+{% include 'ClientManager/components/ui/breadcrumb.html' %}
+<div id="maincontent" class="container">
+    {% block content %}
+    {% endblock %}
+</div>
 {% include 'ClientManager/components/base/FootNavigation.html' %}
 </body>
 </html>
