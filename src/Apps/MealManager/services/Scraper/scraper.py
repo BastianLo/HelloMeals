@@ -301,9 +301,11 @@ class Scraper:
                 recipe_id = recipeJson["id"]
                 url = f"https://www.hellofresh.de/gw/recipes/recipes/{recipe_id}"
                 new_recipe_json = requests.get(url, headers=headers).json()
-                recipe, created = self.create_recipe(new_recipe_json)
-                if recipe is None:
+                temp = self.create_recipe(new_recipe_json)
+                if temp is None:
+                    logging.warning(f"Skipping recipe with id {recipe_id} (index: {index})")
                     continue
+                recipe, created = temp
                 self.create_ingredients(new_recipe_json, recipe)
                 self.create_utensil(new_recipe_json, recipe)
                 self.create_nutrients(new_recipe_json, recipe)
@@ -312,9 +314,9 @@ class Scraper:
                 self.create_work_steps(new_recipe_json, recipe)
                 self.last_error = False
                 if created:
-                    logging.info(f"Successfully created recipe with index {recipe_id}")
+                    logging.info(f"Successfully created recipe with id {recipe_id} (index: {index})")
                 else:
-                    logging.debug(f"Successfully updated recipe with index {recipe_id}")
+                    logging.debug(f"Successfully updated recipe with id {recipe_id} (index: {index})")
             except Exception as e:
                 print(self.last_error)
                 if not self.last_error:

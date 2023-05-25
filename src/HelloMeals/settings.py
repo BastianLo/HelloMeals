@@ -174,8 +174,10 @@ LOGGING = {
     "handlers": {
         "file": {
             "level": "DEBUG",
-            "class": "logging.FileHandler",
+            'class': 'logging.handlers.RotatingFileHandler',
             "filename": BASE_DIR / 'data' / 'log.log',
+            'maxBytes': 500000,
+            'backupCount': 2,
             "formatter": "basic",
         },
     },
