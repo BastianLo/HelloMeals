@@ -21,7 +21,6 @@
             const decodedKey = decodeURIComponent(key);
             const decodedValue = decodeURIComponent(value);
             if (decodedKey.includes('ilike(name')) {
-                console.log(decodedKey.substring(12, decodedKey.length - 1).replace('*',''))
               this.params.searchString = decodedKey.substring(12, decodedKey.length - 1).replaceAll('\'', '').replaceAll('*','');
             } else if (decodedKey === 'filterActive') {
               this.params.filter.active = decodedValue;
@@ -45,7 +44,7 @@
     },
     async init() {
         this.parseUrlParams()
-        await this.search()
+        await this.getRecipes(this.parseParameters())
     },
     addParameterToURL(paramsString){
     _url = location.href.split('?')[0] + paramsString;
@@ -62,7 +61,7 @@
         this.addParameterToURL(filter)
         return filter
     },
-    async search(){await this.getRecipes(this.parseParameters())},
+    async search(){this.params.page=1;await this.getRecipes(this.parseParameters())},
     async next() {if (this.nav.next){await this.requestRecipe(this.nav.next)}},
     async previous() {if (this.nav.previous){await this.requestRecipe(this.nav.previous)}},
 
