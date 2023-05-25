@@ -37,5 +37,7 @@ urlpatterns = [
     path('Scraper/status', scraperView.get_status),
     path('Scraper/start', scraperView.start_scraper),
     path('Scraper/stop', scraperView.stop_scraper),
+    path('Scraper/restart', scraperView.restart_scraper),
+    path('Scraper/setprogress/<int:index>', scraperView.set_index),
 
 ]

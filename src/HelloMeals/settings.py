@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'django_filters',
     'widget_tweaks',
     'pwa',
+    'django_cleanup.apps.CleanupConfig',
 
     'Apps.MealManager',
     'Apps.ClientManager',

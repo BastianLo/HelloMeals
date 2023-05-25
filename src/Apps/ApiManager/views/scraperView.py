@@ -28,3 +28,15 @@ def start_scraper(request):
 def stop_scraper(request):
     get_scraper().stop()
     return HttpResponse(json.dumps(get_scraper().get_status()), content_type='application/json')
+
+@api_view(['POST'])
+@swagger_auto_schema()
+def restart_scraper(request):
+    get_scraper().restart()
+    return HttpResponse(json.dumps(get_scraper().get_status()), content_type='application/json')
+
+@api_view(['POST'])
+@swagger_auto_schema()
+def set_index(request, index):
+    get_scraper().set_progress(index)
+    return HttpResponse(json.dumps(get_scraper().get_status()), content_type='application/json')

@@ -92,6 +92,13 @@ class Scraper:
         self.work_thread.join()
         self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
 
+    def set_progress(self, index):
+        self.config.set_start_index(index)
+    def restart(self):
+        self.stop()
+        self.config.set_start_index(0)
+        self.start()
+
     def is_running(self):
         return self.work_thread.is_alive()
 
@@ -121,6 +128,8 @@ class Scraper:
             return None
 
     def create_recipe(self, recipe_json):
+        if recipe_json["imagePath"] is None:
+            return None
         image_url = "https://img.hellofresh.com/q_40,w_720,f_auto,c_limit,fl_lossy/hellofresh_s3" + recipe_json[
                     "imagePath"]
         if recipe_json["yields"] is None or len(recipe_json["yields"]) == 0:
@@ -151,11 +160,11 @@ class Scraper:
                 "servings": recipe_json["yields"][-1]["yields"] if len(recipe_json["yields"]) > 0 else None,
                 "HelloFreshImageUrl": image_url
             }
-        )[0]
-        if (not (recipe.image and recipe.image.file)) and self.download_images:
+        )
+        if (not (recipe[0].image and recipe[0].image.file)) and self.download_images:
             image = self.get_image(image_url)
             if image is not None:
-                recipe.image.save(str(uuid.uuid4()) + ".png", image)
+                recipe[0].image.save(str(uuid.uuid4()) + ".png", image)
         return recipe
 
     def create_ingredients(self, recipe_json, recipe):
@@ -292,7 +301,9 @@ class Scraper:
                 recipe_id = recipeJson["id"]
                 url = f"https://www.hellofresh.de/gw/recipes/recipes/{recipe_id}"
                 new_recipe_json = requests.get(url, headers=headers).json()
-                recipe = self.create_recipe(new_recipe_json)
+                recipe, created = self.create_recipe(new_recipe_json)
+                if recipe is None:
+                    continue
                 self.create_ingredients(new_recipe_json, recipe)
                 self.create_utensil(new_recipe_json, recipe)
                 self.create_nutrients(new_recipe_json, recipe)
@@ -300,11 +311,16 @@ class Scraper:
                 self.create_tags(new_recipe_json, recipe)
                 self.create_work_steps(new_recipe_json, recipe)
                 self.last_error = False
+                if created:
+                    logging.info(f"Successfully created recipe with index {recipe_id}")
+                else:
+                    logging.debug(f"Successfully updated recipe with index {recipe_id}")
             except Exception as e:
                 print(self.last_error)
                 if not self.last_error:
                     logging.warning(f"Recipe with skip '{index}' failed. Skipping... - Error: {e}")
-                    #self.last_error = True
+                    self.last_error = True
+                    raise e
                 else:
                     logging.error(f"Recipe with skip '{index}' failed second time. Canceling")
                     raise e
