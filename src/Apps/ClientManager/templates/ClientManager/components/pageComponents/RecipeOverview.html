@@ -3,30 +3,66 @@
   currentPage: '',
   store: {
     params: {
-        filter: {},
+        filter: {
+            active: null,
+        },
         take: 1,
-    searchString: '',
+        page: 1,
+        searchString: '',
     },
     show: false,
     recipes: [],
     nav: {},
+    initialized: false,
+    parseUrlParams(){
+        const urlParams = new URLSearchParams(window.location.search);
+        this.params.searchString = urlParams.get('searchString') || '';
+        urlParams.forEach((value, key) => {
+            const decodedKey = decodeURIComponent(key);
+            const decodedValue = decodeURIComponent(value);
+            if (decodedKey.includes('ilike(name')) {
+                console.log(decodedKey.substring(12, decodedKey.length - 1).replace('*',''))
+              this.params.searchString = decodedKey.substring(12, decodedKey.length - 1).replaceAll('\'', '').replaceAll('*','');
+            } else if (decodedKey === 'filterActive') {
+              this.params.filter.active = decodedValue;
+            } else if (decodedKey === 'page') {
+              this.params.page = decodedValue;
+            }
+        })
+    },
     async getRecipes(params) {
         if (params === undefined){params = ''}
-        await this.requestRecipe(`/api/Recipe?ordering(-ratingCount,-averageRating)&page_size=24${params}`)
+        await this.requestRecipe(`/api/Recipe${params}`)
     },
     async requestRecipe(url){
+        const urlParams = new URLSearchParams(url);
+        this.params.page = urlParams.get('page') ? urlParams.get('page') : 1;
         let temp = await (await fetch(url)).json();
         this.recipes = temp.results
         this.nav = temp
         delete this.nav.results
+        this.parseParameters()
     },
-    async init() { await this.getRecipes()  },
+    async init() {
+        this.parseUrlParams()
+        await this.search()
+    },
+    addParameterToURL(paramsString){
+    _url = location.href.split('?')[0] + paramsString;
+    history.pushState({}, null, _url);
+    },
     parseParameters(){
-        let filter = ''
-        if (this.params.searchString !== ''){filter += `&ilike(name,*${this.params.searchString.trim()}*)`}
+        let filter = '?ordering(-ratingCount,-averageRating)'
+        if (this.params.searchString !== ''){filter += `&ilike(name,'*${this.params.searchString.trim()}*')`}
+        if (this.params.filter.active !== null){filter += `&eq(helloFreshActive,${this.params.filter.active})`}
+        filter += `&amp;not(ilike(headline,*Inhalt*))`
+
+        filter += '&page_size=24'
+        filter += '&page=' + this.params.page
+        this.addParameterToURL(filter)
         return filter
     },
-    async search(){if (this.params.searchTerm === ''){await this.init()} else {await this.getRecipes(this.parseParameters())}},
+    async search(){await this.getRecipes(this.parseParameters())},
     async next() {if (this.nav.next){await this.requestRecipe(this.nav.next)}},
     async previous() {if (this.nav.previous){await this.requestRecipe(this.nav.previous)}},
 
@@ -149,7 +185,7 @@
                    x-model="store.params.searchString"
                    class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                    placeholder="{% trans 'recipe.name' %}" required>
-            <button type="button" @click="await store.params.search()"
+            <button type="button" @click="await store.search()"
                     class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                 {% trans 'search' %}
             </button>
