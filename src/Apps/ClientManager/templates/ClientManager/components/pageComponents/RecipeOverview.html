@@ -2,23 +2,37 @@
 <div style="position: absolute; left:20px;right:20px;" x-data="{
   currentPage: '',
   store: {
+    params: {
+        filter: {},
+        take: 1,
     searchString: '',
+    },
     show: false,
     recipes: [],
     nav: {},
-    async makeRequest(url) {
+    async getRecipes(params) {
+        if (params === undefined){params = ''}
+        await this.requestRecipe(`/api/Recipe?ordering(-ratingCount,-averageRating)&page_size=20${params}`)
+    },
+    async requestRecipe(url){
         let temp = await (await fetch(url)).json();
         this.recipes = temp.results
         this.nav = temp
         delete this.nav.results
     },
-    async init() { await this.makeRequest('/api/Recipe')  },
-    async search(text){if (text === ''){await this.init()} else {await this.makeRequest(`/api/Recipe?ilike(name,*${text.trim()}*)`)}},
-    async next() {if (this.nav.next){await this.makeRequest(this.nav.next)}},
-    async previous() {if (this.nav.previous){await this.makeRequest(this.nav.previous)}},
+    async init() { await this.getRecipes()  },
+    parseParameters(){
+        let filter = ''
+        if (this.params.searchTerm !== ''){filter += `&ilike(name,*${this.params.searchString.trim()}*)`}
+        return filter
+    },
+    async search(){if (this.params.searchTerm === ''){await this.init()} else {await this.getRecipes(this.parseParameters())}},
+    async next() {if (this.nav.next){await this.requestRecipe(this.nav.next)}},
+    async previous() {if (this.nav.previous){await this.requestRecipe(this.nav.previous)}},
 
     cutoff(text, limit)
     {
+        if (text === null){return text}
         if(text.length - 3 > limit){
             return text.substring(0, limit - 3) + '...';
         }
@@ -111,7 +125,7 @@
             </div>
         </div>
     </div>
-
+    <!-- Filter button and Searchbox -->
     <div class="mt-5 mb-5 flex flex-row flex justify-center ">
         <button class="p-1 mr-4" @click="store.show = !store.show">
             <svg class="w-6 h-6 mb-1 text-gray-500 dark:text-gray-400" aria-hidden="true" fill="currentColor"
@@ -131,18 +145,38 @@
                           d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                 </svg>
             </div>
-            <input type="search" id="default-search" x-model="searchString"
+            <input type="search" id="default-search" @keyup.enter="await store.search()" x-model="store.params.searchString"
                    class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                    placeholder="{% trans 'recipe.name' %}" required>
-            <button type="button" @click="await store.search(searchString)"
+            <button type="button" @click="await store.params.search()"
                     class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                 {% trans 'search' %}
             </button>
         </div>
+
     </div>
+    <!-- Navigation -->
+    <div class="flex flex-col items-center mb-24">
+        <span class="text-sm text-gray-700 dark:text-gray-400">
+          Showing <span class="font-semibold text-gray-900 dark:text-white" x-text="store.nav.start"></span> to <span
+                class="font-semibold text-gray-900 dark:text-white" x-text="store.nav.end"></span> of <span
+                class="font-semibold text-gray-900 dark:text-white" x-text="store.nav.count"></span> Entries
+        </span>
+        <div class="inline-flex mt-2 xs:mt-0">
+            <button @click="await store.previous()"
+                    class="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-l hover:bg-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                Prev
+            </button>
+            <button @click="await store.next()"
+                    class="px-4 py-2 text-sm font-medium text-white bg-gray-800 border-0 border-l border-gray-700 rounded-r hover:bg-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                Next
+            </button>
+        </div>
+    </div>
+    <!-- Recipes -->
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mx-auto mb-6 mt-10">
         <template x-for="recipe in store.recipes">
-            <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 flex flex-col justify-center">
+            <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 flex flex-col justify-stretch">
                 <a :href="recipe.helloFreshId">
                     <img class="rounded-t-lg" :src="recipe.image" alt=""/>
                 </a>
@@ -168,6 +202,7 @@
             </div>
         </template>
     </div>
+    <!-- Navigation -->
     <div class="flex flex-col items-center mb-24">
         <span class="text-sm text-gray-700 dark:text-gray-400">
           Showing <span class="font-semibold text-gray-900 dark:text-white" x-text="store.nav.start"></span> to <span
