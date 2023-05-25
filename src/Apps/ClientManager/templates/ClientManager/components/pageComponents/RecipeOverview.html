@@ -145,7 +145,8 @@
                           d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                 </svg>
             </div>
-            <input type="search" id="default-search" @keyup.enter="await store.search()" x-model="store.params.searchString"
+            <input type="search" id="default-search" @keyup.enter="await store.search()"
+                   x-model="store.params.searchString"
                    class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                    placeholder="{% trans 'recipe.name' %}" required>
             <button type="button" @click="await store.params.search()"
@@ -178,8 +179,12 @@
         <template x-for="recipe in store.recipes">
             <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 flex flex-col justify-stretch">
                 <a :href="recipe.helloFreshId">
-                    <img class="rounded-t-lg" :src="recipe.image" alt=""/>
                 </a>
+                <div x-data="{ shown: false }" x-intersect="shown = true">
+                    <div x-show="shown" x-transition>
+                        <img class="rounded-t-lg" :src="shown ? recipe.image : ''" alt=""/>
+                    </div>
+                </div>
                 <div class="p-5">
                     <a :href="recipe.helloFreshId">
                         <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
