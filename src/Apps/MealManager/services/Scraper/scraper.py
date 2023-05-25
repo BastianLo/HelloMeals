@@ -271,7 +271,6 @@ class Scraper:
             )
 
     def create_categories(self, recipe_json, recipe):
-        print(recipe_json["category"])
         if recipe_json["category"] is None:
             return None
         category_json = recipe_json["category"]
