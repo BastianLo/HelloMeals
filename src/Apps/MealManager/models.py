@@ -59,12 +59,23 @@ class Tag(models.Model):
         return f"{self.name} ({self.helloFreshId})"
 
 
+class Category(models.Model):
+    helloFreshId = models.TextField(primary_key=True, max_length=255, unique=True)
+    type = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.name} ({self.helloFreshId})"
+
+
 class Recipe(models.Model):
     helloFreshId = models.TextField(primary_key=True, max_length=255, unique=True)
 
-    nutrients = models.ForeignKey(Nutrients, on_delete=models.CASCADE, blank=True, null=True)
+    nutrients = models.ForeignKey(Nutrients, on_delete=models.SET_NULL, blank=True, null=True)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True)
 
     name = models.CharField(max_length=255)
+    clonedFrom = models.CharField(max_length=255, blank=True, null=True)
     helloFreshActive = models.BooleanField(default=True)
     highlighted = models.BooleanField(blank=True, null=True)
     isAddon = models.BooleanField(blank=True, null=True)
@@ -77,6 +88,7 @@ class Recipe(models.Model):
     description = models.CharField(max_length=10000, blank=True, null=True)
     cardLink = models.CharField(max_length=2000, blank=True, null=True)
     websiteLink = models.CharField(max_length=2000, blank=True, null=True)
+    videoLink = models.CharField(max_length=2000, blank=True, null=True)
     prepTime = models.DurationField(blank=True, null=True)
     totalTime = models.DurationField(blank=True, null=True)
     difficulty = models.IntegerField(blank=True, null=True)

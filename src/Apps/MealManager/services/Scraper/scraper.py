@@ -138,6 +138,8 @@ class Scraper:
             helloFreshId=recipe_json["id"],
             defaults={
                 "name": recipe_json["name"],
+                "clonedFrom": recipe_json["clonedFrom"],
+                "videoLink": recipe_json["videoLink"],
                 "highlighted": recipe_json["highlighted"],
                 "isAddon": recipe_json["isAddon"],
                 "isDinnerToLunch": recipe_json["isDinnerToLunch"],
@@ -268,6 +270,20 @@ class Scraper:
                 }
             )
 
+    def create_categories(self, recipe_json, recipe):
+        print(recipe_json["category"])
+        if recipe_json["category"] is None:
+            return None
+        category_json = recipe_json["category"]
+        category = Category.objects.update_or_create(
+            helloFreshId=category_json["id"],
+            defaults={
+                "name": category_json["name"],
+                "type": category_json["type"],
+            }
+        )[0]
+        recipe.category = category
+
     def create_work_steps(self, recipe_json, recipe):
         for step_json in recipe_json["steps"]:
             if (len(step_json["images"]) > 0) and step_json["images"][0]["link"] is not None:
@@ -290,6 +306,8 @@ class Scraper:
                     print(f"Could not save process-step-image for step {step}")
 
     def scrape(self, index):
+        if index % 500 == 0:
+            self.bearer_token = None
         headers = {
             'authorization': f'Bearer {self.bearer()}',
         }
@@ -311,6 +329,7 @@ class Scraper:
                 self.create_nutrients(new_recipe_json, recipe)
                 self.create_cuisine(new_recipe_json, recipe)
                 self.create_tags(new_recipe_json, recipe)
+                self.create_categories(new_recipe_json, recipe)
                 self.create_work_steps(new_recipe_json, recipe)
                 self.last_error = False
                 if created:
