@@ -12,7 +12,7 @@
     nav: {},
     async getRecipes(params) {
         if (params === undefined){params = ''}
-        await this.requestRecipe(`/api/Recipe?ordering(-ratingCount,-averageRating)&page_size=20${params}`)
+        await this.requestRecipe(`/api/Recipe?ordering(-ratingCount,-averageRating)&page_size=24${params}`)
     },
     async requestRecipe(url){
         let temp = await (await fetch(url)).json();
