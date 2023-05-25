@@ -129,6 +129,12 @@ class Scraper:
             helloFreshId=recipe_json["id"],
             defaults={
                 "name": recipe_json["name"],
+                "highlighted": recipe_json["highlighted"],
+                "isAddon": recipe_json["isAddon"],
+                "isDinnerToLunch": recipe_json["isDinnerToLunch"],
+                "isExcludedFromIndex": recipe_json["isExcludedFromIndex"],
+                "isPremium": recipe_json["isPremium"],
+                "author": recipe_json["author"],
                 "helloFreshActive": recipe_json["active"],
                 "headline": recipe_json["headline"],
                 "description": recipe_json["description"],

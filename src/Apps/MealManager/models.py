@@ -66,6 +66,13 @@ class Recipe(models.Model):
 
     name = models.CharField(max_length=255)
     helloFreshActive = models.BooleanField(default=True)
+    highlighted = models.BooleanField(blank=True, null=True)
+    isAddon = models.BooleanField(blank=True, null=True)
+    isComplete = models.BooleanField(blank=True, null=True)
+    isDinnerToLunch = models.BooleanField(blank=True, null=True)
+    isExcludedFromIndex = models.BooleanField(blank=True, null=True)
+    isPremium = models.BooleanField(blank=True, null=True)
+    author = models.CharField(max_length=255, blank=True, null=True)
     headline = models.CharField(max_length=255, blank=True, null=True)
     description = models.CharField(max_length=10000, blank=True, null=True)
     cardLink = models.CharField(max_length=2000, blank=True, null=True)
