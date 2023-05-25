@@ -23,7 +23,7 @@
     async init() { await this.getRecipes()  },
     parseParameters(){
         let filter = ''
-        if (this.params.searchTerm !== ''){filter += `&ilike(name,*${this.params.searchString.trim()}*)`}
+        if (this.params.searchString !== ''){filter += `&ilike(name,*${this.params.searchString.trim()}*)`}
         return filter
     },
     async search(){if (this.params.searchTerm === ''){await this.init()} else {await this.getRecipes(this.parseParameters())}},
