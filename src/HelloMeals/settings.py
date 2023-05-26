@@ -108,9 +108,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'hellomeals',
-        'USER': os.getenv("POSTGRES_USER", "user123"),
-        'PASSWORD': os.getenv("POSTGRES_PASSWORD", "CURIECNRUICNWBcr39bun98BNcfdeui"),
-        'HOST': os.getenv("POSTGRES_HOST", "172.19.0.44"),
+        'USER': os.getenv("POSTGRES_USER", "root"),
+        'PASSWORD': os.getenv("POSTGRES_PASSWORD", "root"),
+        'HOST': os.getenv("POSTGRES_HOST", "127.0.0.1"),
         'PORT': "5432",
     }
 }
