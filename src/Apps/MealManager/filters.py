@@ -41,7 +41,8 @@ class RecipeFilters(AutoRQLFilterClass):
         },
     ]
     class Meta:
-        fields = '__all__'
+        #fields = '__all__'
+        exclude = ['cuisines']
 
 class CuisineFilters(AutoRQLFilterClass):
     MODEL = Cuisine

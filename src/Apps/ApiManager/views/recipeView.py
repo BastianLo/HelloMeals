@@ -55,6 +55,15 @@ class RecipeBaseList(generics.ListAPIView):
     rql_filter_class = RecipeFilters
     filterset_class = RecipeFilterSet
     pagination_class = RqlPagination
+    queryset = Recipe.objects.all()
+
+    def filter_cuisines(self):
+        cuisines = self.request.GET.get('cuisines')
+        if cuisines:
+            cuisines_list = cuisines.split('-')
+            return self.queryset.filter(recipecuisine__cuisine__helloFreshId__in=cuisines_list).distinct()
+        return self.queryset
+
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
@@ -62,8 +71,7 @@ class RecipeBaseList(generics.ListAPIView):
         return RecipeBaseSerializer
 
     def get_queryset(self):
-        recipes = Recipe.objects.all()
-        return recipes
+        return self.filter_cuisines()
 
 
 @permission_classes([IsAuthenticated])

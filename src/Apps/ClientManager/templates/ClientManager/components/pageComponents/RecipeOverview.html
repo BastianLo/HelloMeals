@@ -5,6 +5,7 @@
     params: {
         filter: {
             active: null,
+            cuisines: []
         },
         take: 1,
         page: 1,
@@ -55,12 +56,16 @@
         if (this.params.searchString !== ''){filter += `&ilike(name,'*${this.params.searchString.trim()}*')`}
         if (this.params.filter.active !== null){filter += `&eq(helloFreshActive,${this.params.filter.active})`}
         filter += `&amp;not(ilike(headline,*Inhalt*))`
-
+        filter += `&eq(clonedFrom,null())`
         filter += '&page_size=24'
         filter += '&page=' + this.params.page
+        console.log(this.params.filter.cuisines.length)
+        if (this.params.filter.cuisines.length > 0) {filter += '&cuisines=' + this.params.filter.cuisines.join('-')}
+        console.log(this.params.filter.cuisines.join('-'))
         this.addParameterToURL(filter)
         return filter
     },
+    clearFilter() {this.params.filter.cuisines = []},
     async search(){this.params.page=1;await this.getRecipes(this.parseParameters())},
     async next() {if (this.nav.next){await this.requestRecipe(this.nav.next)}},
     async previous() {if (this.nav.previous){await this.requestRecipe(this.nav.previous)}},
@@ -81,78 +86,63 @@
     <div class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-show="store.show">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
         <div class="fixed inset-0 z-10 overflow-y-auto">
-            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                <div @click.outside="store.show=false"
+            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0 mb-40">
+                <div @click.outside="store.show=false" style="width: 400px"
                      class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                    <div class="w-full shadow p-5 rounded-lg bg-white">
-
+                    <div class="w-lg shadow p-5 rounded-lg dark:bg-gray-800">
+                        <!-- Popup head -->
                         <div class="flex items-center justify-between mt-4">
-                            <p class="font-medium">
-                                Filters
+                            <p class="font-medium dark:text-white">
+                                {% trans 'filter.label' %}
                             </p>
-
-                            <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm font-medium rounded-md">
-                                Reset Filter
+                            <button @click="store.search()" class="text-white px-4 py-2 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                {% trans 'filter.apply' %}
+                            </button>
+                            <button @click="store.clearFilter(); store.search()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm font-medium rounded-md">
+                                {% trans 'filter.reset' %}
                             </button>
                         </div>
-
-                        <div>
-                            <div class="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-2 gap-4 mt-4">
-                                <select class="px-4 py-3 w-full rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 text-sm">
-                                    <option value="">All Type</option>
-                                    <option value="for-rent">For Rent</option>
-                                    <option value="for-sale">For Sale</option>
-                                </select>
-
-                                <select class="px-4 py-3 w-full rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 text-sm">
-                                    <option value="">Furnish Type</option>
-                                    <option value="fully-furnished">Fully Furnished</option>
-                                    <option value="partially-furnished">Partially Furnished</option>
-                                    <option value="not-furnished">Not Furnished</option>
-                                </select>
-
-                                <select class="px-4 py-3 w-full rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 text-sm">
-                                    <option value="">Any Price</option>
-                                    <option value="1000">RM 1000</option>
-                                    <option value="2000">RM 2000</option>
-                                    <option value="3000">RM 3000</option>
-                                    <option value="4000">RM 4000</option>
-                                </select>
-
-                                <select class="px-4 py-3 w-full rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 text-sm">
-                                    <option value="">Floor Area</option>
-                                    <option value="200">200 sq.ft</option>
-                                    <option value="400">400 sq.ft</option>
-                                    <option value="600">600 sq.ft</option>
-                                    <option value="800 sq.ft">800</option>
-                                    <option value="1000 sq.ft">1000</option>
-                                    <option value="1200 sq.ft">1200</option>
-                                </select>
-
-                                <select class="px-4 py-3 w-full rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 text-sm">
-                                    <option value="">Bedrooms</option>
-                                    <option value="1">1 bedroom</option>
-                                    <option value="2">2 bedrooms</option>
-                                    <option value="3">3 bedrooms</option>
-                                    <option value="4">4 bedrooms</option>
-                                    <option value="5">5 bedrooms</option>
-                                </select>
-
-                                <select class="px-4 py-3 w-full rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 text-sm">
-                                    <option value="">Bathrooms</option>
-                                    <option value="1">1 bathroom</option>
-                                    <option value="2">2 bathrooms</option>
-                                    <option value="3">3 bathrooms</option>
-                                    <option value="4">4 bathrooms</option>
-                                    <option value="5">5 bathrooms</option>
-                                </select>
-
-                                <select class="px-4 py-3 w-full rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 text-sm">
-                                    <option value="">Bathrooms</option>
-                                    <option value="1">1 space</option>
-                                    <option value="2">2 space</option>
-                                    <option value="3">3 space</option>
-                                </select>
+                        <!-- Popup body -->
+                        <div class="mt-5">
+                            <div>
+                                <div x-data="{open: false}">
+                                    <h2 id="accordion-collapse-heading-2">
+                                        <button type="button"
+                                                @click="open = !open"
+                                                :class="{'border-b-0':open}"
+                                                class="flex items-center justify-between w-full p-5 font-medium text-left text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                                        >
+                                            <span :class="{'dark:text-white': open}">{% trans 'cuisine.label' %}</span>
+                                            <svg :class="{'rotate-180': open}" data-accordion-icon
+                                                 class="w-6 h-6 shrink-0" fill="currentColor"
+                                                 viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill-rule="evenodd"
+                                                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                      clip-rule="evenodd"></path>
+                                            </svg>
+                                        </button>
+                                    </h2>
+                                    <div :class="{ 'hidden': !open}" class="border dark:border-gray-700 border-t-0"
+                                         aria-labelledby="accordion-collapse-heading-2">
+                                        <div class="p-2 rounded">
+                                            <div class="grid grid-cols-2" x-data="{cuisines: []}"
+                                                 x-init="cuisines = (await (await fetch('/api/Cuisine?page_size=1000')).json()).results">
+                                                <template x-for="cuisine in cuisines">
+                                                    <div class="flex items-center">
+                                                        <label>
+                                                            <input type="checkbox" :value="cuisine.helloFreshId"
+                                                                   class="w-4 h-4 rounded focus:ring-2"
+                                                                   x-model="store.params.filter.cuisines"
+                                                            />
+                                                        </label>
+                                                        <p x-text="cuisine.name"
+                                                           class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-white"></p>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
