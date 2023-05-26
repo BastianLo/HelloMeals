@@ -95,10 +95,10 @@
                             <p class="font-medium dark:text-white">
                                 {% trans 'filter.label' %}
                             </p>
-                            <button @click="store.search()" class="text-white px-4 py-2 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                            <button @click="store.search(); store.show = false" class="text-white px-4 py-2 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                                 {% trans 'filter.apply' %}
                             </button>
-                            <button @click="store.clearFilter(); store.search()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm font-medium rounded-md">
+                            <button @click="store.clearFilter(); store.search(); store.show = false" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm font-medium rounded-md">
                                 {% trans 'filter.reset' %}
                             </button>
                         </div>
