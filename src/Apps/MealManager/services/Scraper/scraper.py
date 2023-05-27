@@ -8,40 +8,12 @@ from ...models import *
 from isodate import parse_duration
 from django.core.files.base import File
 import re
+from .scrapeConfig import scrapeConfig
 
 
 def is_valid_iso_duration(duration_str):
     pattern = r'^P(?:\d+Y)?(?:\d+M)?(?:\d+W)?(?:\d+D)?(?:T(?:\d+H)?(?:\d+M)?(?:\d+S)?)?$'
     return re.match(pattern, duration_str) is not None
-
-
-class ScrapeConfig:
-    def __init__(self):
-        self.path = str(settings.BASE_DIR) + "/data/config/scraper.json"
-        if os.path.exists(self.path):
-            with open(self.path, "r") as f:
-                self.config_data = json.load(f)
-        else:
-            self.config_data = {}
-        self.start_index = self.config_data["start_index"] if "start_index" in self.config_data else 0
-        self.max_recipes = self.config_data["max_recipes"] if "max_recipes" in self.config_data else 1000000
-
-    def set_start_index(self, start_index):
-        self.start_index = start_index
-        self.save_file()
-
-    def set_max_recipes(self, max_recipes):
-        self.max_recipes = max_recipes
-        self.save_file()
-
-    def save_file(self):
-        if not os.path.exists(os.path.dirname(self.path)):
-            os.mkdir(os.path.dirname(self.path))
-        with open(self.path, "w") as f:
-            json.dump({
-                "start_index": self.start_index,
-                "max_recipes": self.max_recipes,
-            }, f)
 
 
 #TODO: for scraper functionality:
@@ -52,7 +24,7 @@ class Scraper:
         self.exception = None
         self.last_error = False
         self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
-        self.config = ScrapeConfig()
+        self.config = scrapeConfig()
         self.active = False
         self.country = os.getenv('COUNTRY') if os.getenv('COUNTRY') else "DE"
         self.HELLO_FRESH_URL = f"https://www.hellofresh.de/gw/api/recipes?country={self.country}&order=-date&take=1&skip="
@@ -61,17 +33,17 @@ class Scraper:
 
     def get_status(self):
         return {
-            "max_recipes": self.config.max_recipes,
-            "start_index": self.config.start_index,
+            "max_recipes": self.config.hf_max_recipes,
+            "start_index": self.config.hf_start_index,
             "running": self.is_running(),
             "exception": self.exception
         }
 
     def work(self):
         try:
-            while self.active and self.config.start_index < self.config.max_recipes:
-                self.scrape(self.config.start_index)
-                self.config.set_start_index(self.config.start_index + 1)
+            while self.active and self.config.hf_start_index < self.config.hf_max_recipes:
+                self.scrape(self.config.hf_start_index)
+                self.config.set_hf_start_index(self.config.hf_start_index + 1)
         except Exception as e:
             self.exception = str(e)
             self.active = False
@@ -93,10 +65,10 @@ class Scraper:
         self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
 
     def set_progress(self, index):
-        self.config.set_start_index(index)
+        self.config.set_hf_start_index(index)
     def restart(self):
         self.stop()
-        self.config.set_start_index(0)
+        self.config.set_hf_start_index(0)
         self.start()
 
     def is_running(self):
@@ -138,6 +110,7 @@ class Scraper:
             helloFreshId=recipe_json["id"],
             defaults={
                 "name": recipe_json["name"],
+                "source": 1,
                 "clonedFrom": recipe_json["clonedFrom"],
                 "videoLink": recipe_json["videoLink"],
                 "highlighted": recipe_json["highlighted"],
@@ -180,7 +153,7 @@ class Scraper:
             ingredient = Ingredient.objects.update_or_create(
                 helloFreshId=ingredient_json["id"],
                 defaults={
-                    "name": ingredient_json["name"],
+                    "name": ingredient_json["name"].replace("*",""),
                     "HelloFreshImageUrl": image_url
                 }
             )[0]
@@ -312,7 +285,7 @@ class Scraper:
         }
         response = requests.request("GET", self.HELLO_FRESH_URL + str(index), headers=headers)
         items = response.json()["items"]
-        self.config.set_max_recipes(response.json()["total"])
+        self.config.set_hf_max_recipes(response.json()["total"])
         for recipeJson in items:
             try:
                 recipe_id = recipeJson["id"]

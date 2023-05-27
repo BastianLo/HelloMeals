@@ -28,14 +28,14 @@ class Utensil(models.Model):
 
 class Nutrients(models.Model):
     id = models.TextField(primary_key=True, max_length=255, unique=True)
-    energyKj = models.IntegerField()
-    energyKcal = models.IntegerField()
-    fat = models.IntegerField()
-    fatSaturated = models.IntegerField()
-    carbs = models.IntegerField()
-    sugar = models.IntegerField()
-    protein = models.IntegerField()
-    salt = models.IntegerField()
+    energyKj = models.IntegerField(blank=True, null=True)
+    energyKcal = models.IntegerField(blank=True, null=True)
+    fat = models.IntegerField(blank=True, null=True)
+    fatSaturated = models.IntegerField(blank=True, null=True)
+    carbs = models.IntegerField(blank=True, null=True)
+    sugar = models.IntegerField(blank=True, null=True)
+    protein = models.IntegerField(blank=True, null=True)
+    salt = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
         return self.id
@@ -71,12 +71,15 @@ class Category(models.Model):
 class Recipe(models.Model):
     helloFreshId = models.TextField(primary_key=True, max_length=255, unique=True)
 
+    #Source: 1 = HelloFresh, 2 = KitchenStories
+    source = models.IntegerField(default=1)
+
     nutrients = models.ForeignKey(Nutrients, on_delete=models.SET_NULL, blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True)
 
     name = models.CharField(max_length=255)
     clonedFrom = models.CharField(max_length=255, blank=True, null=True)
-    helloFreshActive = models.BooleanField(default=True)
+    helloFreshActive = models.BooleanField(default=True, blank=True, null=True)
     highlighted = models.BooleanField(blank=True, null=True)
     isAddon = models.BooleanField(blank=True, null=True)
     isComplete = models.BooleanField(blank=True, null=True)

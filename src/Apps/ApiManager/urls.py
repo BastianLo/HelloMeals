@@ -34,10 +34,16 @@ urlpatterns = [
 
     path('Cuisine', recipeView.CuisineList.as_view()),
 
-    path('Scraper/status', scraperView.get_status),
-    path('Scraper/start', scraperView.start_scraper),
-    path('Scraper/stop', scraperView.stop_scraper),
-    path('Scraper/restart', scraperView.restart_scraper),
-    path('Scraper/setprogress/<int:index>', scraperView.set_index),
+    path('Scraper/hellofresh/status', scraperView.get_status),
+    path('Scraper/hellofresh/start', scraperView.start_scraper),
+    path('Scraper/hellofresh/stop', scraperView.stop_scraper),
+    path('Scraper/hellofresh/restart', scraperView.restart_scraper),
+    path('Scraper/hellofresh/setprogress/<int:index>', scraperView.set_index),
+
+    path('Scraper/kitchenstories/status', scraperView.get_kitchen_stories_status),
+    path('Scraper/kitchenstories/start', scraperView.start_kitchen_stories_scraper),
+    path('Scraper/kitchenstories/stop', scraperView.stop_kitchen_stories_scraper),
+    path('Scraper/kitchenstories/restart', scraperView.restart_kitchen_stories_scraper),
+    path('Scraper/kitchenstories/setprogress/<int:index>', scraperView.set_kitchen_stories_index),
 
 ]

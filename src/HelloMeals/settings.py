@@ -215,6 +215,11 @@ LOGGING = {
             "level": "WARNING",
             "propagate": False,
         },
+        "PIL.TiffImagePlugin": {
+            "handlers": [],
+            "level": "WARNING",
+            "propagate": False,
+        },
     },
     'root': {
         'handlers': ['file'],
