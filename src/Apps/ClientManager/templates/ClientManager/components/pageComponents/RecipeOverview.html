@@ -126,7 +126,7 @@
                                          aria-labelledby="accordion-collapse-heading-2">
                                         <div class="p-2 rounded">
                                             <div class="grid grid-cols-2" x-data="{cuisines: []}"
-                                                 x-init="cuisines = (await (await fetch('/api/Cuisine?page_size=1000')).json()).results">
+                                                 x-init="cuisines = (await (await fetch('/api/Cuisine?page_size=1000&ordering(name,type)')).json()).results">
                                                 <template x-for="cuisine in cuisines">
                                                     <div class="flex items-center">
                                                         <label>
