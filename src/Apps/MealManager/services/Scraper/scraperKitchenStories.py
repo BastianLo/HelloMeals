@@ -104,7 +104,7 @@ class KSScraper:
             return None
 
     def create_recipe(self, recipe_json):
-        if "tags" not in recipe_json or "amount" not in recipe_json["servings"]:
+        if "tags" not in recipe_json or "amount" not in recipe_json["servings"] or "duration" not in recipe_json:
             return None
         #Skip recipes that are not main recipes:
         if len([tag for tag in recipe_json["tags"] if tag["id"] == "f622a099-d5c2-4db2-a689-e7f856db38a8"]) == 0:
