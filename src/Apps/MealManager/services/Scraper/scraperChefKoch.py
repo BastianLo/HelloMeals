@@ -22,7 +22,7 @@ class Scraper:
     def __init__(self):
         self.exception = None
         self.last_error = False
-        self.limit = 2
+        self.limit = 10
         self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
         self.config = scrapeConfig()
         self.active = False
@@ -89,7 +89,7 @@ class Scraper:
             return None
 
     def create_recipe(self, recipe_json):
-        if recipe_json["previewImageUrlTemplate"] is None:
+        if recipe_json["previewImageUrlTemplate"] is None or recipe_json["rating"] is None:
             return None
         image_url = recipe_json["previewImageUrlTemplate"].replace("<format>", "crop-720x480")
         if recipe_json["servings"] is None:
@@ -127,12 +127,14 @@ class Scraper:
     def create_ingredients(self, recipe_json, recipe):
         for group_json in recipe_json["ingredientGroups"]:
             for ingredient_json in group_json["ingredients"]:
-                ingredient = Ingredient.objects.update_or_create(
-                    helloFreshId=ingredient_json["id"],
-                    defaults={
-                        "name": ingredient_json["name"],
-                    }
-                )[0]
+                ingredient = Ingredient.objects.filter(name=ingredient_json["name"]).first()
+                if ingredient is None:
+                    ingredient = Ingredient.objects.update_or_create(
+                        helloFreshId=ingredient_json["id"],
+                        defaults={
+                            "name": ingredient_json["name"],
+                        }
+                    )[0]
                 # Create RecipeIngredient
                 ingredient_id = ingredient_json["id"]
                 recipe_ingredient = RecipeIngredient.objects.update_or_create(
@@ -146,6 +148,8 @@ class Scraper:
                 )[0]
 
     def create_nutrients(self, recipe_json, recipe):
+        if recipe_json["nutrition"] == None:
+            return None
         nutrient_json = recipe_json["nutrition"]
         nutrient = Nutrients.objects.update_or_create(
             id=recipe.helloFreshId + "nutrients",
@@ -163,34 +167,9 @@ class Scraper:
         recipe.nutrients = nutrient
         recipe.save()
 
-
-    def create_cuisine(self, recipe_json, recipe):
-        for cuisine_json in recipe_json["cuisines"]:
-            cuisine = Cuisine.objects.update_or_create(
-                helloFreshId=cuisine_json["id"],
-                defaults={
-                    "name": cuisine_json["name"],
-                    "type": cuisine_json["type"],
-                }
-            )[0]
-            recipe_cuisine = RecipeCuisine.objects.update_or_create(
-                id=recipe.helloFreshId + cuisine.helloFreshId,
-                defaults={
-                    "recipe": recipe,
-                    "cuisine": cuisine,
-                }
-            )
-
-
     def create_tags(self, recipe_json, recipe):
-        for tag_json in recipe_json["tags"]:
-            tag = Tag.objects.update_or_create(
-                helloFreshId=tag_json["id"],
-                defaults={
-                    "name": tag_json["name"],
-                    "type": tag_json["type"],
-                }
-            )[0]
+        for tag_json in recipe_json["fullTags"]:
+            tag = Tag.objects.get(helloFreshId=tag_json["id"])
             recipe_tag = RecipeTag.objects.update_or_create(
                 id=recipe.helloFreshId + tag.helloFreshId,
                 defaults={
@@ -199,47 +178,26 @@ class Scraper:
                 }
             )
 
-
-    def create_categories(self, recipe_json, recipe):
-        if recipe_json["category"] is None:
-            return None
-        category_json = recipe_json["category"]
-        category = Category.objects.update_or_create(
-            helloFreshId=category_json["id"],
+    def create_work_steps(self, recipe_json, recipe):
+        step = WorkSteps.objects.update_or_create(
+            id=recipe.helloFreshId + "0",
             defaults={
-                "name": category_json["name"],
-                "type": category_json["type"],
+                "relatedRecipe": recipe,
+                "index": 0,
+                "description": recipe_json["instructions"],
             }
         )[0]
-        recipe.category = category
-
-
-    def create_work_steps(self, recipe_json, recipe):
-        for step_json in recipe_json["steps"]:
-            if (len(step_json["images"]) > 0) and step_json["images"][0]["link"] is not None:
-                image_url = "https://img.hellofresh.com/q_40,w_480,f_auto,c_limit,fl_lossy/hellofresh_s3" + \
-                            step_json["images"][0]["path"]
-            else:
-                image_url = None
-            step = WorkSteps.objects.update_or_create(
-                id=recipe.helloFreshId + str(step_json["index"]),
-                defaults={
-                    "relatedRecipe": recipe,
-                    "index": step_json["index"],
-                    "description": step_json["instructions"],
-                    "HelloFreshImageUrl": image_url
-                }
-            )[0]
-            if (not (step.image and step.image.file)) and (len(step_json["images"]) > 0) and self.download_images:
-                try:
-                    step.image.save(str(uuid.uuid4()) + ".png", self.get_image(image_url))
-                except:
-                    print(f"Could not save process-step-image for step {step}")
-
+    def create_all_tags(self, tag_groups):
+        for tg in tag_groups:
+            name = tg["key"].capitalize()
+            tg_object, created = TagGroup.objects.get_or_create(name=name)
+            for tag in tg["tags"]:
+                Tag.objects.update_or_create(helloFreshId=tag["id"], name=tag["name"], type=tag["name"], tagGroup=tg_object)
 
     def scrape(self, index):
         chefkoch_url = f"https://api.chefkoch.de/v2/search-gateway/recipes?tags=21&minimumRating=4.2&limit={self.limit}&offset={index}"
         response = requests.request("GET", chefkoch_url)
+        self.create_all_tags(response.json()["tagGroups"])
         items = response.json()["results"]
         self.config.set_hf_max_recipes(response.json()["count"])
         for recipeJson in items:
@@ -255,11 +213,7 @@ class Scraper:
                 recipe, created = temp
                 self.create_ingredients(new_recipe_json, recipe)
                 self.create_nutrients(new_recipe_json, recipe)
-                print("finish")
-                exit()
-                self.create_cuisine(new_recipe_json, recipe)
                 self.create_tags(new_recipe_json, recipe)
-                self.create_categories(new_recipe_json, recipe)
                 self.create_work_steps(new_recipe_json, recipe)
                 self.last_error = False
                 if created:
