@@ -165,7 +165,7 @@ class KSScraper:
                     defaults={
                         "recipe": recipe,
                         "ingredient": ingredient,
-                        "amount": ingredient_json["measurement"]["metric"]["amount"] if "measurement" in ingredient_json else None,
+                        "amount": ingredient_json["measurement"]["metric"]["amount"] if "measurement" in ingredient_json and "metric" in ingredient_json["measurement"] and "amount" in ingredient_json["measurement"]["metric"] else None,
                         "unit": ingredient_json["measurement"]["metric"]["unit"]["name"]["rendered"] if "measurement" in ingredient_json and "unit" in ingredient_json["measurement"]["metric"] else None,
                     }
                 )[0]
