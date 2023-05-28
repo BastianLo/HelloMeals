@@ -104,11 +104,13 @@ class KSScraper:
             return None
 
     def create_recipe(self, recipe_json):
+        if "tags" not in recipe_json:
+            return None
         #Skip recipes that are not main recipes:
         if len([tag for tag in recipe_json["tags"] if tag["id"] == "f622a099-d5c2-4db2-a689-e7f856db38a8"]) == 0:
             logging.info(f"Skipping recipe {recipe_json['id']} because recipe is not main")
             return None
-        if recipe_json["image"]["url"] is None:
+        if "image" not in recipe_json or recipe_json["image"]["url"] is None:
             return None
         print(recipe_json["title"])
         image_url = recipe_json["image"]["url"]
