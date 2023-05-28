@@ -23,6 +23,12 @@ class ScrapeConfig:
         self.ks_max_page = self.config_data["kitchenstories"][
             "max_page"] if "kitchenstories" in self.config_data and "max_page" in self.config_data[
             "kitchenstories"] else 1000000
+        self.ck_index = self.config_data["chefkoch"][
+            "index"] if "chefkoch" in self.config_data and "page" in self.config_data[
+            "chefkoch"] else 1
+        self.ck_skip = self.config_data["chefkoch"][
+            "skip"] if "chefkoch" in self.config_data and "max_page" in self.config_data[
+            "chefkoch"] else 1000000
 
     def set_hf_start_index(self, start_index):
         self.hf_start_index = start_index
@@ -30,6 +36,14 @@ class ScrapeConfig:
 
     def set_hf_max_recipes(self, max_recipes):
         self.hf_max_recipes = max_recipes
+        self.save_file()
+
+    def set_ck_index(self, index):
+        self.ck_index = index
+        self.save_file()
+
+    def set_ck_skip(self, skip):
+        self.ck_skip = skip
         self.save_file()
 
     def set_ks_page(self, page):
@@ -52,6 +66,10 @@ class ScrapeConfig:
                 "kitchenstories": {
                     "page": self.ks_page,
                     "max_page": self.ks_max_page,
+                },
+                "chefkoch": {
+                    "index": self.ck_index,
+                    "skip": self.ck_skip,
                 },
             }, f)
 

@@ -46,4 +46,10 @@ urlpatterns = [
     path('Scraper/kitchenstories/restart', scraperView.restart_kitchen_stories_scraper),
     path('Scraper/kitchenstories/setprogress/<int:index>', scraperView.set_kitchen_stories_index),
 
+    path('Scraper/chefkoch/status', scraperView.get_chefkoch_status),
+    path('Scraper/chefkoch/start', scraperView.start_chefkoch_scraper),
+    path('Scraper/chefkoch/stop', scraperView.stop_chefkoch_scraper),
+    path('Scraper/chefkoch/restart', scraperView.restart_chefkoch_scraper),
+    path('Scraper/chefkoch/setprogress/<int:index>', scraperView.set_chefkoch_index),
+
 ]

@@ -50,10 +50,15 @@ class Cuisine(models.Model):
         return f"{self.name} ({self.helloFreshId})"
 
 
+class TagGroup(models.Model):
+    name = models.CharField(primary_key=True, max_length=255, unique=True)
+
+
 class Tag(models.Model):
     helloFreshId = models.TextField(primary_key=True, max_length=255, unique=True)
     type = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
+    tagGroup = models.ForeignKey(TagGroup, on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self):
         return f"{self.name} ({self.helloFreshId})"
@@ -96,20 +101,19 @@ class Recipe(models.Model):
     isPremium = models.BooleanField(blank=True, null=True)
     headline = models.CharField(max_length=255, blank=True, null=True)
     videoLink = models.CharField(max_length=2000, blank=True, null=True)
-    # Hello fresh: active - Chefkoch: isIndexable
-    helloFreshActive = models.BooleanField(default=True, blank=True, null=True)
+    isExcludedFromIndex = models.BooleanField(blank=True, null=True)
     # HelloFresh & KitchenStories
     description = models.CharField(max_length=10000, blank=True, null=True)
     favoritesCount = models.IntegerField(blank=True, null=True)
 
     # HelloFresh Only
+    helloFreshActive = models.BooleanField(default=True, blank=True, null=True)
     cardLink = models.CharField(max_length=2000, blank=True, null=True)
     clonedFrom = models.CharField(max_length=255, blank=True, null=True)
     highlighted = models.BooleanField(blank=True, null=True)
     isAddon = models.BooleanField(blank=True, null=True)
     isComplete = models.BooleanField(blank=True, null=True)
     isDinnerToLunch = models.BooleanField(blank=True, null=True)
-    isExcludedFromIndex = models.BooleanField(blank=True, null=True)
 
     # KitchenStories Only
 
