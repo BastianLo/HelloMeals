@@ -19,7 +19,7 @@ class Ingredient(models.Model):
 
 class Utensil(models.Model):
     helloFreshId = models.TextField(primary_key=True, max_length=255, unique=True)
-    type = models.CharField(max_length=255)
+    type = models.CharField(max_length=255, null=True, blank=True)
     name = models.CharField(max_length=255)
 
     def __str__(self):
@@ -28,29 +28,34 @@ class Utensil(models.Model):
 
 class Nutrients(models.Model):
     id = models.TextField(primary_key=True, max_length=255, unique=True)
-    energyKj = models.IntegerField()
-    energyKcal = models.IntegerField()
-    fat = models.IntegerField()
-    fatSaturated = models.IntegerField()
-    carbs = models.IntegerField()
-    sugar = models.IntegerField()
-    protein = models.IntegerField()
-    salt = models.IntegerField()
+    energyKj = models.IntegerField(blank=True, null=True)
+    energyKcal = models.IntegerField(blank=True, null=True)
+    fat = models.IntegerField(blank=True, null=True)
+    fatSaturated = models.IntegerField(blank=True, null=True)
+    carbs = models.IntegerField(blank=True, null=True)
+    sugar = models.IntegerField(blank=True, null=True)
+    protein = models.IntegerField(blank=True, null=True)
+    salt = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
         return self.id
 
 
-class Cuisine(models.Model):
+class TagGroup(models.Model):
+    name = models.CharField(primary_key=True, max_length=255, unique=True)
+
+
+class Tag(models.Model):
     helloFreshId = models.TextField(primary_key=True, max_length=255, unique=True)
     type = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
+    tagGroup = models.ForeignKey(TagGroup, on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self):
         return f"{self.name} ({self.helloFreshId})"
 
 
-class Tag(models.Model):
+class Category(models.Model):
     helloFreshId = models.TextField(primary_key=True, max_length=255, unique=True)
     type = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
@@ -62,24 +67,50 @@ class Tag(models.Model):
 class Recipe(models.Model):
     helloFreshId = models.TextField(primary_key=True, max_length=255, unique=True)
 
-    nutrients = models.ForeignKey(Nutrients, on_delete=models.CASCADE, blank=True, null=True)
+    # Source: 1 = HelloFresh, 2 = KitchenStories
+    source = models.IntegerField(default=1)
 
+    nutrients = models.ForeignKey(Nutrients, on_delete=models.SET_NULL, blank=True, null=True)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True)
+
+    ### Shared ###
+    # All
     name = models.CharField(max_length=255)
-    headline = models.CharField(max_length=255, blank=True, null=True)
-    description = models.CharField(max_length=2000, blank=True, null=True)
-    cardLink = models.CharField(max_length=2000, blank=True, null=True)
+    author = models.CharField(max_length=255, blank=True, null=True)
     websiteLink = models.CharField(max_length=2000, blank=True, null=True)
     prepTime = models.DurationField(blank=True, null=True)
     totalTime = models.DurationField(blank=True, null=True)
     difficulty = models.IntegerField(blank=True, null=True)
     createdAt = models.DateTimeField(blank=True, null=True)
     updatedAt = models.DateTimeField(blank=True, null=True)
-    favoritesCount = models.IntegerField(blank=True, null=True)
     averageRating = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
     ratingCount = models.IntegerField(blank=True, null=True)
     servings = models.IntegerField(blank=True, null=True)
     image = models.ImageField(upload_to="images/recipes", null=True)
     HelloFreshImageUrl = models.CharField(max_length=255, null=True)
+    # HelloFresh & Chefkoch
+    isPremium = models.BooleanField(blank=True, null=True)
+    headline = models.CharField(max_length=255, blank=True, null=True)
+    videoLink = models.CharField(max_length=2000, blank=True, null=True)
+    isExcludedFromIndex = models.BooleanField(blank=True, null=True)
+    # HelloFresh & KitchenStories
+    description = models.CharField(max_length=10000, blank=True, null=True)
+    favoritesCount = models.IntegerField(blank=True, null=True)
+
+    # HelloFresh Only
+    helloFreshActive = models.BooleanField(default=True, blank=True, null=True)
+    cardLink = models.CharField(max_length=2000, blank=True, null=True)
+    clonedFrom = models.CharField(max_length=255, blank=True, null=True)
+    highlighted = models.BooleanField(blank=True, null=True)
+    isAddon = models.BooleanField(blank=True, null=True)
+    isComplete = models.BooleanField(blank=True, null=True)
+    isDinnerToLunch = models.BooleanField(blank=True, null=True)
+
+    # KitchenStories Only
+
+    # Chefkoch Only
+    viewCount = models.IntegerField(blank=True, null=True)
+    isPlus = models.BooleanField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.name} ({self.helloFreshId})"
@@ -90,7 +121,7 @@ class WorkSteps(models.Model):
     relatedRecipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
 
     index = models.IntegerField()
-    description = models.CharField(max_length=1000)
+    description = models.CharField(max_length=10000)
     image = models.ImageField(upload_to="images/workSteps")
     HelloFreshImageUrl = models.CharField(max_length=255, null=True)
 
@@ -117,15 +148,6 @@ class RecipeTag(models.Model):
 
     def __str__(self):
         return f"{self.recipe} ({self.tag})"
-
-
-class RecipeCuisine(models.Model):
-    id = models.TextField(primary_key=True, max_length=255, unique=True)
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-    cuisine = models.ForeignKey(Cuisine, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"{self.recipe} ({self.cuisine})"
 
 
 class RecipeUtensil(models.Model):

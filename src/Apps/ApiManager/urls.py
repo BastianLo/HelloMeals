@@ -15,7 +15,7 @@ schema_view = get_schema_view(
         contact=openapi.Contact(url="https://github.com/BastianLo/HelloMeals"),
         license=openapi.License(name="Apache-2.0 license "),
     ),
-    url=os.getenv("APP_URL", "http://127.0.0.1"),
+    url=os.getenv("APP_URL", "http://127.0.0.1:8000"),
     public=True,
     permission_classes=[permissions.AllowAny, ],
 )
@@ -32,10 +32,23 @@ urlpatterns = [
     path('Recipe', recipeView.RecipeBaseList.as_view()),
     path('Recipe/<str:helloFreshId>', recipeView.RecipeBaseDetail.as_view()),
 
-    path('Cuisine', recipeView.CuisineList.as_view()),
 
-    path('Scraper/status', scraperView.get_status),
-    path('Scraper/start', scraperView.start_scraper),
-    path('Scraper/stop', scraperView.stop_scraper),
+    path('Scraper/hellofresh/status', scraperView.get_status),
+    path('Scraper/hellofresh/start', scraperView.start_scraper),
+    path('Scraper/hellofresh/stop', scraperView.stop_scraper),
+    path('Scraper/hellofresh/restart', scraperView.restart_scraper),
+    path('Scraper/hellofresh/setprogress/<int:index>', scraperView.set_index),
+
+    path('Scraper/kitchenstories/status', scraperView.get_kitchen_stories_status),
+    path('Scraper/kitchenstories/start', scraperView.start_kitchen_stories_scraper),
+    path('Scraper/kitchenstories/stop', scraperView.stop_kitchen_stories_scraper),
+    path('Scraper/kitchenstories/restart', scraperView.restart_kitchen_stories_scraper),
+    path('Scraper/kitchenstories/setprogress/<int:index>', scraperView.set_kitchen_stories_index),
+
+    path('Scraper/chefkoch/status', scraperView.get_chefkoch_status),
+    path('Scraper/chefkoch/start', scraperView.start_chefkoch_scraper),
+    path('Scraper/chefkoch/stop', scraperView.stop_chefkoch_scraper),
+    path('Scraper/chefkoch/restart', scraperView.restart_chefkoch_scraper),
+    path('Scraper/chefkoch/setprogress/<int:index>', scraperView.set_chefkoch_index),
 
 ]

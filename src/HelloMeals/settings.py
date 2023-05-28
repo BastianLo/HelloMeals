@@ -57,8 +57,12 @@ INSTALLED_APPS = [
     'rql_filter',
     'rest_framework',
     'django_filters',
+    'widget_tweaks',
+    'pwa',
+    'django_cleanup.apps.CleanupConfig',
 
-    'Apps.MealManager'
+    'Apps.MealManager',
+    'Apps.ClientManager',
 ]
 
 MIDDLEWARE = [
@@ -69,6 +73,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
 ]
 
 REST_FRAMEWORK = {
@@ -82,7 +87,7 @@ ROOT_URLCONF = 'HelloMeals.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "Apps" / "ClientManager" / "templates" / "ClientManager" / "pages"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -97,10 +102,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'HelloMeals.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-print(os.getenv("POSTGRES_USER"))
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -111,7 +114,6 @@ DATABASES = {
         'PORT': "5432",
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -131,7 +133,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -143,6 +144,11 @@ USE_I18N = True
 
 USE_TZ = True
 
+LANGUAGES = [('en', 'English'), ('de', 'Deutsch')]
+
+LOCALE_PATHS = (
+    os.path.join(BASE_DIR, 'Apps/ClientManager', 'locale'),
+)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
@@ -155,3 +161,99 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "basic": {
+            "format": "{levelname} {asctime}: {module} - {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "file": {
+            "level": "DEBUG",
+            'class': 'logging.handlers.RotatingFileHandler',
+            "filename": BASE_DIR / 'data' / 'log.log',
+            'maxBytes': 500000,
+            'backupCount': 2,
+            "formatter": "basic",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["file"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+        'django.utils.autoreload': {
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'django.db': {
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'urllib3': {
+            'handlers': [],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'http.server': {
+            'handlers': [],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        "http.client": {
+            "handlers": [],
+            "level": "WARNING",
+            "propagate": False,
+        },
+        "Basehttp": {
+            "handlers": [],
+            "level": "WARNING",
+            "propagate": False,
+        },
+        "PIL.TiffImagePlugin": {
+            "handlers": [],
+            "level": "WARNING",
+            "propagate": False,
+        },
+    },
+    'root': {
+        'handlers': ['file'],
+        'level': 'DEBUG',
+    }
+}
+
+
+PWA_APP_NAME = 'HelloMeals'
+PWA_APP_DESCRIPTION = "Selfhosted HelloFresh recipe manager"
+PWA_APP_THEME_COLOR = '#0F172A'
+PWA_APP_BACKGROUND_COLOR = '#0F172A'
+PWA_APP_DISPLAY = 'standalone'
+PWA_APP_SCOPE = '/'
+PWA_APP_ORIENTATION = 'any'
+PWA_APP_START_URL = '/Home'
+PWA_APP_STATUS_BAR_COLOR = 'default'
+PWA_APP_ICONS = [
+    {
+        'src': '/static/images/logo/512px.png',
+        'sizes': '160x160'
+    }
+]
+PWA_APP_ICONS_APPLE = [
+    {
+        'src': '/static/images/logo/512px.png',
+        'sizes': '160x160'
+    }
+]
+PWA_APP_SPLASH_SCREEN = [
+    {
+        'src': '/static/images/icons/splash-640x1136.png',
+        'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'
+    }
+]
+PWA_APP_DIR = 'ltr'
+PWA_APP_LANG = 'en-US'

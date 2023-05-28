@@ -19,13 +19,19 @@ from django.urls import include, path
 from django.views.generic.base import RedirectView
 from . import settings
 from django.conf.urls.static import static
+from django.views.i18n import set_language, JavaScriptCatalog
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('set-language/', set_language, name='set_language'),
+    path('jsi18n/', JavaScriptCatalog.as_view(), name='javascript-catalog'),
+    path('', include('pwa.urls')),  # You MUST use an empty string as the URL prefix
+    path("accounts/", include("django.contrib.auth.urls")),  # new
 
-    path("", RedirectView.as_view(url='/MealManager')),
+    path("", RedirectView.as_view(url='/Home/')),
     path("api/", include("Apps.ApiManager.urls")),
-    path('MealManager/', include("Apps.MealManager.urls")),
+    path('Home/', include("Apps.ClientManager.urls")),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
