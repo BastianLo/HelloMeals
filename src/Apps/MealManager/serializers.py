@@ -75,10 +75,16 @@ class WorkStepSerializer(serializers.ModelSerializer):
 ### Recipe ###
 
 class RecipeBaseSerializer(serializers.ModelSerializer):
+    ingredient_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Recipe
         exclude = []
+
+    def get_ingredient_count(self, instance):
+        ingredient_count = len(RecipeIngredient.objects.filter(recipe=instance))
+        return ingredient_count
+
 
 class RecipeFullSerializer(serializers.ModelSerializer):
     ingredients = RecipeIngredientSerializer(many=True, read_only=True)
