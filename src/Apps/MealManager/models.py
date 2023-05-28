@@ -71,38 +71,51 @@ class Category(models.Model):
 class Recipe(models.Model):
     helloFreshId = models.TextField(primary_key=True, max_length=255, unique=True)
 
-    #Source: 1 = HelloFresh, 2 = KitchenStories
+    # Source: 1 = HelloFresh, 2 = KitchenStories
     source = models.IntegerField(default=1)
 
     nutrients = models.ForeignKey(Nutrients, on_delete=models.SET_NULL, blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True)
 
+    ### Shared ###
+    # All
     name = models.CharField(max_length=255)
-    clonedFrom = models.CharField(max_length=255, blank=True, null=True)
-    helloFreshActive = models.BooleanField(default=True, blank=True, null=True)
-    highlighted = models.BooleanField(blank=True, null=True)
-    isAddon = models.BooleanField(blank=True, null=True)
-    isComplete = models.BooleanField(blank=True, null=True)
-    isDinnerToLunch = models.BooleanField(blank=True, null=True)
-    isExcludedFromIndex = models.BooleanField(blank=True, null=True)
-    isPremium = models.BooleanField(blank=True, null=True)
     author = models.CharField(max_length=255, blank=True, null=True)
-    headline = models.CharField(max_length=255, blank=True, null=True)
-    description = models.CharField(max_length=10000, blank=True, null=True)
-    cardLink = models.CharField(max_length=2000, blank=True, null=True)
     websiteLink = models.CharField(max_length=2000, blank=True, null=True)
-    videoLink = models.CharField(max_length=2000, blank=True, null=True)
     prepTime = models.DurationField(blank=True, null=True)
     totalTime = models.DurationField(blank=True, null=True)
     difficulty = models.IntegerField(blank=True, null=True)
     createdAt = models.DateTimeField(blank=True, null=True)
     updatedAt = models.DateTimeField(blank=True, null=True)
-    favoritesCount = models.IntegerField(blank=True, null=True)
     averageRating = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
     ratingCount = models.IntegerField(blank=True, null=True)
     servings = models.IntegerField(blank=True, null=True)
     image = models.ImageField(upload_to="images/recipes", null=True)
     HelloFreshImageUrl = models.CharField(max_length=255, null=True)
+    # HelloFresh & Chefkoch
+    isPremium = models.BooleanField(blank=True, null=True)
+    headline = models.CharField(max_length=255, blank=True, null=True)
+    videoLink = models.CharField(max_length=2000, blank=True, null=True)
+    # Hello fresh: active - Chefkoch: isIndexable
+    helloFreshActive = models.BooleanField(default=True, blank=True, null=True)
+    # HelloFresh & KitchenStories
+    description = models.CharField(max_length=10000, blank=True, null=True)
+    favoritesCount = models.IntegerField(blank=True, null=True)
+
+    # HelloFresh Only
+    cardLink = models.CharField(max_length=2000, blank=True, null=True)
+    clonedFrom = models.CharField(max_length=255, blank=True, null=True)
+    highlighted = models.BooleanField(blank=True, null=True)
+    isAddon = models.BooleanField(blank=True, null=True)
+    isComplete = models.BooleanField(blank=True, null=True)
+    isDinnerToLunch = models.BooleanField(blank=True, null=True)
+    isExcludedFromIndex = models.BooleanField(blank=True, null=True)
+
+    # KitchenStories Only
+
+    # Chefkoch Only
+    viewCount = models.IntegerField(blank=True, null=True)
+    isPlus = models.BooleanField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.name} ({self.helloFreshId})"
