@@ -1,61 +1,8 @@
-<nav x-data="breadcrumb()" class="flex" aria-label="Breadcrumb">
-    <ol class="inline-flex items-center space-x-1 md:space-x-3">
-        <template x-for="(item, index) in items" :key="index">
-            <li class="inline-flex items-center">
-                <button x-show="index !== items.length - 1" :hx-get="item.url" hx-swap="outerHTML" hx-target="#body" hx-replace-url="true" hx-trigger="click" hx-ext="true"
-                   class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
-                    <svg aria-hidden="true" class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"
-                         xmlns="http://www.w3.org/2000/svg">
-                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
-                    </svg>
-                    <span x-text="item.label"></span>
-                </button>
-                <span x-show="index === items.length - 1"
-                      class="inline-flex items-center text-sm font-medium text-gray-500 dark:text-gray-400"
-                      x-text="item.label"></span>
-            </li>
-            <li x-show="index !== items.length - 1">
-                <div class="flex items-center">
-                    <svg aria-hidden="true" class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"
-                         xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd"
-                              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                              clip-rule="evenodd"></path>
-                    </svg>
-                    <a :href="item.url"
-                       class="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2 dark:text-gray-400 dark:hover:text-white"
-                       x-text="item.label"></a>
-                </div>
-            </li>
-        </template>
-    </ol>
-</nav>
 
-<script>
-    function breadcrumb() {
-        return {
-            items: [],
-            init() {
-                const self = this;
-
-                // Define a function to update the breadcrumb based on the current path
-                function updateBreadcrumb() {
-                    setTimeout(() => {
-                        const path = window.location.pathname;
-                        const segments = path.split('/').filter((segment) => segment !== '');
-
-                        self.items = segments.reduce((accumulator, segment) => {
-                            const url = accumulator + '/' + segment;
-                            return [...accumulator, {label: segment, url}];
-                        }, []);
-                    }, 1); // Delay of 100 milliseconds
-                }
-
-                updateBreadcrumb();
-                document.addEventListener('htmx:afterSettle', updateBreadcrumb);
-            },
-
-        }
-
-    }
-</script>
+<button class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white" hx-get="{% url 'back_view' %}" hx-trigger="click" hx-replace-url="true" hx-swap="innerHTML" hx-target="#body">
+    <svg class="w-4 h-4 mr-2" aria-hidden="true" fill="currentcolor" stroke="currentColor" stroke-width="1.5" viewBox="0 0 20 20"
+         xmlns="http://www.w3.org/2000/svg">
+        <path d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" stroke-linecap="round" stroke-linejoin="round"></path>
+    </svg>
+    Back
+</button>
