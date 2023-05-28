@@ -213,36 +213,24 @@ class KSScraper:
 
     def create_tags(self, recipe_json, recipe):
         for tag_json in recipe_json["tags"]:
+            cuisine_tg = None
             if tag_json["type"] == "cuisine":
-                cuisine = Cuisine.objects.update_or_create(
-                    helloFreshId=tag_json["id"],
-                    defaults={
-                        "name": tag_json["title"],
-                        "type": tag_json["type"],
-                    }
-                )[0]
-                recipe_cuisine = RecipeCuisine.objects.update_or_create(
-                    id=recipe.helloFreshId + cuisine.helloFreshId,
-                    defaults={
-                        "recipe": recipe,
-                        "cuisine": cuisine,
-                    }
-                )
-            else:
-                tag = Tag.objects.update_or_create(
-                    helloFreshId=tag_json["id"],
-                    defaults={
-                        "name": tag_json["title"],
-                        "type": tag_json["type"],
-                    }
-                )[0]
-                recipe_tag = RecipeTag.objects.update_or_create(
-                    id=recipe.helloFreshId + tag.helloFreshId,
-                    defaults={
-                        "recipe": recipe,
-                        "tag": tag,
-                    }
-                )
+                cuisine_tg, created = TagGroup.objects.get_or_create(name="Cuisine")
+            tag = Tag.objects.update_or_create(
+                helloFreshId=tag_json["id"],
+                defaults={
+                    "name": tag_json["title"],
+                    "type": tag_json["type"],
+                    "tagGroup": cuisine_tg
+                }
+            )[0]
+            recipe_tag = RecipeTag.objects.update_or_create(
+                id=recipe.helloFreshId + tag.helloFreshId,
+                defaults={
+                    "recipe": recipe,
+                    "tag": tag,
+                }
+            )
 
     def create_work_steps(self, recipe_json, recipe):
         for i, step_json in enumerate(recipe_json["steps"]):

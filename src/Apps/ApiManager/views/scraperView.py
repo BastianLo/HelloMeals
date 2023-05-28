@@ -7,7 +7,7 @@ import json
 
 from Apps.MealManager.services.Scraper import scraper, scraperKitchenStories, scraperChefKoch
 
-from Apps.MealManager.models import Cuisine, Tag, TagGroup, RecipeCuisine, RecipeTag
+from Apps.MealManager.models import Tag, TagGroup, RecipeTag
 
 
 ### HelloFresh Scraper ###
@@ -117,22 +117,3 @@ def restart_chefkoch_scraper(request):
 def set_chefkoch_index(request, index):
     scraperChefKoch.get_scraper().set_progress(index)
     return HttpResponse(json.dumps(scraperChefKoch.get_scraper().get_status()), content_type='application/json')
-
-
-
-
-
-
-# Temporary migration
-if True:
-    cuisines = Cuisine.objects.all()
-    tg, created1 = TagGroup.objects.get_or_create(name="Cuisine")
-    for cuisine in cuisines:
-        print(tg)
-        tag, created2 = Tag.objects.update_or_create(type=cuisine.type, name=cuisine.name, helloFreshId=cuisine.helloFreshId, tagGroup=tg)
-        cuisine_recipes = RecipeCuisine.objects.filter(cuisine=cuisine)
-        for recipe_cuisine in cuisine_recipes:
-            recipe_tag, created3 = RecipeTag.objects.update_or_create(id=recipe_cuisine.recipe.helloFreshId+tag.helloFreshId, recipe=recipe_cuisine.recipe, tag=tag)
-            recipe_cuisine.delete()
-        print(cuisine_recipes)
-        cuisine.delete()

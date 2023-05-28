@@ -41,15 +41,6 @@ class Nutrients(models.Model):
         return self.id
 
 
-class Cuisine(models.Model):
-    helloFreshId = models.TextField(primary_key=True, max_length=255, unique=True)
-    type = models.CharField(max_length=255)
-    name = models.CharField(max_length=255)
-
-    def __str__(self):
-        return f"{self.name} ({self.helloFreshId})"
-
-
 class TagGroup(models.Model):
     name = models.CharField(primary_key=True, max_length=255, unique=True)
 
@@ -157,15 +148,6 @@ class RecipeTag(models.Model):
 
     def __str__(self):
         return f"{self.recipe} ({self.tag})"
-
-
-class RecipeCuisine(models.Model):
-    id = models.TextField(primary_key=True, max_length=255, unique=True)
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-    cuisine = models.ForeignKey(Cuisine, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"{self.recipe} ({self.cuisine})"
 
 
 class RecipeUtensil(models.Model):

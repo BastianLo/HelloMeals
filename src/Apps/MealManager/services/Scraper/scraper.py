@@ -210,19 +210,21 @@ class Scraper:
         recipe.save()
 
     def create_cuisine(self, recipe_json, recipe):
+        cuisine_tg, created = TagGroup.objects.get_or_create(name="Cuisine")
         for cuisine_json in recipe_json["cuisines"]:
-            cuisine = Cuisine.objects.update_or_create(
+            cuisine = Tag.objects.update_or_create(
                 helloFreshId=cuisine_json["id"],
                 defaults={
                     "name": cuisine_json["name"],
                     "type": cuisine_json["type"],
+                    "tagGroup": cuisine_tg
                 }
             )[0]
-            recipe_cuisine = RecipeCuisine.objects.update_or_create(
+            recipe_cuisine = RecipeTag.objects.update_or_create(
                 id=recipe.helloFreshId + cuisine.helloFreshId,
                 defaults={
                     "recipe": recipe,
-                    "cuisine": cuisine,
+                    "tag": cuisine,
                 }
             )
 

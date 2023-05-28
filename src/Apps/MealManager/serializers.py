@@ -3,9 +3,9 @@ from rest_framework import serializers
 from .models import *
 
 ### Cuisine ###
-class CuisineBaseSerializer(serializers.ModelSerializer):
+class TagBaseSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Cuisine
+        model = Tag
         fields = "__all__"
 
 ### Ingredient ###
@@ -38,21 +38,6 @@ class RecipeUtensilSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RecipeUtensil
-        exclude = ["recipe", "id"]
-
-### Cuisine ###
-
-class CuisineSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Cuisine
-        fields = "__all__"
-
-
-class RecipeCuisineSerializer(serializers.ModelSerializer):
-    cuisine = CuisineSerializer()
-
-    class Meta:
-        model = RecipeCuisine
         exclude = ["recipe", "id"]
 
 ### Tag ###
@@ -117,11 +102,6 @@ class RecipeFullSerializer(serializers.ModelSerializer):
         recipe_nutrients = Nutrients.objects.filter(recipe=instance).first()
         utensil_serializer = NutrientSerializer(recipe_nutrients, many=False)
         return utensil_serializer.data
-
-    def get_cuisine(self, instance):
-        recipe_cuisine = RecipeCuisine.objects.filter(recipe=instance)
-        cuisine_serializer = RecipeCuisineSerializer(recipe_cuisine, many=True)
-        return cuisine_serializer.data
 
     def get_tag(self, instance):
         recipe_tag = RecipeTag.objects.filter(recipe=instance)
