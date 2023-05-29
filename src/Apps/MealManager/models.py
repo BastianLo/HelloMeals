@@ -44,13 +44,15 @@ class TagGroup(models.Model):
 
 class TagMergeManager(models.Manager):
     def create(self, **kwargs):
-        print("Custom create method")
         source = Tag.objects.filter(helloFreshId=kwargs["source"]).first()
         target = Tag.objects.filter(helloFreshId=kwargs["target"]).first()
         if source is not None and target is not None:
             for t in RecipeTag.objects.filter(tag=source):
-                t.tag = target
-                t.save()
+                try:
+                    t.tag = target
+                    t.save()
+                except:
+                    t.delete()
             source.delete()
         return super().create(**kwargs)
 
@@ -64,8 +66,13 @@ class TagQuerySet(models.query.QuerySet):
     def update_or_create(self, defaults=None, **kwargs):
         id = kwargs["helloFreshId"]
         tagMerge = TagMerge.objects.filter(source=id).first()
-        if tagMerge:
-            return Tag.objects.get_or_create(helloFreshId=tagMerge.target)
+        while tagMerge:
+            if TagMerge.objects.filter(source=tagMerge.target).first() is None:
+                return Tag.objects.get_or_create(helloFreshId=tagMerge.target)
+            tagMerge = TagMerge.objects.filter(source=tagMerge.target).first()
+
+        #if tagMerge:
+        #    return Tag.objects.get_or_create(helloFreshId=tagMerge.target)
         return super().update_or_create(defaults=defaults, **kwargs)
 
 
