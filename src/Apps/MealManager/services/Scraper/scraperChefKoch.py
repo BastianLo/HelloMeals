@@ -22,7 +22,7 @@ class Scraper:
     def __init__(self):
         self.exception = None
         self.last_error = False
-        self.limit = 10
+        self.limit = 50
         self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
         self.config = scrapeConfig()
         self.active = False
@@ -42,6 +42,7 @@ class Scraper:
                                            ".2&limit=0&offset=0")
         tags = self.create_all_tags(r.json()["tagGroups"])
         for tag in tags:
+            self.config.set_ck_index(0)
             try:
                 while self.active and self.config.ck_index < self.config.ck_skip:
                     self.scrape(self.config.ck_index, tag)
