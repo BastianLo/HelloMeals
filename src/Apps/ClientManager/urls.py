@@ -10,5 +10,6 @@ urlpatterns = [
 
     path("Recipe/", views.recipe_overview),
 
+    path("Settings/", RedirectView.as_view(url='/Home/Settings/Index/')),
     path("Settings/Index/", views.settings_index),
 ]

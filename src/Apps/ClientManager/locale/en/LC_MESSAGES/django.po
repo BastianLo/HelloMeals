@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-26 12:39+0000\n"
+"POT-Creation-Date: 2023-05-29 08:32+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,11 +18,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: Apps/ClientManager/templates/ClientManager/components/base/FootNavigation.html:11
+#: Apps/ClientManager/templates/ClientManager/components/base/FootNavigation.html:10
 msgid "base.recipes"
 msgstr "Recipes"
 
-#: Apps/ClientManager/templates/ClientManager/components/base/FootNavigation.html:18
+#: Apps/ClientManager/templates/ClientManager/components/base/FootNavigation.html:17
 msgid "base.planner"
 msgstr "Planner"
 
@@ -38,27 +38,38 @@ msgstr "Profile"
 msgid "filter.label"
 msgstr "Filter"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:99
-#| msgid "filter.label"
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:100
 msgid "filter.apply"
 msgstr "Apply"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:102
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:104
 msgid "filter.reset"
 msgstr "Reset"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:115
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:117
 msgid "cuisine.label"
 msgstr "Nationality"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:164
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:179
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:166
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:181
 msgid "search"
 msgstr "Search"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:176
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:178
 msgid "recipe.name"
 msgstr "Recipe name"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsIndex.html:12
+msgid "settings.profile.label"
+msgstr "Profile"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsIndex.html:22
+msgid "settings.downloader.label"
+msgstr "Recipe-Download"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsIndex.html:32
+msgid "settings.grouping.label"
+msgstr "Grouping"
 
 #: Apps/ClientManager/templates/ClientManager/pages/registration/login.html:18
 msgid "login.description"
