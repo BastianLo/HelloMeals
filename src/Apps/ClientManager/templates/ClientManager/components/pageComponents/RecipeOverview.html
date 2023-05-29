@@ -39,6 +39,9 @@
         this.params.page = urlParams.get('page') ? urlParams.get('page') : 1;
         let temp = await (await fetch(url)).json();
         this.recipes = temp.results
+        this.recipes.forEach(function (recipe, i) {
+            recipe.shown = i<=4;
+        });
         this.recipes.forEach(recipe => {recipe.show = false})
         this.nav = temp
         delete this.nav.results
