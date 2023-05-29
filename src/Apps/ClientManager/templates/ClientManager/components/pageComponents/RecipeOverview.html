@@ -39,6 +39,7 @@
         this.params.page = urlParams.get('page') ? urlParams.get('page') : 1;
         let temp = await (await fetch(url)).json();
         this.recipes = temp.results
+        this.recipes.forEach(recipe => {recipe.show = false})
         this.nav = temp
         delete this.nav.results
         this.parseParameters()
@@ -59,16 +60,14 @@
         filter += `&eq(clonedFrom,null())`
         filter += '&page_size=24'
         filter += '&page=' + this.params.page
-        console.log(this.params.filter.cuisines.length)
         if (this.params.filter.cuisines.length > 0) {filter += '&cuisines=' + this.params.filter.cuisines.join('-')}
-        console.log(this.params.filter.cuisines.join('-'))
         this.addParameterToURL(filter)
         return filter
     },
     clearFilter() {this.params.filter.cuisines = []},
     async search(){this.params.page=1;await this.getRecipes(this.parseParameters())},
-    async next() {if (this.nav.next){await this.requestRecipe(this.nav.next)}},
-    async previous() {if (this.nav.previous){await this.requestRecipe(this.nav.previous)}},
+    async next() {if (this.nav.next){await this.requestRecipe(this.nav.next); window.scrollTo({ top: 0});}},
+    async previous() {if (this.nav.previous){await this.requestRecipe(this.nav.previous); window.scrollTo({ top: 0 });}},
 
     cutoff(text, limit)
     {
@@ -207,10 +206,10 @@
             <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 flex flex-col justify-stretch">
                 <a :href="recipe.helloFreshId">
                 </a>
-                <div x-data="{ shown: false }" x-intersect="shown = true">
-                    <div x-show="shown" x-transition>
+                <div x-intersect="recipe.shown = true">
+                    <div x-show="recipe.shown" x-transition>
                         <img style="object-fit: cover;height: 224px; width: 336px" class="rounded-t-lg"
-                             :src="shown ? recipe.image : ''" alt=""/>
+                             :src="recipe.shown ? recipe.image : ''" alt=""/>
                     </div>
                 </div>
 
@@ -226,9 +225,15 @@
                         reviews</p>
                 </div>
                 <div class="flex items-center mt-2 ml-2">
-                    <template x-if="recipe.source=='1'"><span class="bg-lime-500 text-black text-xs font-medium mr-2 px-2.5 py-0.5 rounded ">HelloFresh</span></template>
-                    <template x-if="recipe.source=='2'"><span class="bg-yellow-500 text-black text-xs font-medium mr-2 px-2.5 py-0.5 rounded ">KitchenStories</span></template>
-                    <template x-if="recipe.source=='3'"><span class="bg-green-700 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded ">Chefkoch</span></template>
+                    <template x-if="recipe.source=='1'"><span
+                            class="bg-lime-500 text-black text-xs font-medium mr-2 px-2.5 py-0.5 rounded ">HelloFresh</span>
+                    </template>
+                    <template x-if="recipe.source=='2'"><span
+                            class="bg-yellow-500 text-black text-xs font-medium mr-2 px-2.5 py-0.5 rounded ">KitchenStories</span>
+                    </template>
+                    <template x-if="recipe.source=='3'"><span
+                            class="bg-green-700 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded ">Chefkoch</span>
+                    </template>
                 </div>
                 <div class="p-5">
                     <a :href="recipe.helloFreshId">
