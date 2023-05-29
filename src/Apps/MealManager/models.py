@@ -1,9 +1,6 @@
-from tempfile import NamedTemporaryFile
-from urllib.request import urlopen
-from django.core.files.base import File
+from django.contrib import admin
 
 from django.db import models
-import uuid
 
 
 class Ingredient(models.Model):
@@ -45,11 +42,45 @@ class TagGroup(models.Model):
     name = models.CharField(primary_key=True, max_length=255, unique=True)
 
 
+class TagMergeManager(models.Manager):
+    def create(self, **kwargs):
+        print("Custom create method")
+        source = Tag.objects.filter(helloFreshId=kwargs["source"]).first()
+        target = Tag.objects.filter(helloFreshId=kwargs["target"]).first()
+        if source is not None and target is not None:
+            for t in RecipeTag.objects.filter(tag=source):
+                t.tag = target
+                t.save()
+            source.delete()
+        return super().create(**kwargs)
+
+class TagMerge(models.Model):
+    source = models.CharField(max_length=255, unique=True)
+    target = models.CharField(max_length=255)
+    objects = TagMergeManager()
+
+
+class TagQuerySet(models.query.QuerySet):
+    def update_or_create(self, defaults=None, **kwargs):
+        id = kwargs["helloFreshId"]
+        tagMerge = TagMerge.objects.filter(source=id).first()
+        if tagMerge:
+            return Tag.objects.get_or_create(helloFreshId=tagMerge.target)
+        return super().update_or_create(defaults=defaults, **kwargs)
+
+
+class TagManager(models.Manager):
+    def get_queryset(self):
+        return TagQuerySet(self.model)
+
+
 class Tag(models.Model):
     helloFreshId = models.TextField(primary_key=True, max_length=255, unique=True)
     type = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
     tagGroup = models.ForeignKey(TagGroup, on_delete=models.SET_NULL, blank=True, null=True)
+
+    objects = TagManager()
 
     def __str__(self):
         return f"{self.name} ({self.helloFreshId})"
@@ -146,6 +177,8 @@ class RecipeTag(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
 
+    class Meta:
+        unique_together = ('recipe', 'tag',)
     def __str__(self):
         return f"{self.recipe} ({self.tag})"
 

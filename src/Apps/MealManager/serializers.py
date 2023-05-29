@@ -2,11 +2,13 @@ from rest_framework import serializers
 
 from .models import *
 
+
 ### Cuisine ###
 class TagBaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = "__all__"
+
 
 ### Ingredient ###
 
@@ -24,7 +26,6 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
         exclude = ["recipe"]
 
 
-
 ### Utensil ###
 
 class UtensilSerializer(serializers.ModelSerializer):
@@ -40,7 +41,14 @@ class RecipeUtensilSerializer(serializers.ModelSerializer):
         model = RecipeUtensil
         exclude = ["recipe", "id"]
 
+
 ### Tag ###
+
+class TagMergeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TagMerge
+        fields = "__all__"
+
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:

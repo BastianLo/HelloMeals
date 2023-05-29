@@ -16,6 +16,8 @@ def is_valid_iso_duration(duration_str):
     return re.match(pattern, duration_str) is not None
 
 
+#TagMerge.objects.create(source="57ebbc17b7e8697d4b3053ac", target="57ebbc17b7e8697d4b3053b5")
+
 #TODO: for scraper functionality:
 #eg: functionality to redownload images (to improve quality)
 #Possibly increase recipe quality compared to other images

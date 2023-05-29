@@ -5,7 +5,7 @@ from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 import os
 
-from .views import scraperView, recipeView
+from .views import scraperView, recipeView, tagView
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -31,6 +31,8 @@ urlpatterns = [
 
     path('Recipe', recipeView.RecipeBaseList.as_view()),
     path('Recipe/<str:helloFreshId>', recipeView.RecipeBaseDetail.as_view()),
+
+    path('Tag/Merge', tagView.TagMergeListCreate.as_view()),
 
 
     path('Scraper/status', scraperView.get_all_status),
