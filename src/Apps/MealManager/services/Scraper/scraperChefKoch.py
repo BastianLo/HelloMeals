@@ -38,15 +38,19 @@ class Scraper:
         }
 
     def work(self):
-        try:
-            while self.active and self.config.ck_index < self.config.ck_skip:
-                self.scrape(self.config.ck_index)
-                self.config.set_ck_index(self.config.ck_index + self.limit)
-        except Exception as e:
-            self.exception = str(e)
-            self.active = False
-            self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
-            raise e
+        r = requests.request("GET", "https://api.chefkoch.de/v2/search-gateway/recipes?tags=21&minimumRating=4"
+                                           ".2&limit=0&offset=0")
+        tags = self.create_all_tags(r.json()["tagGroups"])
+        for tag in tags:
+            try:
+                while self.active and self.config.ck_index < self.config.ck_skip:
+                    self.scrape(self.config.ck_index, tag)
+                    self.config.set_ck_index(self.config.ck_index + self.limit)
+            except Exception as e:
+                self.exception = str(e)
+                self.active = False
+                self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
+                raise e
 
     def start(self):
         self.bearer_token = None
@@ -188,18 +192,21 @@ class Scraper:
             }
         )[0]
     def create_all_tags(self, tag_groups):
+        tags = []
         for tg in tag_groups:
             name = tg["key"].capitalize()
             tg_object, created = TagGroup.objects.get_or_create(name=name)
             for tag in tg["tags"]:
                 Tag.objects.update_or_create(helloFreshId=tag["id"], name=tag["name"], type=tag["name"], tagGroup=tg_object)
+                tags.append(tag["id"])
+        return tags
 
-    def scrape(self, index):
-        chefkoch_url = f"https://api.chefkoch.de/v2/search-gateway/recipes?tags=21&minimumRating=4.2&limit={self.limit}&offset={index}"
+    def scrape(self, index, tag):
+        chefkoch_url = f"https://api.chefkoch.de/v2/search-gateway/recipes?tags=21,{tag}&minimumRating=4.2&limit={self.limit}&offset={index}"
         response = requests.request("GET", chefkoch_url)
         self.create_all_tags(response.json()["tagGroups"])
         items = response.json()["results"]
-        self.config.set_ck_skip(response.json()["count"])
+        self.config.set_ck_skip(min(response.json()["count"], 1000))
         for recipeJson in items:
             recipeJson = recipeJson["recipe"]
             try:
