@@ -31,17 +31,17 @@ class Scraper:
 
     def get_status(self):
         return {
-            "max_recipes": self.config.hf_max_recipes,
-            "start_index": self.config.hf_start_index,
+            "max_recipes": self.config.ck_skip,
+            "start_index": self.config.ck_index,
             "running": self.is_running(),
             "exception": self.exception
         }
 
     def work(self):
         try:
-            while self.active and self.config.hf_start_index < self.config.hf_max_recipes:
-                self.scrape(self.config.hf_start_index)
-                self.config.set_hf_start_index(self.config.hf_start_index + self.limit)
+            while self.active and self.config.ck_index < self.config.ck_skip:
+                self.scrape(self.config.ck_index)
+                self.config.set_ck_index(self.config.ck_index + self.limit)
         except Exception as e:
             self.exception = str(e)
             self.active = False
@@ -64,11 +64,11 @@ class Scraper:
         self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
 
     def set_progress(self, index):
-        self.config.set_hf_start_index(index)
+        self.config.set_ck_index(index)
 
     def restart(self):
         self.stop()
-        self.config.set_hf_start_index(0)
+        self.config.set_ck_index(0)
         self.start()
 
     def is_running(self):
@@ -199,7 +199,7 @@ class Scraper:
         response = requests.request("GET", chefkoch_url)
         self.create_all_tags(response.json()["tagGroups"])
         items = response.json()["results"]
-        self.config.set_hf_max_recipes(response.json()["count"])
+        self.config.set_ck_skip(response.json()["count"])
         for recipeJson in items:
             recipeJson = recipeJson["recipe"]
             try:

@@ -117,3 +117,14 @@ def restart_chefkoch_scraper(request):
 def set_chefkoch_index(request, index):
     scraperChefKoch.get_scraper().set_progress(index)
     return HttpResponse(json.dumps(scraperChefKoch.get_scraper().get_status()), content_type='application/json')
+
+
+@api_view(['GET'])
+@swagger_auto_schema()
+def get_all_status(request):
+    response = {
+        "Chefkoch": scraperChefKoch.get_scraper().get_status(),
+        "KitchenStories": scraperKitchenStories.get_scraper().get_status(),
+        "HelloFresh": scraper.get_scraper().get_status(),
+    }
+    return HttpResponse(json.dumps(response), content_type='application/json')

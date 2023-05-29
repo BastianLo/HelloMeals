@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-29 08:32+0000\n"
+"POT-Creation-Date: 2023-05-29 12:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,30 +34,46 @@ msgstr "Settings"
 msgid "base.profile"
 msgstr "Profile"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:96
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:98
 msgid "filter.label"
 msgstr "Filter"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:100
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:102
 msgid "filter.apply"
 msgstr "Apply"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:104
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:106
 msgid "filter.reset"
 msgstr "Reset"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:117
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:119
 msgid "cuisine.label"
 msgstr "Nationality"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:166
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:181
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:168
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:183
 msgid "search"
 msgstr "Search"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:178
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:180
 msgid "recipe.name"
 msgstr "Recipe name"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:15
+msgid "of"
+msgstr "of"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:25
+msgid "settings.scraper.start"
+msgstr "Start"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:29
+msgid "settings.scraper.restart"
+msgstr "Restart"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:33
+msgid "settings.scraper.stop"
+msgstr "Stop"
 
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsIndex.html:12
 msgid "settings.profile.label"

@@ -33,6 +33,8 @@ urlpatterns = [
     path('Recipe/<str:helloFreshId>', recipeView.RecipeBaseDetail.as_view()),
 
 
+    path('Scraper/status', scraperView.get_all_status),
+
     path('Scraper/hellofresh/status', scraperView.get_status),
     path('Scraper/hellofresh/start', scraperView.start_scraper),
     path('Scraper/hellofresh/stop', scraperView.stop_scraper),
