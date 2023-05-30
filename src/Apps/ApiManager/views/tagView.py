@@ -29,7 +29,7 @@ class TagMergeListCreate(generics.ListCreateAPIView):
 
 
 @permission_classes([IsAuthenticated])
-class TagList(generics.ListAPIView):
+class TagListCreate(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     pagination_class = RqlPagination
     rql_filter_class = TagFilters

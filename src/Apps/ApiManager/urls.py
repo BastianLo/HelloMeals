@@ -34,7 +34,7 @@ urlpatterns = [
 
     path('Tag/Merge', tagView.TagMergeListCreate.as_view()),
     path('Tag/Group', tagView.TagGroupList.as_view()),
-    path('Tag', tagView.TagList.as_view()),
+    path('Tag', tagView.TagListCreate.as_view()),
 
     path('Scraper/status', scraperView.get_all_status),
 
