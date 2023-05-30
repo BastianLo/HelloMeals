@@ -56,6 +56,12 @@ class TagSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class TagGroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TagGroup
+        fields = "__all__"
+
+
 class RecipeTagSerializer(serializers.ModelSerializer):
     tag = TagSerializer()
 
