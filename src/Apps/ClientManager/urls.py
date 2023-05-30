@@ -14,5 +14,7 @@ urlpatterns = [
     path("Settings/Index/", views.settings_index),
     path("Settings/Downloader/", views.settings_downloader, name="settings.downloader"),
     path("Settings/Profile/", views.settings_index, name="settings.profile"),
-    path("Settings/Grouping/", views.settings_index, name="settings.grouping"),
+    path("Settings/Grouping/", views.settings_grouping_index, name="settings.grouping"),
+    path("Settings/Grouping/Tag", views.settings_grouping_tag, name="settings.grouping.tag"),
+    path("Settings/Grouping/Ingredient", views.settings_grouping_index, name="settings.grouping.ingredient"),
 ]

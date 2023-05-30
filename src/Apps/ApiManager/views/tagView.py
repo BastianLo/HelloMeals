@@ -8,6 +8,8 @@ from Apps.MealManager.models import TagMerge, Tag, TagGroup
 
 from util.pagination import RqlPagination
 
+from Apps.MealManager.filters import TagFilters
+
 
 ### Views ###
 

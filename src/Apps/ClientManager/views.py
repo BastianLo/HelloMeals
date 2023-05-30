@@ -42,6 +42,18 @@ def settings_index(request):
     return render(request, "ClientManager/pages/Settings/SettingsIndex.html", context)
 
 @login_required(login_url='/accounts/login/')
+def settings_grouping_index(request):
+    navigation_history(request)
+    context = get_base_context()
+    return render(request, "ClientManager/pages/Settings/SettingsGroupingIndex.html", context)
+
+@login_required(login_url='/accounts/login/')
+def settings_grouping_tag(request):
+    navigation_history(request)
+    context = get_base_context()
+    return render(request, "ClientManager/pages/Settings/SettingsGroupingTag.html", context)
+
+@login_required(login_url='/accounts/login/')
 def settings_downloader(request):
     navigation_history(request)
     context = get_base_context()

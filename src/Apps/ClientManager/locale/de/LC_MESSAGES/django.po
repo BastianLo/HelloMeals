@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-29 12:41+0000\n"
+"POT-Creation-Date: 2023-05-30 14:24+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -59,21 +59,67 @@ msgstr "Suche"
 msgid "recipe.name"
 msgstr "Rezeptname"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:15
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:56
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:114
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:172
 msgid "of"
 msgstr "von"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:25
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:67
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:125
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:183
 msgid "settings.scraper.start"
 msgstr "Start"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:29
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:71
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:129
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:187
 msgid "settings.scraper.restart"
 msgstr "Neustart"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:33
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:75
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:133
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:191
 msgid "settings.scraper.stop"
 msgstr "Stop"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIndex.html:15
+msgid "settings.grouping.tags"
+msgstr "Tags"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIndex.html:26
+msgid "settings.grouping.ingredients"
+msgstr "Zutaten"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:157
+msgid "common.delete"
+msgstr "Löschen"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:167
+msgid "common.group"
+msgstr "Gruppieren"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:177
+msgid "common.merge"
+msgstr "Merge"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:213
+msgid "settings.grouping.tags.delete.question"
+msgstr "Ausgewählte Tags wirklich löschen?"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:216
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:283
+msgid "common.dialog.confirm"
+msgstr "Bestätigen"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:220
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:287
+msgid "common.dialog.cancel"
+msgstr "Abbrechen"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:237
+msgid "settings.grouping.mergeinto"
+msgstr "Mergen in"
 
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsIndex.html:12
 msgid "settings.profile.label"

@@ -1,7 +1,7 @@
 from dj_rql.filter_cls import RQLFilterClass, AutoRQLFilterClass
 from dj_rql.qs import NSR
 
-from .models import Recipe
+from .models import *
 
 class RecipeFilters(AutoRQLFilterClass):
     MODEL = Recipe
@@ -43,3 +43,9 @@ class RecipeFilters(AutoRQLFilterClass):
     class Meta:
         #fields = '__all__'
         exclude = ['cuisines']
+
+class TagFilters(AutoRQLFilterClass):
+    MODEL = Tag
+
+    class Meta:
+        fields = '__all__'
