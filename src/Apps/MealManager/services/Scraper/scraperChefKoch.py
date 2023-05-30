@@ -175,14 +175,18 @@ class Scraper:
     def create_tags(self, recipe_json, recipe):
         for tag_json in recipe_json["fullTags"]:
             tag = Tag.objects.get(helloFreshId=tag_json["id"])
-            recipe_tag = RecipeTag.objects.update_or_create(
-                id=recipe.helloFreshId + tag.helloFreshId,
-                defaults={
-                    "recipe": recipe,
-                    "tag": tag,
-                }
-            )
-
+            if tag is None:
+                continue
+            try:
+                recipe_tag = RecipeTag.objects.update_or_create(
+                    id=recipe.helloFreshId + tag.helloFreshId,
+                    defaults={
+                        "recipe": recipe,
+                        "tag": tag,
+                    }
+                )
+            except:
+                continue
     def create_work_steps(self, recipe_json, recipe):
         step = WorkSteps.objects.update_or_create(
             id=recipe.helloFreshId + "0",

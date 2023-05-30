@@ -2,6 +2,10 @@ import json
 import os
 import threading
 import logging
+import uuid
+from tempfile import NamedTemporaryFile
+from urllib.request import urlopen
+
 import requests
 from HelloMeals import settings
 from ...models import *
@@ -221,7 +225,10 @@ class Scraper:
                     "type": cuisine_json["type"],
                     "tagGroup": cuisine_tg
                 }
-            )[0]
+            )
+            if cuisine is None:
+                continue
+            cuisine = cuisine[0]
             recipe_cuisine = RecipeTag.objects.update_or_create(
                 id=recipe.helloFreshId + cuisine.helloFreshId,
                 defaults={
@@ -238,7 +245,10 @@ class Scraper:
                     "name": tag_json["name"],
                     "type": tag_json["type"],
                 }
-            )[0]
+            )
+            if tag is None:
+                continue
+            tag = tag[0]
             recipe_tag = RecipeTag.objects.update_or_create(
                 id=recipe.helloFreshId + tag.helloFreshId,
                 defaults={

@@ -46,19 +46,25 @@ class TagMergeManager(models.Manager):
     def create(self, **kwargs):
         source = Tag.objects.filter(helloFreshId=kwargs["source"]).first()
         target = Tag.objects.filter(helloFreshId=kwargs["target"]).first()
-        if source is not None and target is not None:
+        delete = kwargs["delete"]
+        if source is not None and (target is not None or delete):
             for t in RecipeTag.objects.filter(tag=source):
+                if delete:
+                    t.delete()
+                    continue
                 try:
                     t.tag = target
                     t.save()
                 except:
+                    print("Could not merge tags")
                     t.delete()
             source.delete()
         return super().create(**kwargs)
 
 class TagMerge(models.Model):
     source = models.CharField(max_length=255, unique=True)
-    target = models.CharField(max_length=255)
+    target = models.CharField(max_length=255, null=True)
+    delete = models.BooleanField(default=False)
     objects = TagMergeManager()
 
 
@@ -67,14 +73,24 @@ class TagQuerySet(models.query.QuerySet):
         id = kwargs["helloFreshId"]
         tagMerge = TagMerge.objects.filter(source=id).first()
         while tagMerge:
+            if tagMerge.delete:
+                return None
             if TagMerge.objects.filter(source=tagMerge.target).first() is None:
                 return Tag.objects.get_or_create(helloFreshId=tagMerge.target)
             tagMerge = TagMerge.objects.filter(source=tagMerge.target).first()
 
-        #if tagMerge:
-        #    return Tag.objects.get_or_create(helloFreshId=tagMerge.target)
         return super().update_or_create(defaults=defaults, **kwargs)
 
+    def get(self, **kwargs):
+        id = kwargs["helloFreshId"]
+        tagMerge = TagMerge.objects.filter(source=id).first()
+        while tagMerge:
+            if tagMerge.delete:
+                return None
+            if TagMerge.objects.filter(source=tagMerge.target).first() is None:
+                return Tag.objects.get_or_create(helloFreshId=tagMerge.target)[0]
+            tagMerge = TagMerge.objects.filter(source=tagMerge.target).first()
+        return super().get(**kwargs)
 
 class TagManager(models.Manager):
     def get_queryset(self):
