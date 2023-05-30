@@ -1,14 +1,18 @@
-import logging
+import json
 import os
-import re
 import threading
+import logging
+import uuid
 from datetime import timedelta
+from tempfile import NamedTemporaryFile
+from urllib.request import urlopen
 
 import requests
-
-from .scrapeConfig import scrapeConfig
+from HelloMeals import settings
 from ...models import *
-
+from django.core.files.base import File
+import re
+from .scrapeConfig import scrapeConfig
 
 def is_valid_iso_duration(duration_str):
     pattern = r'^P(?:\d+Y)?(?:\d+M)?(?:\d+W)?(?:\d+D)?(?:T(?:\d+H)?(?:\d+M)?(?:\d+S)?)?$'
