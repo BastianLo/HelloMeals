@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-30 14:24+0000\n"
+"POT-Creation-Date: 2023-05-30 21:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -91,35 +91,41 @@ msgstr "Tags"
 msgid "settings.grouping.ingredients"
 msgstr "Zutaten"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:157
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:192
 msgid "common.delete"
 msgstr "Löschen"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:167
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:202
 msgid "common.group"
 msgstr "Gruppieren"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:177
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:212
 msgid "common.merge"
 msgstr "Merge"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:213
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:248
 msgid "settings.grouping.tags.delete.question"
 msgstr "Ausgewählte Tags wirklich löschen?"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:216
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:283
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:251
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:318
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:382
 msgid "common.dialog.confirm"
 msgstr "Bestätigen"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:220
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:287
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:255
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:322
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:386
 msgid "common.dialog.cancel"
 msgstr "Abbrechen"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:237
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:270
 msgid "settings.grouping.mergeinto"
 msgstr "Mergen in"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:337
+msgid "settings.grouping.groupInto"
+msgstr "Gruppieren in"
 
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsIndex.html:12
 msgid "settings.profile.label"

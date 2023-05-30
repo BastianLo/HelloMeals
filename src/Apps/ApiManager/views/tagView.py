@@ -44,6 +44,14 @@ class TagListCreate(generics.ListCreateAPIView):
         return tags
 
 @permission_classes([IsAuthenticated])
+class TagDetail(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = TagSerializer
+    lookup_field = 'helloFreshId'
+
+    def get_queryset(self):
+        return Tag.objects.all()
+
+@permission_classes([IsAuthenticated])
 class TagGroupList(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     pagination_class = RqlPagination

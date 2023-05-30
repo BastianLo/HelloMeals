@@ -9,8 +9,10 @@
 
         tagGroups: [],
         tagSearchString: '',
+        groupSearchString: '',
         selected: [],
         mergeInto: '',
+        groupInto: '',
         mergeSearchString: '',
 
         getCookie(name) {
@@ -84,6 +86,37 @@
             await this.selected.forEach(tag => this.mergeTag(tag).then())
             await this.getTagGroups()
         },
+        async groupTag(tag){
+            if (this.groupInto === ''){return}
+            let fullTag;
+            this.tagGroups.forEach(tg => {
+                tg.tags.forEach(t => {
+                    if (t.helloFreshId === tag){fullTag = t}
+                })
+            })
+            fullTag.tagGroup = this.groupInto
+
+            var raw = JSON.stringify(fullTag);
+            var requestOptions = {
+              method: 'PATCH',
+              headers: {'X-CSRFToken': this.getCookie('csrftoken'), 'Content-Type': 'application/json'},
+              body: raw,
+              redirect: 'follow'
+            };
+
+            fetch('/api/Tag/' + fullTag.helloFreshId, requestOptions)
+              .then(response => response.text())
+              .then(result => console.log(result))
+              .catch(error => console.log('error', error));
+            this.mergeInto = ''
+            this.mergeSearchString = ''
+        },
+        async groupTags(){
+            await this.selected.forEach(tag => this.groupTag(tag).then())
+            await this.getTagGroups()
+            this.groupInto = ''
+            this.selected = []
+        },
         async getTags(){
             tags = (await this.sendGet('/api/Tag?ordering(name)&page_size=10000')).results
             tags.forEach(t => {
@@ -91,7 +124,6 @@
                     this.tagGroups.find(tg => tg.name === t.tagGroup).tags.push(t)}
                 else{this.tagGroups.find(tg => tg.name === 'unassigned').tags.push(t)}
             })
-            console.log(this.tagGroups)
         },
         async init(){
         await this.getTagGroups()
@@ -160,7 +192,7 @@
                 <span class="block mb-px text-xs font-medium">{% trans 'common.delete' %}</span>
             </button>
 
-            <button type="button"
+            <button @click="dialogs.confirmMove=true"
                     class="w-[56px] h-[56px] text-gray-500 bg-white rounded-lg border border-gray-200 hover:text-gray-900 dark:border-gray-600 shadow-sm dark:hover:text-white dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 focus:ring-4 focus:ring-gray-300 focus:outline-none dark:focus:ring-gray-400">
                 <svg class="w-6 h-6 mx-auto mt-px" aria-hidden="true" fill="none" stroke="currentColor"
                      stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -237,7 +269,7 @@
                     <h3 class="text-xl font-medium text-gray-900 dark:text-white">
                         {% trans 'settings.grouping.mergeinto' %}
                     </h3>
-                    <button type="button"
+                    <button @click="store.selected = []; dialogs.confirmMerge = false"
                             class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
                             data-modal-hide="medium-modal">
                         <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
@@ -267,11 +299,13 @@
                 <div class="p-6">
                     <template x-for="tagGroup in store.tagGroups">
                         <template x-for="tag in tagGroup.tags">
-                            <template x-if="tag.name.toLowerCase().includes(store.mergeSearchString.toLowerCase()) && !store.selected.includes(tag.helloFreshId)">
+                            <template
+                                    x-if="tag.name.toLowerCase().includes(store.mergeSearchString.toLowerCase()) && !store.selected.includes(tag.helloFreshId)">
                                 <div>
                                     <input x-model="store.mergeInto" type="radio" :value="tag.helloFreshId.toString()"
                                            :id="tag.HelloFreshId">
-                                    <label class="text-gray-900 dark:text-white" :for="tag.name" x-text="tag.name"></label>
+                                    <label class="text-gray-900 dark:text-white" :for="tag.name"
+                                           x-text="tag.name"></label>
                                 </div>
                             </template>
                         </template>
@@ -284,6 +318,70 @@
                         {% trans 'common.dialog.confirm' %}
                     </button>
                     <button @click="store.selected = []; dialogs.confirmMerge = false"
+                            class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
+                        {% trans 'common.dialog.cancel' %}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Grouping Modal -->
+    <div :class="{ 'hidden': !dialogs.confirmMove }" id="medium-modal" tabindex="-1"
+         class=" bg-gray-500 bg-opacity-75 flex justify-center fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        <div class="relative w-full max-w-lg max-h-full">
+            <!-- Modal content -->
+            <div class="mb-24 relative bg-white rounded-lg shadow dark:bg-gray-700">
+                <!-- Modal header -->
+                <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-gray-600">
+                    <h3 class="text-xl font-medium text-gray-900 dark:text-white">
+                        {% trans 'settings.grouping.groupInto' %}
+                    </h3>
+                    <button @click="store.selected = []; dialogs.confirmMove = false"
+                            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                            data-modal-hide="medium-modal">
+                        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                  clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="sr-only">Close modal</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <label for="default-search"
+                       class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none"
+                             stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                    <input type="search" x-model="store.groupSearchString"
+                           class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                           placeholder="Tag Group Name" required>
+                </div>
+                <div class="p-6">
+                    <template x-for="tagGroup in store.tagGroups">
+                        <template
+                                x-if="tagGroup.name.toLowerCase().includes(store.groupSearchString.toLowerCase())">
+                            <div>
+                                <input x-model="store.groupInto" type="radio" :value="tagGroup.name"
+                                       :id="tagGroup.name">
+                                <label class="text-gray-900 dark:text-white" :for="tagGroup.name" x-text="tagGroup.name"></label>
+                            </div>
+                        </template>
+                    </template>
+                </div>
+                <!-- Modal footer -->
+                <div class="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
+                    <button @click="store.groupTags(); dialogs.confirmMove = false"
+                            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        {% trans 'common.dialog.confirm' %}
+                    </button>
+                    <button @click="store.selected = []; dialogs.confirmMove = false"
                             class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
                         {% trans 'common.dialog.cancel' %}
                     </button>
