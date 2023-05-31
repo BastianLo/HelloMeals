@@ -60,10 +60,15 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'pwa',
     'django_cleanup.apps.CleanupConfig',
+    'graphene_django',
 
     'Apps.MealManager',
     'Apps.ClientManager',
 ]
+
+GRAPHENE = {
+    'SCHEMA': 'Apps.ApiManager.schema.schema'
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
