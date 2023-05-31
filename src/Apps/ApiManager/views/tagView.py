@@ -3,7 +3,7 @@ from rest_framework import generics
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
 
-from Apps.MealManager.serializers import TagMergeSerializer, TagSerializer, TagGroupSerializer
+from Apps.MealManager.serializers import TagMergeSerializer, TagSerializer, TagGroupSerializer, TagGroupFullSerializer
 from Apps.MealManager.models import TagMerge, Tag, TagGroup
 
 from util.pagination import RqlPagination
@@ -65,3 +65,17 @@ class TagGroupList(generics.ListAPIView):
         tag_groups = TagGroup.objects.all()
         return tag_groups
 
+
+@permission_classes([IsAuthenticated])
+class TagGroupFullList(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    pagination_class = RqlPagination
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return TagGroupFullSerializer
+        return TagGroupFullSerializer
+
+    def get_queryset(self):
+        tags = TagGroup.objects.all()
+        return tags

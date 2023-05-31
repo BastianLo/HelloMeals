@@ -62,6 +62,24 @@ class TagGroupSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class TagGroupFullSerializer(serializers.ModelSerializer):
+    tags = TagSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = TagGroup
+        exclude = []
+
+    def get_tags(self, instance):
+        tag_group_tags = Tag.objects.filter(tagGroup=instance)
+        tag_serializer = TagSerializer(tag_group_tags, many=True)
+        return tag_serializer.data
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['tags'] = self.get_tags(instance)
+        return representation
+
+
 class RecipeTagSerializer(serializers.ModelSerializer):
     tag = TagSerializer()
 

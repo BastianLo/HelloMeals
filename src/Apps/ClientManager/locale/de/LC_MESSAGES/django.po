@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-30 21:10+0000\n"
+"POT-Creation-Date: 2023-05-31 12:03+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,28 +34,28 @@ msgstr "Einstellungen"
 msgid "base.profile"
 msgstr "Profil"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:98
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:105
 msgid "filter.label"
 msgstr "Filter"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:102
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:109
 msgid "filter.apply"
 msgstr "Anwenden"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:106
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:113
 msgid "filter.reset"
 msgstr "Löschen"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:119
-msgid "cuisine.label"
-msgstr "Nationalität"
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:120
+msgid "filter.categories.label"
+msgstr "Kategorien"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:168
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:183
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:180
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:195
 msgid "search"
 msgstr "Suche"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:180
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:192
 msgid "recipe.name"
 msgstr "Rezeptname"
 
@@ -146,3 +146,6 @@ msgstr "Melde dich mit deinem Account an"
 #: Apps/ClientManager/templates/ClientManager/pages/registration/login.html:32
 msgid "login.submit"
 msgstr "Anmelden"
+
+#~ msgid "cuisine.label"
+#~ msgstr "Nationalität"

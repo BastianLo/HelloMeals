@@ -5,12 +5,13 @@
     params: {
         filter: {
             active: null,
-            cuisines: []
+            sources: []
         },
         take: 1,
         page: 1,
         searchString: '',
     },
+    tag_groups: [],
     show: false,
     recipes: [],
     nav: {},
@@ -30,6 +31,15 @@
             }
         })
     },
+    getTagFilter(){
+        filters = []
+         this.tag_groups.forEach(tg => {
+            filters.push(tg.tags.filter(t => t.temp).map(t => t.helloFreshId).join('_'))
+        })
+        filters = filters.filter(t => t != '').join('@')
+        if (filters === ''){return ''}
+        return '&tags=' + filters
+    },
     async getRecipes(params) {
         if (params === undefined){params = ''}
         await this.requestRecipe(`/api/Recipe${params}`)
@@ -47,8 +57,13 @@
         delete this.nav.results
         this.parseParameters()
     },
+    async getTagGroups(){
+        let temp = await (await fetch('/api/Tag/Full' ) ).json();
+        this.tag_groups = temp.results
+    },
     async init() {
-        this.parseUrlParams()
+        await this.getTagGroups()
+        await this.parseUrlParams()
         await this.getRecipes(this.parseParameters())
     },
     addParameterToURL(paramsString){
@@ -63,11 +78,12 @@
         filter += `&eq(clonedFrom,null())`
         filter += '&page_size=24'
         filter += '&page=' + this.params.page
-        if (this.params.filter.cuisines.length > 0) {filter += '&cuisines=' + this.params.filter.cuisines.join('-')}
+        filter += this.getTagFilter()
+        if (this.params.filter.sources.length > 0) {filter += '&in(source,('+ this.params.filter.sources.join(',') +'))'}
         this.addParameterToURL(filter)
         return filter
     },
-    clearFilter() {this.params.filter.cuisines = []},
+    clearFilter() {this.tag_groups.forEach(tg => {tg.tags.forEach(t => {t.temp = false; console.log(t)})})},
     async search(){this.params.page=1;await this.getRecipes(this.parseParameters())},
     async next() {if (this.nav.next){await this.requestRecipe(this.nav.next); window.scrollTo({ top: 0});}},
     async previous() {if (this.nav.previous){await this.requestRecipe(this.nav.previous); window.scrollTo({ top: 0 });}},
@@ -109,14 +125,14 @@
                         <!-- Popup body -->
                         <div class="mt-5">
                             <div>
-                                <div x-data="{open: false}">
+                                <div class="mb-5" x-data="{open: false}">
                                     <h2 id="accordion-collapse-heading-2">
                                         <button type="button"
                                                 @click="open = !open"
                                                 :class="{'border-b-0':open}"
                                                 class="flex items-center justify-between w-full p-5 font-medium text-left text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
                                         >
-                                            <span :class="{'dark:text-white': open}">{% trans 'cuisine.label' %}</span>
+                                            <span :class="{'dark:text-white': open}"> {% trans 'filter.source.label' %} </span>
                                             <svg :class="{'rotate-180': open}" data-accordion-icon
                                                  class="w-6 h-6 shrink-0" fill="currentColor"
                                                  viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -129,24 +145,86 @@
                                     <div :class="{ 'hidden': !open}" class="border dark:border-gray-700 border-t-0"
                                          aria-labelledby="accordion-collapse-heading-2">
                                         <div class="p-2 rounded">
-                                            <div class="grid grid-cols-2" x-data="{cuisines: []}"
-                                                 x-init="cuisines = (await (await fetch('/api/Cuisine?page_size=1000&ordering(name,type)')).json()).results">
-                                                <template x-for="cuisine in cuisines">
-                                                    <div class="flex items-center">
-                                                        <label>
-                                                            <input type="checkbox" :value="cuisine.helloFreshId"
-                                                                   class="w-4 h-4 rounded focus:ring-2"
-                                                                   x-model="store.params.filter.cuisines"
-                                                            />
-                                                        </label>
-                                                        <p x-text="cuisine.name"
-                                                           class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-white"></p>
-                                                    </div>
-                                                </template>
+                                            <div class="grid grid-cols-1">
+                                                <div class="flex items-center">
+                                                    <label>
+                                                        <input type="checkbox" value="1"
+                                                               class="w-4 h-4 rounded focus:ring-2"
+                                                               x-model="store.params.filter.sources"
+                                                        />
+                                                    </label>
+                                                    <p class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-white">
+                                                        HelloFresh</p>
+                                                </div>
+                                                <div class="flex items-center">
+                                                    <label>
+                                                        <input type="checkbox" value="2"
+                                                               class="w-4 h-4 rounded focus:ring-2"
+                                                               x-model="store.params.filter.sources"
+                                                        />
+                                                    </label>
+                                                    <p class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-white">
+                                                        Kitchenstories</p>
+                                                </div>
+                                                <div class="flex items-center">
+                                                    <label>
+                                                        <input type="checkbox" value="3"
+                                                               class="w-4 h-4 rounded focus:ring-2"
+                                                               x-model="store.params.filter.sources"
+                                                        />
+                                                    </label>
+                                                    <p class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-white">
+                                                        Chefkoch</p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                            <!-- Categories -->
+                            <div>
+                                <p class="text-3xl dark:text-white mb-2 mt-2">
+                                    {% trans 'filter.categories.label' %}
+                                </p>
+                                <template x-for="tagGroup in store.tag_groups">
+                                    <div class="mb-5" x-data="{open: false}">
+                                        <h2 id="accordion-collapse-heading-2">
+                                            <button type="button"
+                                                    @click="open = !open"
+                                                    :class="{'border-b-0':open}"
+                                                    class="flex items-center justify-between w-full p-5 font-medium text-left text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                                            >
+                                                <span :class="{'dark:text-white': open}" x-text="tagGroup.name"></span>
+                                                <svg :class="{'rotate-180': open}" data-accordion-icon
+                                                     class="w-6 h-6 shrink-0" fill="currentColor"
+                                                     viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd"
+                                                          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                          clip-rule="evenodd"></path>
+                                                </svg>
+                                            </button>
+                                        </h2>
+                                        <div :class="{ 'hidden': !open}" class="border dark:border-gray-700 border-t-0"
+                                             aria-labelledby="accordion-collapse-heading-2">
+                                            <div class="p-2 rounded">
+                                                <div class="grid grid-cols-2">
+                                                    <template x-for="tag in tagGroup.tags">
+                                                        <div class="flex items-center">
+                                                            <label>
+                                                                <input type="checkbox" :value="tag.helloFreshId"
+                                                                       class="w-4 h-4 rounded focus:ring-2"
+                                                                       x-model="tag.temp"
+                                                                />
+                                                            </label>
+                                                            <p x-text="tag.name"
+                                                               class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-white"></p>
+                                                        </div>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
                             </div>
                         </div>
                     </div>
