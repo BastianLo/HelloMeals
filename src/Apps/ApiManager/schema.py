@@ -1,34 +1,63 @@
 import graphene
+from Apps.MealManager.models import Recipe, RecipeIngredient, Ingredient
+from django.contrib.postgres.search import TrigramSimilarity
 from graphene import relay
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
-from django.db.models import Q
-from Apps.MealManager.models import Recipe
-from django.contrib.postgres.search import TrigramSimilarity
-from django_filters import FilterSet, CharFilter
+
+from .filters import RecipeFilterSet
+
+
+class IngredientNode(DjangoObjectType):
+    class Meta:
+        model = Ingredient
+        fields = "__all__"
+        interfaces = (relay.Node,)
+
+
+class RecipeIngredientNode(DjangoObjectType):
+    class Meta:
+        model = RecipeIngredient
+        fields = "__all__"
+        interfaces = (relay.Node,)
+
 
 class RecipeNode(DjangoObjectType):
     similarity = graphene.Float()  # Add the similarity field
+    ingredients = graphene.List(RecipeIngredientNode)
 
     class Meta:
         model = Recipe
         filter_fields = {
-            'name': ['exact', 'icontains'],
-            'description': ['exact', 'icontains'],
             'difficulty': ['exact'],
         }
-        interfaces = (relay.Node, )
+        interfaces = (relay.Node,)
 
     def resolve_similarity(self, info):
-        return self.similarity  # Return the similarity score
+        return self.similarity
 
-class BookQuery(graphene.ObjectType):
-    recipe = relay.Node.Field(RecipeNode)
+    def resolve_ingredients(self, info):
+        return self.recipeingredient_set.all()
+
+    def resolve_id(self, info):
+        return self.helloFreshId
+
+
+class RecipeQuery(graphene.ObjectType):
+    recipe = graphene.Field(RecipeNode, id=graphene.ID(required=True))
     all_recipes = DjangoFilterConnectionField(
         RecipeNode,
-        filterset_class=FilterSet,
+        filterset_class=RecipeFilterSet,
         search=graphene.String(description='Full-text search on name and description fields')
     )
+
+    def resolve_recipe(self, info, id):
+        try:
+            # Retrieve the recipe by its helloFreshId
+            recipe = Recipe.objects.get(helloFreshId=id)
+            return recipe
+        except Recipe.DoesNotExist:
+            return None
 
     def resolve_all_recipes(self, info, search=None, **kwargs):
         queryset = Recipe.objects.all()
@@ -40,4 +69,5 @@ class BookQuery(graphene.ObjectType):
 
         return queryset
 
-schema = graphene.Schema(query=BookQuery)
+
+schema = graphene.Schema(query=RecipeQuery)

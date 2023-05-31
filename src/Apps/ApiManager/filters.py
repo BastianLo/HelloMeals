@@ -2,14 +2,10 @@ import django_filters
 
 from Apps.MealManager.models import Recipe
 
-
-class BookFilter(django_filters.FilterSet):
-    title = django_filters.CharFilter(lookup_expr='icontains')
-    search = django_filters.CharFilter(method='perform_search')
-
-    def perform_search(self, queryset, name, value):
-        return queryset.filter(title__icontains=value)
+class RecipeFilterSet(django_filters.FilterSet):
+    difficulty = django_filters.NumberFilter(field_name='difficulty', lookup_expr='exact')
+    isCloned = django_filters.BooleanFilter(field_name='clonedFrom', lookup_expr='isnull')
 
     class Meta:
         model = Recipe
-        fields = ['title', 'search']
+        fields = ['difficulty']
