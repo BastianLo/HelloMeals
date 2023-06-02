@@ -37,7 +37,6 @@ class RecipeFilterSet(filters.FilterSet):
         fields = ['srch', 'tag', 'cloned_from_null', 'difficulty', 'ingredient_count__lt']
         ordering_fields = '__all__'
 
-
 ### Views ###
 
 @permission_classes([IsAuthenticated])
@@ -89,8 +88,12 @@ class RecipeBaseList(generics.ListAPIView):
         return RecipeBaseSerializer
 
     def get_queryset(self):
-        return self.filter_tags()
-
+        queryset = self.filter_tags()
+        ordering = self.request.query_params.get('ordering', None)
+        if ordering:
+            fields = ordering.split(',')
+            queryset = queryset.order_by(*fields)
+        return queryset
 
 @permission_classes([IsAuthenticated])
 class RecipeBaseDetail(generics.RetrieveAPIView):
