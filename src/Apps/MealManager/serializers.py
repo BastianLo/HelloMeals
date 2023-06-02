@@ -114,12 +114,19 @@ class RecipeBaseSerializer(serializers.ModelSerializer):
         exclude = []
 
     similarity = serializers.SerializerMethodField()
+    relevancy = serializers.SerializerMethodField()
 
     def get_similarity(self, obj):
         search = self.context.get('request').query_params.get('srch')
         if search:
             similarity = obj.similarity or obj.calculate_similarity(search)
             return similarity
+        return None
+    def get_relevancy(self, obj):
+        search = self.context.get('request').query_params.get('srch')
+        if search:
+            relevancy = obj.relevancy or obj.calculate_similarity(search)
+            return relevancy
         return None
     def get_ingredient_count(self, instance):
         ingredient_count = len(RecipeIngredient.objects.filter(recipe=instance))

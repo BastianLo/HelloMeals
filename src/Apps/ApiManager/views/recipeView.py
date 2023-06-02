@@ -2,7 +2,7 @@ import django_filters
 from Apps.MealManager.models import Recipe
 from Apps.MealManager.serializers import RecipeFullSerializer, RecipeBaseSerializer
 from django.contrib.postgres.search import TrigramSimilarity
-from django.db.models import Count
+from django.db.models import Count, F, FloatField, ExpressionWrapper
 from django_filters import rest_framework as filters
 from rest_framework import generics
 from rest_framework.decorators import permission_classes
@@ -21,21 +21,32 @@ class RecipeFilterSet(filters.FilterSet):
         method='filter_ingredient_count',
         label='Ingredient Count less than',
     )
+    relevancy = django_filters.CharFilter(method='filter_relevancy')
 
     def filter_search(self, queryset, name, value):
         return queryset.annotate(
             similarity=(TrigramSimilarity('name', value) * 5 + TrigramSimilarity('description', value))
-        ).filter(similarity__gt=0.5).order_by('-similarity')
+        ).filter(similarity__gt=0.5).annotate(
+            relevancy=ExpressionWrapper(
+                F('averageRating') * ((F('ratingCount') * F('similarity'))**0.2),
+                output_field=FloatField()
+            )
+        ).order_by('-relevancy')
 
     def filter_ingredient_count(self, queryset, name, value):
         return queryset.annotate(
             ingredient_count=Count('recipeingredient')
         ).filter(ingredient_count__lte=value)
 
+    def filter_relevancy(self, queryset, name, value):
+        return queryset.annotate(
+            relevancy=F('rating') * F('ratingCount')
+        ).order_by('-relevancy')
+
     class Meta:
         model = Recipe
-        fields = ['srch', 'tag', 'cloned_from_null', 'difficulty', 'ingredient_count__lt']
-        ordering_fields = '__all__'
+        fields = ['srch', 'tag', 'cloned_from_null', 'difficulty', 'ingredient_count__lt', 'relevancy']
+
 
 ### Views ###
 
@@ -64,7 +75,6 @@ class RecipeFullDetail(generics.RetrieveAPIView):
         return Recipe.objects.all()
 
 
-@permission_classes([IsAuthenticated])
 class RecipeBaseList(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     filterset_class = RecipeFilterSet
@@ -82,6 +92,13 @@ class RecipeBaseList(generics.ListAPIView):
             return queryset
         return self.queryset
 
+    def filter_relevancy(self, queryset):
+        queryset = queryset.annotate(relevancy=F('averageRating') * F('ratingCount'))
+        ordering = self.request.query_params.get('ordering', None)
+        if ordering == 'relevancy':
+            queryset = queryset.order_by('-relevancy')
+        return queryset
+
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return RecipeBaseSerializer
@@ -89,11 +106,15 @@ class RecipeBaseList(generics.ListAPIView):
 
     def get_queryset(self):
         queryset = self.filter_tags()
+        queryset = queryset.filter(clonedFrom__isnull=True)
+        queryset = queryset.annotate(relevance=F('averageRating') * F('ratingCount')).exclude(relevance=0)
+        queryset = self.filter_relevancy(queryset)
         ordering = self.request.query_params.get('ordering', None)
-        if ordering:
+        if ordering and ordering != 'relevancy':
             fields = ordering.split(',')
             queryset = queryset.order_by(*fields)
         return queryset
+
 
 @permission_classes([IsAuthenticated])
 class RecipeBaseDetail(generics.RetrieveAPIView):
