@@ -42,7 +42,7 @@ class RecipeFilters(AutoRQLFilterClass):
     ]
     class Meta:
         #fields = '__all__'
-        exclude = ['cuisines']
+        exclude = ['cuisines', 'srch']
 
 class TagFilters(AutoRQLFilterClass):
     MODEL = Tag

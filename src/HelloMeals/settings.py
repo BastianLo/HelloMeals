@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+from datetime import timedelta
 from pathlib import Path
 import os
 
@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'rql_filter',
     'rest_framework',
+    'rest_framework_simplejwt.token_blacklist',
     'django_filters',
     'widget_tweaks',
     'pwa',
@@ -85,6 +86,17 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ['dj_rql.drf.RQLFilterBackend', 'django_filters.rest_framework.DjangoFilterBackend'],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('JWT',),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=14),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=56),
 }
 
 ROOT_URLCONF = 'HelloMeals.urls'
@@ -113,9 +125,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'hellomeals',
-        'USER': os.getenv("POSTGRES_USER", "root"),
-        'PASSWORD': os.getenv("POSTGRES_PASSWORD", "root"),
-        'HOST': os.getenv("POSTGRES_HOST", "127.0.0.1"),
+        'USER': os.getenv("POSTGRES_USER", "user123"),
+        'PASSWORD': os.getenv("POSTGRES_PASSWORD", "CURIECNRUICNWBcr39bun98BNcfdeui"),
+        'HOST': os.getenv("POSTGRES_HOST", "172.19.0.44"),
         'PORT': "5432",
     }
 }

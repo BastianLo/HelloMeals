@@ -1,8 +1,10 @@
 from django_filters import rest_framework as filters
+import django_filters
+from django.contrib.postgres.search import TrigramSimilarity
 from rest_framework import generics
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
-
+from rest_framework import serializers
 from Apps.MealManager.serializers import RecipeFullSerializer, RecipeBaseSerializer
 from Apps.MealManager.models import Recipe
 from Apps.MealManager.filters import RecipeFilters
@@ -13,12 +15,18 @@ from util.pagination import RqlPagination
 ### Filter Sets ###
 
 class RecipeFilterSet(filters.FilterSet):
-    cuisine = filters.CharFilter(field_name='recipecuisine__cuisine__helloFreshId')
     tag = filters.CharFilter(field_name='recipetag__tag__helloFreshId')
+
+    srch = django_filters.CharFilter(method='filter_search')
+
+    def filter_search(self, queryset, name, value):
+        return queryset.annotate(
+            similarity=(TrigramSimilarity('name', value) * 5 + TrigramSimilarity('description', value))
+        ).filter(similarity__gt=0.5).order_by('-similarity')
 
     class Meta:
         model = Recipe
-        fields = ['cuisine', 'tag']
+        fields = ['srch', 'tag']
 
 
 ### Views ###
@@ -68,7 +76,6 @@ class RecipeBaseList(generics.ListAPIView):
             return queryset
         return self.queryset
 
-
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return RecipeBaseSerializer
@@ -85,4 +92,3 @@ class RecipeBaseDetail(generics.RetrieveAPIView):
 
     def get_queryset(self):
         return Recipe.objects.all()
-
