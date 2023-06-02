@@ -1,14 +1,12 @@
-from django_filters import rest_framework as filters
 import django_filters
+from Apps.MealManager.models import Recipe
+from Apps.MealManager.serializers import RecipeFullSerializer, RecipeBaseSerializer
 from django.contrib.postgres.search import TrigramSimilarity
+from django.db.models import Count
+from django_filters import rest_framework as filters
 from rest_framework import generics
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
-from rest_framework import serializers
-from Apps.MealManager.serializers import RecipeFullSerializer, RecipeBaseSerializer
-from Apps.MealManager.models import Recipe
-from Apps.MealManager.filters import RecipeFilters
-
 from util.pagination import RqlPagination
 
 
@@ -16,17 +14,28 @@ from util.pagination import RqlPagination
 
 class RecipeFilterSet(filters.FilterSet):
     tag = filters.CharFilter(field_name='recipetag__tag__helloFreshId')
-
+    cloned_from_null = filters.BooleanFilter(field_name='clonedFrom', lookup_expr='isnull')
     srch = django_filters.CharFilter(method='filter_search')
+    difficulty = django_filters.NumberFilter(field_name='difficulty')
+    ingredient_count__lt = django_filters.NumberFilter(
+        method='filter_ingredient_count',
+        label='Ingredient Count less than',
+    )
 
     def filter_search(self, queryset, name, value):
         return queryset.annotate(
             similarity=(TrigramSimilarity('name', value) * 5 + TrigramSimilarity('description', value))
         ).filter(similarity__gt=0.5).order_by('-similarity')
 
+    def filter_ingredient_count(self, queryset, name, value):
+        return queryset.annotate(
+            ingredient_count=Count('recipeingredient')
+        ).filter(ingredient_count__lte=value)
+
     class Meta:
         model = Recipe
-        fields = ['srch', 'tag']
+        fields = ['srch', 'tag', 'cloned_from_null', 'difficulty', 'ingredient_count__lt']
+        ordering_fields = '__all__'
 
 
 ### Views ###
@@ -34,7 +43,6 @@ class RecipeFilterSet(filters.FilterSet):
 @permission_classes([IsAuthenticated])
 class RecipeFullList(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
-    rql_filter_class = RecipeFilters
     filterset_class = RecipeFilterSet
     pagination_class = RqlPagination
 
@@ -60,7 +68,6 @@ class RecipeFullDetail(generics.RetrieveAPIView):
 @permission_classes([IsAuthenticated])
 class RecipeBaseList(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
-    rql_filter_class = RecipeFilters
     filterset_class = RecipeFilterSet
     pagination_class = RqlPagination
     queryset = Recipe.objects.all()
