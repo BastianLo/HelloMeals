@@ -2,7 +2,7 @@ import django_filters
 from Apps.MealManager.models import Recipe
 from Apps.MealManager.serializers import RecipeFullSerializer, RecipeBaseSerializer
 from django.contrib.postgres.search import TrigramSimilarity
-from django.db.models import Count, F, FloatField, ExpressionWrapper
+from django.db.models import Count, F, FloatField, ExpressionWrapper, Q
 from django_filters import rest_framework as filters
 from rest_framework import generics
 from rest_framework.decorators import permission_classes
@@ -28,7 +28,7 @@ class RecipeFilterSet(filters.FilterSet):
             similarity=(TrigramSimilarity('name', value) * 5 + TrigramSimilarity('description', value))
         ).filter(similarity__gt=0.5).annotate(
             relevancy=ExpressionWrapper(
-                F('averageRating') * ((F('ratingCount') * F('similarity'))**0.2),
+                F('averageRating') * ((F('ratingCount') * F('similarity'))**0.1),
                 output_field=FloatField()
             )
         ).order_by('-relevancy')
@@ -107,6 +107,7 @@ class RecipeBaseList(generics.ListAPIView):
     def get_queryset(self):
         queryset = self.filter_tags()
         queryset = queryset.filter(clonedFrom__isnull=True)
+        queryset = queryset.exclude(Q(headline__contains="Inhalt"))
         queryset = queryset.annotate(relevance=F('averageRating') * F('ratingCount')).exclude(relevance=0)
         queryset = self.filter_relevancy(queryset)
         ordering = self.request.query_params.get('ordering', None)
