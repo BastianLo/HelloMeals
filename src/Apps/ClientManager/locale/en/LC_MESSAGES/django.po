@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-03 12:07+0000\n"
+"POT-Creation-Date: 2023-06-03 13:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,32 +34,36 @@ msgstr "Settings"
 msgid "base.profile"
 msgstr "Profile"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:105
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:124
+msgid "common.loading.label"
+msgstr "Loading"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:140
 msgid "filter.label"
 msgstr "Filter"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:109
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:144
 msgid "filter.apply"
 msgstr "Apply"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:113
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:148
 msgid "filter.reset"
 msgstr "Reset"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:126
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:161
 msgid "filter.source.label"
 msgstr "Source"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:178
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:213
 msgid "filter.categories.label"
 msgstr "Categories"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:237
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:252
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:272
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:287
 msgid "search"
 msgstr "Search"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:249
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:284
 msgid "recipe.name"
 msgstr "Recipe name"
 
