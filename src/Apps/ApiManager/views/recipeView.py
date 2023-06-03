@@ -94,7 +94,6 @@ class RecipeBaseList(generics.ListAPIView):
     def filter_source(self, queryset):
         tags = self.request.GET.get('source')
         if tags:
-            print(tags)
             tag_list = tags.split(',')
             queryset = queryset.filter(source__in=tag_list).distinct()
             return queryset
