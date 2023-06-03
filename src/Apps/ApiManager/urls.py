@@ -4,7 +4,6 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 import os
-from graphene_django.views import GraphQLView
 
 from .views import scraperView, recipeView, tagView, authentification_view
 
@@ -63,5 +62,4 @@ urlpatterns = [
     path('Scraper/chefkoch/restart', scraperView.restart_chefkoch_scraper),
     path('Scraper/chefkoch/setprogress/<int:index>', scraperView.set_chefkoch_index),
 
-    path('graphql/', GraphQLView.as_view(graphiql=True)),
 ]
