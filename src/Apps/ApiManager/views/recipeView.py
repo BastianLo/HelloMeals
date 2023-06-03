@@ -108,9 +108,15 @@ class RecipeBaseList(generics.ListAPIView):
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
-            return RecipeBaseSerializer
+            fields = self.request.query_params.get('fields')
+            if fields:
+                fields = fields.split(',')
+                meta = RecipeBaseSerializer.Meta
+                meta.fields = fields
+                return type('DynamicRecipeBaseSerializer', (RecipeBaseSerializer,), {'Meta': meta})
+            else:
+                return RecipeBaseSerializer
         return RecipeBaseSerializer
-
     def get_queryset(self):
         queryset = self.queryset
         queryset = self.filter_tags(queryset)
