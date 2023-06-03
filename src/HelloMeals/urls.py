@@ -36,3 +36,7 @@ urlpatterns = [
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+
+handler404 = 'Apps.ClientManager.views.handler404'
+handler500 = 'Apps.ClientManager.views.handler500'

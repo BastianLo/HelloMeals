@@ -1,0 +1,378 @@
+{% load i18n %}
+<div style="position: absolute; left:20px;right:20px;" x-data="{
+  currentPage: '',
+  store: {
+    params: {
+        filter: {
+            sources: [],
+            tags: [],
+        },
+        take: 1,
+        page: 1,
+        pageSize: 24,
+        searchString: '',
+        fields: ['name', 'headline', 'averageRating', 'ratingCount', 'image', 'source', 'helloFreshId']
+    },
+    tag_groups: [],
+    show: false,
+    recipes: [],
+    nav: {},
+    initialized: false,
+    loading: false,
+    parseUrlParams(){
+        const urlParams = new URLSearchParams(window.location.search);
+        this.params.searchString = urlParams.get('srch') || '';
+        this.params.page = urlParams.get('page') || 1;
+        this.params.pageSize = urlParams.get('page_size') || 24;
+        this.params.filter.sources = (urlParams.get('source') || '').split(',')
+        this.params.filter.tags = (urlParams.get('tags') || '').split(',')
+
+    },
+    parseParameters(){
+        let filter = '?ordering=relevancy'
+        if (this.params.searchString !== '')
+            filter += '&srch=' + this.params.searchString
+        filter += '&page_size=' + this.params.pageSize
+        filter += '&page=' + this.params.page
+        if (this.params.filter.sources.filter(s => s !== '').length > 0)
+            filter += '&source=' + this.params.filter.sources.filter(s => s !== '').join(',')
+        if (this.params.filter.tags.filter(s => s !== '').length > 0)
+            filter += '&tags=' + this.params.filter.tags.filter(t => t !== '').join('_')
+        filter += '&fields=' + this.params.fields.join(',')
+        //filter += this.getTagFilter()
+        this.addParameterToURL(filter)
+        return filter
+    },
+    getTagFilter(){
+        filters = []
+         this.tag_groups.forEach(tg => {
+            filters.push(tg.tags.filter(t => t.temp).map(t => t.helloFreshId).join('_'))
+        })
+        filters = filters.filter(t => t != '').join('@')
+        if (filters === ''){return ''}
+        return '&tags=' + filters
+    },
+    async getRecipes(params) {
+        if (params === undefined){params = ''}
+        await this.requestRecipe(`/api/Recipe${params}`)
+    },
+    async requestRecipe(url){
+        this.loading = true;
+        const urlParams = new URLSearchParams(url);
+        this.params.page = urlParams.get('page') ? urlParams.get('page') : 1;
+        let temp = await (await fetch(url)).json();
+        this.recipes = temp.results
+        this.recipes.forEach(function (recipe, i) {
+            recipe.shown = i<=4;
+        });
+        this.recipes.forEach(recipe => {recipe.show = false})
+        this.nav = temp
+        delete this.nav.results
+        this.parseParameters()
+        this.loading = false;
+    },
+    async getTagGroups(){
+        this.loading = true;
+        let temp = await (await fetch('/api/Tag/Full' ) ).json();
+        this.tag_groups = temp.results
+        this.loading = false;
+    },
+    async init() {
+        await this.getTagGroups()
+        await this.parseUrlParams()
+        await this.getRecipes(this.parseParameters())
+    },
+    addParameterToURL(paramsString){
+    _url = location.href.split('?')[0] + paramsString;
+    history.pushState({}, null, _url);
+    },
+    clearFilter() {history.pushState({}, null, location.href.split('?')[0]);this.parseUrlParams()},
+    async search(){this.params.page=1;await this.getRecipes(this.parseParameters())},
+    async next() {
+        if (this.nav.next){
+            await this.requestRecipe(this.nav.next);
+            window.scrollTo({ top: 0});
+            }
+        },
+    async previous() {
+        if (this.nav.previous){
+            await this.requestRecipe(this.nav.previous);
+            window.scrollTo({ top: 0 });
+        }
+    },
+
+    cutoff(text, limit)
+    {
+        if (text === null){return text}
+        if(text.length - 3 > limit){
+            return text.substring(0, limit - 3) + '...';
+        }
+        else{
+            return text
+        }
+    }
+  }
+}" x-init="await store.init()">
+
+    <div x-show="store.loading" class="fixed top-0 left-0 z-50 flex justify-between w-full p-4 ">
+        <div class="text-center flex justify-center w-full ">
+            <button disabled type="button"
+                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 inline-flex items-center">
+                <svg aria-hidden="true" role="status" class="inline w-4 h-4 mr-3 text-white animate-spin"
+                     viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                          fill="#E5E7EB"></path>
+                    <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                          fill="currentColor"></path>
+                </svg>
+                {% trans 'common.loading.label' %}...
+            </button>
+        </div>
+    </div>
+
+    <!-- Filter popup Modal -->
+    <div class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-show="store.show">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0 mb-40">
+                <div @click.outside="store.search();store.show=false" style="width: 400px"
+                     class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                    <div class="w-lg shadow p-5 rounded-lg dark:bg-gray-800">
+                        <!-- Popup head -->
+                        <div class="flex items-center justify-between mt-4">
+                            <p class="font-medium dark:text-white">
+                                {% trans 'filter.label' %}
+                            </p>
+                            <button @click="store.search(); store.show = false"
+                                    class="text-white px-4 py-2 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                {% trans 'filter.apply' %}
+                            </button>
+                            <button @click="store.clearFilter(); store.search(); store.show = false"
+                                    class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm font-medium rounded-md">
+                                {% trans 'filter.reset' %}
+                            </button>
+                        </div>
+                        <!-- Popup body -->
+                        <div class="mt-5">
+                            <div>
+                                <div class="mb-5" x-data="{open: false}">
+                                    <h2 id="accordion-collapse-heading-2">
+                                        <button type="button"
+                                                @click="open = !open"
+                                                :class="{'border-b-0':open}"
+                                                class="flex items-center justify-between w-full p-5 font-medium text-left text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                                        >
+                                            <span :class="{'dark:text-white': open}"> {% trans 'filter.source.label' %} </span>
+                                            <svg :class="{'rotate-180': open}" data-accordion-icon
+                                                 class="w-6 h-6 shrink-0" fill="currentColor"
+                                                 viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill-rule="evenodd"
+                                                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                      clip-rule="evenodd"></path>
+                                            </svg>
+                                        </button>
+                                    </h2>
+                                    <div :class="{ 'hidden': !open}" class="border dark:border-gray-700 border-t-0"
+                                         aria-labelledby="accordion-collapse-heading-2">
+                                        <div class="p-2 rounded">
+                                            <div class="grid grid-cols-1">
+                                                <div class="flex items-center">
+                                                    <label>
+                                                        <input type="checkbox" value="1"
+                                                               class="w-4 h-4 rounded focus:ring-2"
+                                                               x-model="store.params.filter.sources"
+                                                        />
+                                                    </label>
+                                                    <p class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-white">
+                                                        HelloFresh</p>
+                                                </div>
+                                                <div class="flex items-center">
+                                                    <label>
+                                                        <input type="checkbox" value="2"
+                                                               class="w-4 h-4 rounded focus:ring-2"
+                                                               x-model="store.params.filter.sources"
+                                                        />
+                                                    </label>
+                                                    <p class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-white">
+                                                        Kitchenstories</p>
+                                                </div>
+                                                <div class="flex items-center">
+                                                    <label>
+                                                        <input type="checkbox" value="3"
+                                                               class="w-4 h-4 rounded focus:ring-2"
+                                                               x-model="store.params.filter.sources"
+                                                        />
+                                                    </label>
+                                                    <p class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-white">
+                                                        Chefkoch</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Categories -->
+                            <div>
+                                <p class="text-3xl dark:text-white mb-2 mt-2">
+                                    {% trans 'filter.categories.label' %}
+                                </p>
+                                <template x-for="tagGroup in store.tag_groups">
+                                    <div class="mb-5" x-data="{open: false}">
+                                        <h2 id="accordion-collapse-heading-2">
+                                            <button type="button"
+                                                    @click="open = !open"
+                                                    :class="{'border-b-0':open}"
+                                                    class="flex items-center justify-between w-full p-5 font-medium text-left text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                                            >
+                                                <span :class="{'dark:text-white': open}" x-text="tagGroup.name"></span>
+                                                <svg :class="{'rotate-180': open}" data-accordion-icon
+                                                     class="w-6 h-6 shrink-0" fill="currentColor"
+                                                     viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd"
+                                                          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                          clip-rule="evenodd"></path>
+                                                </svg>
+                                            </button>
+                                        </h2>
+                                        <div :class="{ 'hidden': !open}" class="border dark:border-gray-700 border-t-0"
+                                             aria-labelledby="accordion-collapse-heading-2">
+                                            <div class="p-2 rounded">
+                                                <div class="grid grid-cols-2">
+                                                    <template x-for="tag in tagGroup.tags">
+                                                        <div class="flex items-center">
+                                                            <label>
+                                                                <input type="checkbox" :value="tag.helloFreshId"
+                                                                       class="w-4 h-4 rounded focus:ring-2"
+                                                                       x-model="store.params.filter.tags"
+                                                                />
+                                                            </label>
+                                                            <p x-text="tag.name"
+                                                               class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-white"></p>
+                                                        </div>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Filter button and Searchbox -->
+    <div class="mt-5 mb-5 flex flex-row flex justify-center ">
+        <button class="p-1 mr-4" @click="store.show = !store.show">
+            <svg class="w-6 h-6 mb-1 text-gray-500 dark:text-gray-400" aria-hidden="true" fill="currentColor"
+                 viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path clip-rule="evenodd"
+                      d="M2.628 1.601C5.028 1.206 7.49 1 10 1s4.973.206 7.372.601a.75.75 0 01.628.74v2.288a2.25 2.25 0 01-.659 1.59l-4.682 4.683a2.25 2.25 0 00-.659 1.59v3.037c0 .684-.31 1.33-.844 1.757l-1.937 1.55A.75.75 0 018 18.25v-5.757a2.25 2.25 0 00-.659-1.591L2.659 6.22A2.25 2.25 0 012 4.629V2.34a.75.75 0 01.628-.74z"
+                      fill-rule="evenodd"></path>
+            </svg>
+        </button>
+        <label for="default-search"
+               class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">{% trans 'search' %}</label>
+        <div x-data="{searchString: ''}" class="relative" style="width: 400px">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none"
+                     stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+            <input type="search" id="default-search" @keyup.enter="await store.search()"
+                   x-model="store.params.searchString"
+                   class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                   placeholder="{% trans 'recipe.name' %}" required>
+            <button type="button" @click="await store.search()"
+                    class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                {% trans 'search' %}
+            </button>
+        </div>
+
+    </div>
+    <!-- Navigation -->
+    <div class="flex flex-col items-center mb-24">
+        <span class="text-sm text-gray-700 dark:text-gray-400">
+          {% trans 'common.navigation.showing' %} <span class="font-semibold text-gray-900 dark:text-white" x-text="store.nav.start"></span> {% trans 'common.navigation.to' %} <span
+                class="font-semibold text-gray-900 dark:text-white" x-text="store.nav.end"></span> {% trans 'common.navigation.of' %} <span
+                class="font-semibold text-gray-900 dark:text-white" x-text="store.nav.count"></span> {% trans 'common.navigation.entries' %}
+        </span>
+        <div class="inline-flex mt-2 xs:mt-0">
+            <button @click="await store.previous()"
+                    class="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-l hover:bg-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                {% trans 'common.navigation.previous' %}
+            </button>
+            <button @click="await store.next()"
+                    class="px-4 py-2 text-sm font-medium text-white bg-gray-800 border-0 border-l border-gray-700 rounded-r hover:bg-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                {% trans 'common.navigation.next' %}
+            </button>
+        </div>
+    </div>
+    <!-- Recipes -->
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mx-auto mb-6 mt-10">
+        <template x-for="recipe in store.recipes">
+            <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 flex flex-col justify-stretch">
+                <a :href="recipe.helloFreshId">
+                </a>
+                <div x-intersect="recipe.shown = true">
+                    <div x-show="recipe.shown" x-transition>
+                        <img style="object-fit: cover;height: 224px; width: 336px" class="rounded-t-lg"
+                             :src="recipe.shown ? recipe.image : ''" alt=""/>
+                    </div>
+                </div>
+
+                <div class="flex items-center mt-2 ml-2">
+                    <svg aria-hidden="true" class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"
+                         xmlns="http://www.w3.org/2000/svg"><title>Rating star</title>
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                    </svg>
+                    <p class="ml-2 text-sm font-bold text-gray-900 dark:text-white" x-text="recipe.averageRating"></p>
+                    <span class="w-1 h-1 mx-1.5 bg-gray-500 rounded-full dark:bg-gray-400"></span>
+                    <p class="text-sm font-medium text-gray-900 dark:text-white"
+                       x-text="recipe.ratingCount + ' Bewertungen'">
+                        reviews</p>
+                </div>
+                <div class="flex items-center mt-2 ml-2">
+                    <template x-if="recipe.source=='1'"><span
+                            class="bg-lime-500 text-black text-xs font-medium mr-2 px-2.5 py-0.5 rounded ">HelloFresh</span>
+                    </template>
+                    <template x-if="recipe.source=='2'"><span
+                            class="bg-yellow-500 text-black text-xs font-medium mr-2 px-2.5 py-0.5 rounded ">KitchenStories</span>
+                    </template>
+                    <template x-if="recipe.source=='3'"><span
+                            class="bg-green-700 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded ">Chefkoch</span>
+                    </template>
+                </div>
+                <div class="p-5">
+                    <a :href="recipe.helloFreshId">
+                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
+                            x-text="recipe.name"></h5>
+                    </a>
+                    <p class="mb-3 font-normal text-gray-700 dark:text-gray-400"
+                       x-text="store.cutoff(recipe.headline, 100)"></p>
+                </div>
+            </div>
+        </template>
+    </div>
+    <!-- Navigation -->
+    <div class="flex flex-col items-center mb-24">
+        <span class="text-sm text-gray-700 dark:text-gray-400">
+          {% trans 'common.navigation.showing' %} <span class="font-semibold text-gray-900 dark:text-white" x-text="store.nav.start"></span> {% trans 'common.navigation.to' %} <span
+                class="font-semibold text-gray-900 dark:text-white" x-text="store.nav.end"></span> {% trans 'common.navigation.of' %} <span
+                class="font-semibold text-gray-900 dark:text-white" x-text="store.nav.count"></span> {% trans 'common.navigation.entries' %}
+        </span>
+        <div class="inline-flex mt-2 xs:mt-0">
+            <button @click="await store.previous()"
+                    class="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-l hover:bg-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                {% trans 'common.navigation.previous' %}
+            </button>
+            <button @click="await store.next()"
+                    class="px-4 py-2 text-sm font-medium text-white bg-gray-800 border-0 border-l border-gray-700 rounded-r hover:bg-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                {% trans 'common.navigation.next' %}
+            </button>
+        </div>
+    </div>
+</div>
