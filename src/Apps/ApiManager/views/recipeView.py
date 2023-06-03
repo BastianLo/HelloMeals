@@ -81,16 +81,24 @@ class RecipeBaseList(generics.ListAPIView):
     pagination_class = RqlPagination
     queryset = Recipe.objects.all()
 
-    def filter_tags(self):
+    def filter_tags(self, queryset):
         tags = self.request.GET.get('tags')
         if tags:
             tag_group = tags.split('@')
-            queryset = self.queryset
             for group in tag_group:
                 tag_list = group.split('_')
                 queryset = queryset.filter(recipetag__tag__helloFreshId__in=tag_list).distinct()
             return queryset
-        return self.queryset
+        return queryset
+
+    def filter_source(self, queryset):
+        tags = self.request.GET.get('source')
+        if tags:
+            print(tags)
+            tag_list = tags.split(',')
+            queryset = queryset.filter(source__in=tag_list).distinct()
+            return queryset
+        return queryset
 
     def filter_relevancy(self, queryset):
         queryset = queryset.annotate(relevancy=F('averageRating') * F('ratingCount'))
@@ -105,7 +113,9 @@ class RecipeBaseList(generics.ListAPIView):
         return RecipeBaseSerializer
 
     def get_queryset(self):
-        queryset = self.filter_tags()
+        queryset = self.queryset
+        queryset = self.filter_tags(queryset)
+        queryset = self.filter_source(queryset)
         queryset = queryset.filter(clonedFrom__isnull=True)
         queryset = queryset.exclude(Q(headline__contains="Inhalt"))
         queryset = queryset.annotate(relevance=F('averageRating') * F('ratingCount')).exclude(relevance=0)
