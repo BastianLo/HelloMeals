@@ -2,11 +2,13 @@ from rest_framework import serializers
 
 from .models import *
 
+
 ### Cuisine ###
 class TagBaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = "__all__"
+
 
 ### Ingredient ###
 
@@ -24,7 +26,6 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
         exclude = ["recipe"]
 
 
-
 ### Utensil ###
 
 class UtensilSerializer(serializers.ModelSerializer):
@@ -40,12 +41,43 @@ class RecipeUtensilSerializer(serializers.ModelSerializer):
         model = RecipeUtensil
         exclude = ["recipe", "id"]
 
+
 ### Tag ###
+
+class TagMergeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TagMerge
+        fields = "__all__"
+
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = "__all__"
+
+
+class TagGroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TagGroup
+        fields = "__all__"
+
+
+class TagGroupFullSerializer(serializers.ModelSerializer):
+    tags = TagSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = TagGroup
+        exclude = []
+
+    def get_tags(self, instance):
+        tag_group_tags = Tag.objects.filter(tagGroup=instance)
+        tag_serializer = TagSerializer(tag_group_tags, many=True)
+        return tag_serializer.data
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['tags'] = self.get_tags(instance)
+        return representation
 
 
 class RecipeTagSerializer(serializers.ModelSerializer):
@@ -80,7 +112,23 @@ class RecipeBaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         exclude = []
+        fields = '__all__'
 
+    similarity = serializers.SerializerMethodField()
+    relevancy = serializers.SerializerMethodField()
+
+    def get_similarity(self, obj):
+        search = self.context.get('request').query_params.get('srch')
+        if search:
+            similarity = obj.similarity or obj.calculate_similarity(search)
+            return similarity
+        return None
+    def get_relevancy(self, obj):
+        search = self.context.get('request').query_params.get('srch')
+        if search:
+            relevancy = obj.relevancy or obj.calculate_similarity(search)
+            return relevancy
+        return None
     def get_ingredient_count(self, instance):
         ingredient_count = len(RecipeIngredient.objects.filter(recipe=instance))
         return ingredient_count

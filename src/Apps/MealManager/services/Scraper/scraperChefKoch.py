@@ -1,14 +1,18 @@
-import logging
+import json
 import os
-import re
 import threading
+import logging
+import uuid
 from datetime import timedelta
+from tempfile import NamedTemporaryFile
+from urllib.request import urlopen
 
 import requests
-
-from .scrapeConfig import scrapeConfig
+from HelloMeals import settings
 from ...models import *
-
+from django.core.files.base import File
+import re
+from .scrapeConfig import scrapeConfig
 
 def is_valid_iso_duration(duration_str):
     pattern = r'^P(?:\d+Y)?(?:\d+M)?(?:\d+W)?(?:\d+D)?(?:T(?:\d+H)?(?:\d+M)?(?:\d+S)?)?$'
@@ -22,7 +26,7 @@ class Scraper:
     def __init__(self):
         self.exception = None
         self.last_error = False
-        self.limit = 10
+        self.limit = 50
         self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
         self.config = scrapeConfig()
         self.active = False
@@ -31,22 +35,27 @@ class Scraper:
 
     def get_status(self):
         return {
-            "max_recipes": self.config.hf_max_recipes,
-            "start_index": self.config.hf_start_index,
+            "max_recipes": self.config.ck_skip,
+            "start_index": self.config.ck_index,
             "running": self.is_running(),
             "exception": self.exception
         }
 
     def work(self):
-        try:
-            while self.active and self.config.hf_start_index < self.config.hf_max_recipes:
-                self.scrape(self.config.hf_start_index)
-                self.config.set_hf_start_index(self.config.hf_start_index + self.limit)
-        except Exception as e:
-            self.exception = str(e)
-            self.active = False
-            self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
-            raise e
+        r = requests.request("GET", "https://api.chefkoch.de/v2/search-gateway/recipes?tags=21&minimumRating=4"
+                                           ".2&limit=0&offset=0")
+        tags = self.create_all_tags(r.json()["tagGroups"])
+        for tag in tags:
+            self.config.set_ck_index(0)
+            try:
+                while self.active and self.config.ck_index < self.config.ck_skip:
+                    self.scrape(self.config.ck_index, tag)
+                    self.config.set_ck_index(self.config.ck_index + self.limit)
+            except Exception as e:
+                self.exception = str(e)
+                self.active = False
+                self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
+                raise e
 
     def start(self):
         self.bearer_token = None
@@ -64,11 +73,11 @@ class Scraper:
         self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
 
     def set_progress(self, index):
-        self.config.set_hf_start_index(index)
+        self.config.set_ck_index(index)
 
     def restart(self):
         self.stop()
-        self.config.set_hf_start_index(0)
+        self.config.set_ck_index(0)
         self.start()
 
     def is_running(self):
@@ -170,14 +179,18 @@ class Scraper:
     def create_tags(self, recipe_json, recipe):
         for tag_json in recipe_json["fullTags"]:
             tag = Tag.objects.get(helloFreshId=tag_json["id"])
-            recipe_tag = RecipeTag.objects.update_or_create(
-                id=recipe.helloFreshId + tag.helloFreshId,
-                defaults={
-                    "recipe": recipe,
-                    "tag": tag,
-                }
-            )
-
+            if tag is None:
+                continue
+            try:
+                recipe_tag = RecipeTag.objects.update_or_create(
+                    id=recipe.helloFreshId + tag.helloFreshId,
+                    defaults={
+                        "recipe": recipe,
+                        "tag": tag,
+                    }
+                )
+            except:
+                continue
     def create_work_steps(self, recipe_json, recipe):
         step = WorkSteps.objects.update_or_create(
             id=recipe.helloFreshId + "0",
@@ -188,18 +201,21 @@ class Scraper:
             }
         )[0]
     def create_all_tags(self, tag_groups):
+        tags = []
         for tg in tag_groups:
             name = tg["key"].capitalize()
             tg_object, created = TagGroup.objects.get_or_create(name=name)
             for tag in tg["tags"]:
                 Tag.objects.update_or_create(helloFreshId=tag["id"], name=tag["name"], type=tag["name"], tagGroup=tg_object)
+                tags.append(tag["id"])
+        return tags
 
-    def scrape(self, index):
-        chefkoch_url = f"https://api.chefkoch.de/v2/search-gateway/recipes?tags=21&minimumRating=4.2&limit={self.limit}&offset={index}"
+    def scrape(self, index, tag):
+        chefkoch_url = f"https://api.chefkoch.de/v2/search-gateway/recipes?tags=21,{tag}&minimumRating=4.2&limit={self.limit}&offset={index}"
         response = requests.request("GET", chefkoch_url)
         self.create_all_tags(response.json()["tagGroups"])
         items = response.json()["results"]
-        self.config.set_hf_max_recipes(response.json()["count"])
+        self.config.set_ck_skip(min(response.json()["count"], 1000))
         for recipeJson in items:
             recipeJson = recipeJson["recipe"]
             try:

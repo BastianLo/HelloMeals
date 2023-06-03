@@ -2,6 +2,10 @@ import json
 import os
 import threading
 import logging
+import uuid
+from tempfile import NamedTemporaryFile
+from urllib.request import urlopen
+
 import requests
 from HelloMeals import settings
 from ...models import *
@@ -223,14 +227,20 @@ class KSScraper:
                     "type": tag_json["type"],
                     "tagGroup": cuisine_tg
                 }
-            )[0]
-            recipe_tag = RecipeTag.objects.update_or_create(
-                id=recipe.helloFreshId + tag.helloFreshId,
-                defaults={
-                    "recipe": recipe,
-                    "tag": tag,
-                }
             )
+            if tag is None:
+                continue
+            tag = tag[0]
+            try:
+                recipe_tag = RecipeTag.objects.update_or_create(
+                    id=recipe.helloFreshId + tag.helloFreshId,
+                    defaults={
+                        "recipe": recipe,
+                        "tag": tag,
+                    }
+                )
+            except:
+                continue
 
     def create_work_steps(self, recipe_json, recipe):
         for i, step_json in enumerate(recipe_json["steps"]):

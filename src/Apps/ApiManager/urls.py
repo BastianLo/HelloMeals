@@ -4,8 +4,9 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 import os
+from graphene_django.views import GraphQLView
 
-from .views import scraperView, recipeView
+from .views import scraperView, recipeView, tagView, authentification_view
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -26,12 +27,23 @@ urlpatterns = [
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
+    ### --- API Authentification --- ###
+    path('auth/login/', authentification_view.api_login, name='api_login'),
+    path('auth/token/', authentification_view.ObtainTokenPairView.as_view(), name='token_obtain_pair'),
+
     path('FullRecipe', recipeView.RecipeFullList.as_view()),
     path('FullRecipe/<str:helloFreshId>', recipeView.RecipeFullDetail.as_view()),
 
     path('Recipe', recipeView.RecipeBaseList.as_view()),
     path('Recipe/<str:helloFreshId>', recipeView.RecipeBaseDetail.as_view()),
 
+    path('Tag/Merge', tagView.TagMergeListCreate.as_view()),
+    path('Tag/Group', tagView.TagGroupList.as_view()),
+    path('Tag', tagView.TagListCreate.as_view()),
+    path('Tag/Full', tagView.TagGroupFullList.as_view()),
+    path('Tag/<str:helloFreshId>', tagView.TagDetail.as_view()),
+
+    path('Scraper/status', scraperView.get_all_status),
 
     path('Scraper/hellofresh/status', scraperView.get_status),
     path('Scraper/hellofresh/start', scraperView.start_scraper),
@@ -51,4 +63,5 @@ urlpatterns = [
     path('Scraper/chefkoch/restart', scraperView.restart_chefkoch_scraper),
     path('Scraper/chefkoch/setprogress/<int:index>', scraperView.set_chefkoch_index),
 
+    path('graphql/', GraphQLView.as_view(graphiql=True)),
 ]

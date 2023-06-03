@@ -2,6 +2,10 @@ import json
 import os
 import threading
 import logging
+import uuid
+from tempfile import NamedTemporaryFile
+from urllib.request import urlopen
+
 import requests
 from HelloMeals import settings
 from ...models import *
@@ -15,6 +19,8 @@ def is_valid_iso_duration(duration_str):
     pattern = r'^P(?:\d+Y)?(?:\d+M)?(?:\d+W)?(?:\d+D)?(?:T(?:\d+H)?(?:\d+M)?(?:\d+S)?)?$'
     return re.match(pattern, duration_str) is not None
 
+
+#TagMerge.objects.create(source="57ebbc17b7e8697d4b3053ac", target="57ebbc17b7e8697d4b3053b5")
 
 #TODO: for scraper functionality:
 #eg: functionality to redownload images (to improve quality)
@@ -219,7 +225,10 @@ class Scraper:
                     "type": cuisine_json["type"],
                     "tagGroup": cuisine_tg
                 }
-            )[0]
+            )
+            if cuisine is None:
+                continue
+            cuisine = cuisine[0]
             recipe_cuisine = RecipeTag.objects.update_or_create(
                 id=recipe.helloFreshId + cuisine.helloFreshId,
                 defaults={
@@ -236,7 +245,10 @@ class Scraper:
                     "name": tag_json["name"],
                     "type": tag_json["type"],
                 }
-            )[0]
+            )
+            if tag is None:
+                continue
+            tag = tag[0]
             recipe_tag = RecipeTag.objects.update_or_create(
                 id=recipe.helloFreshId + tag.helloFreshId,
                 defaults={

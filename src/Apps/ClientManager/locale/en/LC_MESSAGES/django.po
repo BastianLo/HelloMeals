@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-26 12:39+0000\n"
+"POT-Creation-Date: 2023-06-03 12:07+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,11 +18,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: Apps/ClientManager/templates/ClientManager/components/base/FootNavigation.html:11
+#: Apps/ClientManager/templates/ClientManager/components/base/FootNavigation.html:10
 msgid "base.recipes"
 msgstr "Recipes"
 
-#: Apps/ClientManager/templates/ClientManager/components/base/FootNavigation.html:18
+#: Apps/ClientManager/templates/ClientManager/components/base/FootNavigation.html:17
 msgid "base.planner"
 msgstr "Planner"
 
@@ -34,31 +34,114 @@ msgstr "Settings"
 msgid "base.profile"
 msgstr "Profile"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:96
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:105
 msgid "filter.label"
 msgstr "Filter"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:99
-#| msgid "filter.label"
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:109
 msgid "filter.apply"
 msgstr "Apply"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:102
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:113
 msgid "filter.reset"
 msgstr "Reset"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:115
-msgid "cuisine.label"
-msgstr "Nationality"
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:126
+msgid "filter.source.label"
+msgstr "Source"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:164
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:179
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:178
+msgid "filter.categories.label"
+msgstr "Categories"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:237
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:252
 msgid "search"
 msgstr "Search"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:176
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:249
 msgid "recipe.name"
 msgstr "Recipe name"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:56
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:114
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:172
+msgid "of"
+msgstr "of"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:67
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:125
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:183
+msgid "settings.scraper.start"
+msgstr "Start"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:71
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:129
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:187
+msgid "settings.scraper.restart"
+msgstr "Restart"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:75
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:133
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:191
+msgid "settings.scraper.stop"
+msgstr "Stop"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIndex.html:15
+msgid "settings.grouping.tags"
+msgstr "Tags"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIndex.html:26
+msgid "settings.grouping.ingredients"
+msgstr "Ingredients"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:192
+msgid "common.delete"
+msgstr "Delete"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:202
+msgid "common.group"
+msgstr "Group"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:212
+msgid "common.merge"
+msgstr "Merge"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:248
+msgid "settings.grouping.tags.delete.question"
+msgstr "Confirm deleting tags?"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:251
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:318
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:382
+msgid "common.dialog.confirm"
+msgstr "Confirm"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:255
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:322
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:386
+msgid "common.dialog.cancel"
+msgstr "Cancel"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:270
+msgid "settings.grouping.mergeinto"
+msgstr "Merge into"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:337
+msgid "settings.grouping.groupInto"
+msgstr "Group into"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsIndex.html:12
+msgid "settings.profile.label"
+msgstr "Profile"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsIndex.html:22
+msgid "settings.downloader.label"
+msgstr "Recipe-Download"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsIndex.html:32
+msgid "settings.grouping.label"
+msgstr "Grouping"
 
 #: Apps/ClientManager/templates/ClientManager/pages/registration/login.html:18
 msgid "login.description"
@@ -67,3 +150,6 @@ msgstr "Log into your account"
 #: Apps/ClientManager/templates/ClientManager/pages/registration/login.html:32
 msgid "login.submit"
 msgstr "Log in"
+
+#~ msgid "cuisine.label"
+#~ msgstr "Nationality"

@@ -1,24 +1,51 @@
+import django_filters
+from Apps.MealManager.models import Recipe
+from Apps.MealManager.serializers import RecipeFullSerializer, RecipeBaseSerializer
+from django.contrib.postgres.search import TrigramSimilarity
+from django.db.models import Count, F, FloatField, ExpressionWrapper, Q
 from django_filters import rest_framework as filters
 from rest_framework import generics
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
-
-from Apps.MealManager.serializers import RecipeFullSerializer, RecipeBaseSerializer
-from Apps.MealManager.models import Recipe
-from Apps.MealManager.filters import RecipeFilters
-
 from util.pagination import RqlPagination
 
 
 ### Filter Sets ###
 
 class RecipeFilterSet(filters.FilterSet):
-    cuisine = filters.CharFilter(field_name='recipecuisine__cuisine__helloFreshId')
     tag = filters.CharFilter(field_name='recipetag__tag__helloFreshId')
+    cloned_from_null = filters.BooleanFilter(field_name='clonedFrom', lookup_expr='isnull')
+    srch = django_filters.CharFilter(method='filter_search')
+    difficulty = django_filters.NumberFilter(field_name='difficulty')
+    ingredient_count__lt = django_filters.NumberFilter(
+        method='filter_ingredient_count',
+        label='Ingredient Count less than',
+    )
+    relevancy = django_filters.CharFilter(method='filter_relevancy')
+
+    def filter_search(self, queryset, name, value):
+        return queryset.annotate(
+            similarity=(TrigramSimilarity('name', value) * 5 + TrigramSimilarity('description', value))
+        ).filter(similarity__gt=0.5).annotate(
+            relevancy=ExpressionWrapper(
+                F('averageRating') * ((F('ratingCount') * F('similarity'))**0.1),
+                output_field=FloatField()
+            )
+        ).order_by('-relevancy')
+
+    def filter_ingredient_count(self, queryset, name, value):
+        return queryset.annotate(
+            ingredient_count=Count('recipeingredient')
+        ).filter(ingredient_count__lte=value)
+
+    def filter_relevancy(self, queryset, name, value):
+        return queryset.annotate(
+            relevancy=F('rating') * F('ratingCount')
+        ).order_by('-relevancy')
 
     class Meta:
         model = Recipe
-        fields = ['cuisine', 'tag']
+        fields = ['srch', 'tag', 'cloned_from_null', 'difficulty', 'ingredient_count__lt', 'relevancy']
 
 
 ### Views ###
@@ -26,7 +53,6 @@ class RecipeFilterSet(filters.FilterSet):
 @permission_classes([IsAuthenticated])
 class RecipeFullList(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
-    rql_filter_class = RecipeFilters
     filterset_class = RecipeFilterSet
     pagination_class = RqlPagination
 
@@ -49,29 +75,61 @@ class RecipeFullDetail(generics.RetrieveAPIView):
         return Recipe.objects.all()
 
 
-@permission_classes([IsAuthenticated])
 class RecipeBaseList(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
-    rql_filter_class = RecipeFilters
     filterset_class = RecipeFilterSet
     pagination_class = RqlPagination
     queryset = Recipe.objects.all()
 
-    def filter_cuisines(self):
-        cuisines = self.request.GET.get('cuisines')
-        if cuisines:
-            cuisines_list = cuisines.split('-')
-            return self.queryset.filter(recipecuisine__cuisine__helloFreshId__in=cuisines_list).distinct()
-        return self.queryset
+    def filter_tags(self, queryset):
+        tags = self.request.GET.get('tags')
+        if tags:
+            tag_group = tags.split('@')
+            for group in tag_group:
+                tag_list = group.split('_')
+                queryset = queryset.filter(recipetag__tag__helloFreshId__in=tag_list).distinct()
+            return queryset
+        return queryset
 
+    def filter_source(self, queryset):
+        tags = self.request.GET.get('source')
+        if tags:
+            tag_list = tags.split(',')
+            queryset = queryset.filter(source__in=tag_list).distinct()
+            return queryset
+        return queryset
+
+    def filter_relevancy(self, queryset):
+        queryset = queryset.annotate(relevancy=F('averageRating') * F('ratingCount'))
+        ordering = self.request.query_params.get('ordering', None)
+        if ordering == 'relevancy':
+            queryset = queryset.order_by('-relevancy')
+        return queryset
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
-            return RecipeBaseSerializer
+            fields = self.request.query_params.get('fields')
+            if fields:
+                fields = fields.split(',')
+                meta = RecipeBaseSerializer.Meta
+                meta.fields = fields
+                return type('DynamicRecipeBaseSerializer', (RecipeBaseSerializer,), {'Meta': meta})
+            else:
+                return RecipeBaseSerializer
         return RecipeBaseSerializer
-
     def get_queryset(self):
-        return self.filter_cuisines()
+        queryset = self.queryset
+        queryset = self.filter_tags(queryset)
+        queryset = self.filter_source(queryset)
+        queryset = queryset.filter(clonedFrom__isnull=True)
+        queryset = queryset.exclude(Q(headline__contains="Inhalt"))
+        queryset = queryset.annotate(relevance=F('averageRating') * F('ratingCount')).exclude(relevance=0)
+        queryset = self.filter_relevancy(queryset)
+        ordering = self.request.query_params.get('ordering', None)
+        if ordering and ordering != 'relevancy':
+            fields = ordering.split(',')
+            queryset = queryset.order_by(*fields)
+        return queryset
 
 
 @permission_classes([IsAuthenticated])
@@ -81,4 +139,3 @@ class RecipeBaseDetail(generics.RetrieveAPIView):
 
     def get_queryset(self):
         return Recipe.objects.all()
-
