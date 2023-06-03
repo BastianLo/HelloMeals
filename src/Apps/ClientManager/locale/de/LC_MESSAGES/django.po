@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-31 12:03+0000\n"
+"POT-Creation-Date: 2023-06-03 12:07+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -46,16 +46,20 @@ msgstr "Anwenden"
 msgid "filter.reset"
 msgstr "Löschen"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:120
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:126
+msgid "filter.source.label"
+msgstr "Quelle"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:178
 msgid "filter.categories.label"
 msgstr "Kategorien"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:180
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:195
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:237
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:252
 msgid "search"
 msgstr "Suche"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:192
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:249
 msgid "recipe.name"
 msgstr "Rezeptname"
 
