@@ -72,8 +72,10 @@
         this.loading = false;
     },
     async getTagGroups(){
+        this.loading = true;
         let temp = await (await fetch('/api/Tag/Full' ) ).json();
         this.tag_groups = temp.results
+        this.loading = false;
     },
     async init() {
         await this.getTagGroups()
