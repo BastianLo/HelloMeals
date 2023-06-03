@@ -4,11 +4,11 @@
   store: {
     params: {
         filter: {
-            active: null,
             sources: []
         },
         take: 1,
         page: 1,
+        pageSize: 24,
         searchString: '',
     },
     tag_groups: [],
@@ -19,17 +19,18 @@
     parseUrlParams(){
         const urlParams = new URLSearchParams(window.location.search);
         this.params.searchString = urlParams.get('searchString') || '';
-        urlParams.forEach((value, key) => {
-            const decodedKey = decodeURIComponent(key);
-            const decodedValue = decodeURIComponent(value);
-            if (decodedKey.includes('ilike(name')) {
-              this.params.searchString = decodedKey.substring(12, decodedKey.length - 1).replaceAll('\'', '').replaceAll('*','');
-            } else if (decodedKey === 'filterActive') {
-              this.params.filter.active = decodedValue;
-            } else if (decodedKey === 'page') {
-              this.params.page = decodedValue;
-            }
-        })
+        this.params.filter.sources = (urlParams.get('source') || '').split(',')
+
+    },
+    parseParameters(){
+        let filter = '?ordering(-ratingCount,-averageRating)'
+        if (this.params.searchString !== ''){filter += `&ilike(name,'*${this.params.searchString.trim()}*')`}
+        filter += '&page_size=' + this.params.pageSize
+        filter += '&page=' + this.params.page
+        filter += '&source=' + this.params.filter.sources.join(',')
+        filter += this.getTagFilter()
+        this.addParameterToURL(filter)
+        return filter
     },
     getTagFilter(){
         filters = []
@@ -70,20 +71,7 @@
     _url = location.href.split('?')[0] + paramsString;
     history.pushState({}, null, _url);
     },
-    parseParameters(){
-        let filter = '?ordering(-ratingCount,-averageRating)'
-        if (this.params.searchString !== ''){filter += `&ilike(name,'*${this.params.searchString.trim()}*')`}
-        if (this.params.filter.active !== null){filter += `&eq(helloFreshActive,${this.params.filter.active})`}
-        filter += `&amp;not(ilike(headline,*Inhalt*))`
-        filter += `&eq(clonedFrom,null())`
-        filter += '&page_size=24'
-        filter += '&page=' + this.params.page
-        filter += this.getTagFilter()
-        if (this.params.filter.sources.length > 0) {filter += '&in(source,('+ this.params.filter.sources.join(',') +'))'}
-        this.addParameterToURL(filter)
-        return filter
-    },
-    clearFilter() {this.tag_groups.forEach(tg => {tg.tags.forEach(t => {t.temp = false; console.log(t)})})},
+    clearFilter() {this.tag_groups.forEach(tg => {tg.tags.forEach(t => {t.temp = false})})},
     async search(){this.params.page=1;await this.getRecipes(this.parseParameters())},
     async next() {if (this.nav.next){await this.requestRecipe(this.nav.next); window.scrollTo({ top: 0});}},
     async previous() {if (this.nav.previous){await this.requestRecipe(this.nav.previous); window.scrollTo({ top: 0 });}},
@@ -105,7 +93,7 @@
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
         <div class="fixed inset-0 z-10 overflow-y-auto">
             <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0 mb-40">
-                <div @click.outside="store.show=false" style="width: 400px"
+                <div @click.outside="store.search();store.show=false" style="width: 400px"
                      class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                     <div class="w-lg shadow p-5 rounded-lg dark:bg-gray-800">
                         <!-- Popup head -->
