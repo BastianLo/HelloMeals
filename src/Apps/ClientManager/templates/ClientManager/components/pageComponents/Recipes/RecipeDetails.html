@@ -3,12 +3,13 @@
   store: {
     recipe: {},
     async requestRecipe(url){
+        console.log(url)
         this.loading = true;
         this.recipe = await (await fetch(url)).json();
         this.loading = false;
     },
     async init() {
-        await this.requestRecipe('/Home/Recipe/' + location.href.split('/').at(-1))
+        await this.requestRecipe('/api/FullRecipe/' + location.href.split('/').at(-2))
     },
   }
 }" x-init="await store.init()">

@@ -3,13 +3,6 @@ from rest_framework import serializers
 from .models import *
 
 
-### Cuisine ###
-class TagBaseSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Tag
-        fields = "__all__"
-
-
 ### Ingredient ###
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -172,7 +165,6 @@ class RecipeFullSerializer(serializers.ModelSerializer):
         representation['ingredients'] = self.get_ingredients(instance)
         representation['utensils'] = self.get_utensils(instance)
         representation['nutrients'] = self.get_nutrients(instance)
-        representation['cuisines'] = self.get_cuisine(instance)
         representation['tags'] = self.get_tag(instance)
         representation['work_steps'] = self.get_work_steps(instance)
         return representation
