@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-03 13:10+0000\n"
+"POT-Creation-Date: 2023-06-03 14:39+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,38 +34,62 @@ msgstr "Settings"
 msgid "base.profile"
 msgstr "Profile"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:124
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:128
 msgid "common.loading.label"
 msgstr "Loading"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:140
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:144
 msgid "filter.label"
 msgstr "Filter"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:144
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:148
 msgid "filter.apply"
 msgstr "Apply"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:148
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:152
 msgid "filter.reset"
 msgstr "Reset"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:161
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:165
 msgid "filter.source.label"
 msgstr "Source"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:213
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:217
 msgid "filter.categories.label"
 msgstr "Categories"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:272
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:287
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:276
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:291
 msgid "search"
 msgstr "Search"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/RecipeOverview.html:284
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:288
 msgid "recipe.name"
 msgstr "Recipe name"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:299
+msgid "common.navigation.showing"
+msgstr "Showing"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:299
+msgid "common.navigation.to"
+msgstr "to"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:300
+msgid "common.navigation.of"
+msgstr "of"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:301
+msgid "common.navigation.entries"
+msgstr "Entries"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:306
+msgid "common.navigation.previous"
+msgstr "prev"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:310
+msgid "common.navigation.next"
+msgstr "next"
 
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:56
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:114
