@@ -19,19 +19,24 @@
     initialized: false,
     parseUrlParams(){
         const urlParams = new URLSearchParams(window.location.search);
-        this.params.searchString = urlParams.get('searchString') || '';
+        this.params.searchString = urlParams.get('srch') || '';
+        this.params.page = urlParams.get('page') || 1;
+        this.params.pageSize = urlParams.get('page_size') || 24;
         this.params.filter.sources = (urlParams.get('source') || '').split(',')
         this.params.filter.tags = (urlParams.get('tags') || '').split(',')
 
     },
     parseParameters(){
         let filter = '?ordering=relevancy'
-        if (this.params.searchString !== ''){filter += `&ilike(name,'*${this.params.searchString.trim()}*')`}
+        if (this.params.searchString !== '')
+            filter += '&srch=' + this.params.searchString
         filter += '&page_size=' + this.params.pageSize
         filter += '&page=' + this.params.page
-        filter += '&source=' + this.params.filter.sources.filter(s => s !== '').join(',')
-        filter += '&tags=' + this.params.filter.tags.filter(t => t !== '').join(',')
-        filter += this.getTagFilter()
+        if (this.params.filter.sources.filter(s => s !== '').length > 0)
+            filter += '&source=' + this.params.filter.sources.filter(s => s !== '').join(',')
+        if (this.params.filter.tags.filter(s => s !== '').length > 0)
+            filter += '&tags=' + this.params.filter.tags.filter(t => t !== '').join('_')
+        //filter += this.getTagFilter()
         this.addParameterToURL(filter)
         return filter
     },
