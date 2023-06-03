@@ -112,6 +112,7 @@ class RecipeBaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         exclude = []
+        fields = '__all__'
 
     similarity = serializers.SerializerMethodField()
     relevancy = serializers.SerializerMethodField()
