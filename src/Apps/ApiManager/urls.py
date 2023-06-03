@@ -6,7 +6,7 @@ from rest_framework import permissions
 import os
 from graphene_django.views import GraphQLView
 
-from .views import scraperView, recipeView, tagView
+from .views import scraperView, recipeView, tagView, authentification_view
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -26,6 +26,10 @@ urlpatterns = [
     path('swagger<str:format>', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+
+    ### --- API Authentification --- ###
+    path('auth/login/', authentification_view.api_login, name='api_login'),
+    path('auth/token/', authentification_view.ObtainTokenPairView.as_view(), name='token_obtain_pair'),
 
     path('FullRecipe', recipeView.RecipeFullList.as_view()),
     path('FullRecipe/<str:helloFreshId>', recipeView.RecipeFullDetail.as_view()),
