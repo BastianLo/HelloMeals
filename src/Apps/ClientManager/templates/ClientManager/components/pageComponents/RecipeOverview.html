@@ -11,6 +11,7 @@
         page: 1,
         pageSize: 24,
         searchString: '',
+        fields: ['name', 'headline', 'averageRating', 'ratingCount', 'image', 'source']
     },
     tag_groups: [],
     show: false,
@@ -37,6 +38,7 @@
             filter += '&source=' + this.params.filter.sources.filter(s => s !== '').join(',')
         if (this.params.filter.tags.filter(s => s !== '').length > 0)
             filter += '&tags=' + this.params.filter.tags.filter(t => t !== '').join('_')
+        filter += '&fields=' + this.params.fields.join(',')
         //filter += this.getTagFilter()
         this.addParameterToURL(filter)
         return filter
