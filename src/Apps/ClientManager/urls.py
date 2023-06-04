@@ -8,7 +8,9 @@ urlpatterns = [
     path("", views.index, name="recipe_index"),
     path('back/', back_view, name='back_view'),
 
-    path("Recipe/", views.recipe_overview),
+    #TODO: Create recipe overview page and redirect to it
+    path("Recipe/", views.recipe_index, name="recipe.overview"),
+    path("Recipe/All", views.recipe_overview, name="recipe.all"),
     path("Recipe/<str:recipe_id>/", views.recipe_details),
 
     path("Settings/", RedirectView.as_view(url='/Home/Settings/Index/')),

@@ -28,6 +28,12 @@ def index(request):
 
 
 @login_required(login_url='/accounts/login/')
+def recipe_index(request):
+    navigation_history(request)
+    context = get_base_context()
+    return render(request, "ClientManager/pages/Recipes/RecipeIndex.html", context)
+
+@login_required(login_url='/accounts/login/')
 def recipe_overview(request):
     navigation_history(request)
     context = get_base_context()

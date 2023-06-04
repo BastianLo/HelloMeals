@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-03 14:39+0000\n"
+"POT-Creation-Date: 2023-06-04 13:36+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,9 +34,14 @@ msgstr "Einstellungen"
 msgid "base.profile"
 msgstr "Profil"
 
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:28
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:128
 msgid "common.loading.label"
 msgstr "Lade"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeIndex.html:6
+msgid "recipe.seeMore"
+msgstr "Mehr sehen"
 
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:144
 msgid "filter.label"
@@ -68,26 +73,32 @@ msgid "recipe.name"
 msgstr "Rezeptname"
 
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:299
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:363
 msgid "common.navigation.showing"
 msgstr "Zeige"
 
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:299
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:363
 msgid "common.navigation.to"
 msgstr "bis"
 
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:300
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:364
 msgid "common.navigation.of"
 msgstr "von"
 
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:301
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:365
 msgid "common.navigation.entries"
 msgstr "Einträgen"
 
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:306
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:370
 msgid "common.navigation.previous"
 msgstr "Zurück"
 
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:310
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:374
 msgid "common.navigation.next"
 msgstr "Weiter"
 
