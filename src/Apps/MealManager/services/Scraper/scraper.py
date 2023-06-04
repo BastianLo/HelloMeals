@@ -249,7 +249,8 @@ class Scraper:
             if tag is None:
                 continue
             tag = tag[0]
-            try:
+            temp = RecipeTag.objects.filter(recipe=recipe, tag=tag)
+            if len(temp) == 0:
                 recipe_tag = RecipeTag.objects.update_or_create(
                     id=recipe.helloFreshId + tag.helloFreshId,
                     defaults={
@@ -257,8 +258,6 @@ class Scraper:
                         "tag": tag,
                     }
                 )
-            except:
-                pass
 
     def create_categories(self, recipe_json, recipe):
         if recipe_json["category"] is None:
