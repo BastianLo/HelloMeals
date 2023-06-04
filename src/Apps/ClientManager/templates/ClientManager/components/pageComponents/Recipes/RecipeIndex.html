@@ -26,7 +26,7 @@
     loading: false,
     async requestRecipe(){
         this.loading = true;
-        params = '?fields=' + this.fields.join(',')
+        params = '?random=true&fields=' + this.fields.join(',')
         let temp = await (await fetch('/api/Recipe' + params)).json();
         this.recipes = temp.results
         this.loading = false;

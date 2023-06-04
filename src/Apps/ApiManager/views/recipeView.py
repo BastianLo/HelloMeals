@@ -1,3 +1,5 @@
+import random
+
 import django_filters
 from Apps.MealManager.models import Recipe
 from Apps.MealManager.serializers import RecipeFullSerializer, RecipeBaseSerializer
@@ -129,7 +131,13 @@ class RecipeBaseList(generics.ListAPIView):
         queryset = queryset.annotate(relevance=F('averageRating') * F('ratingCount')).exclude(relevance=0)
         queryset = self.filter_relevancy(queryset)
         ordering = self.request.query_params.get('ordering', None)
-        if ordering and ordering != 'relevancy':
+        random_param = self.request.query_params.get('random')
+        if random_param == 'true':
+            sample_size = int(self.request.query_params.get('sample_size', 10))
+            hellofresh_ids = queryset.values_list('recipetag__tag__helloFreshId', flat=True).distinct()
+            random_hellofresh_ids = random.sample(list(hellofresh_ids), min(sample_size, len(hellofresh_ids)))
+            queryset = queryset.filter(recipetag__tag__helloFreshId__in=random_hellofresh_ids)
+        elif ordering and ordering != 'relevancy':
             fields = ordering.split(',')
             queryset = queryset.order_by(*fields)
         return queryset
