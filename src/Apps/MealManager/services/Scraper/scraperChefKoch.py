@@ -1,18 +1,21 @@
-import json
-import os
-import threading
 import logging
+import os
+import re
+import threading
 import uuid
 from datetime import timedelta
 from tempfile import NamedTemporaryFile
 from urllib.request import urlopen
 
 import requests
-from HelloMeals import settings
-from ...models import *
 from django.core.files.base import File
-import re
+from dynamic_preferences.registries import global_preferences_registry
+
 from .scrapeConfig import scrapeConfig
+from ...models import *
+
+global_preferences = global_preferences_registry.manager()
+
 
 def is_valid_iso_duration(duration_str):
     pattern = r'^P(?:\d+Y)?(?:\d+M)?(?:\d+W)?(?:\d+D)?(?:T(?:\d+H)?(?:\d+M)?(?:\d+S)?)?$'
@@ -31,7 +34,6 @@ class Scraper:
         self.config = scrapeConfig()
         self.active = False
         self.country = os.getenv('COUNTRY') if os.getenv('COUNTRY') else "DE"
-        self.download_images = os.getenv('DOWNLOAD_IMAGES') if os.getenv('DOWNLOAD_IMAGES') else True
 
     def get_status(self):
         return {
@@ -43,7 +45,7 @@ class Scraper:
 
     def work(self):
         r = requests.request("GET", "https://api.chefkoch.de/v2/search-gateway/recipes?tags=21&minimumRating=4"
-                                           ".2&limit=0&offset=0")
+                                    ".2&limit=0&offset=0")
         tags = self.create_all_tags(r.json()["tagGroups"])
         for tag in tags:
             self.config.set_ck_index(0)
@@ -127,7 +129,7 @@ class Scraper:
                 "HelloFreshImageUrl": image_url
             }
         )
-        if (not (recipe[0].image and recipe[0].image.file)) and self.download_images:
+        if (not (recipe[0].image and recipe[0].image.file)) and global_preferences['scraper__Download_Recipe_Images']:
             image = self.get_image(image_url)
             if image is not None:
                 recipe[0].image.save(str(uuid.uuid4()) + ".png", image)
@@ -191,6 +193,7 @@ class Scraper:
                 )
             except:
                 continue
+
     def create_work_steps(self, recipe_json, recipe):
         step = WorkSteps.objects.update_or_create(
             id=recipe.helloFreshId + "0",
@@ -200,13 +203,15 @@ class Scraper:
                 "description": recipe_json["instructions"],
             }
         )[0]
+
     def create_all_tags(self, tag_groups):
         tags = []
         for tg in tag_groups:
             name = tg["key"].capitalize()
             tg_object, created = TagGroup.objects.get_or_create(name=name)
             for tag in tg["tags"]:
-                Tag.objects.update_or_create(helloFreshId=tag["id"], name=tag["name"], type=tag["name"], tagGroup=tg_object)
+                Tag.objects.update_or_create(helloFreshId=tag["id"], name=tag["name"], type=tag["name"],
+                                             tagGroup=tg_object)
                 tags.append(tag["id"])
         return tags
 

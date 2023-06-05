@@ -9,13 +9,12 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
+import os
 from datetime import timedelta
 from pathlib import Path
-import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -61,9 +60,12 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'pwa',
     'django_cleanup.apps.CleanupConfig',
+    'dynamic_preferences',
+    'dynamic_preferences.users.apps.UserPreferencesConfig',
 
     'Apps.MealManager',
     'Apps.ClientManager',
+    'HelloMeals',
 ]
 
 MIDDLEWARE = [
@@ -107,6 +109,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'dynamic_preferences.processors.global_preferences',
             ],
         },
     },
@@ -238,7 +241,6 @@ LOGGING = {
         'level': 'DEBUG',
     }
 }
-
 
 PWA_APP_NAME = 'HelloMeals'
 PWA_APP_DESCRIPTION = "Selfhosted HelloFresh recipe manager"
