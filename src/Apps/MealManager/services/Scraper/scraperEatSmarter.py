@@ -81,7 +81,7 @@ class KSScraper:
                 "healthScore": recipe_json["healthScore"],
                 "isPremium": recipe_json["isPremium"],
                 "headline": recipe_json["subtitle"],
-                "description": recipe_json["whyHealthy"],
+                "description": recipe_json["whyHealthy"] if "whyHealthy" in recipe_json else None,
                 "websiteLink": "https://eatsmarter.de" + recipe_json["url"],
                 "prepTime": timedelta(minutes=recipe_json["preparationTime"]["minutes"]),
                 "totalTime": timedelta(minutes=recipe_json["preparationTime"]["minutesInclWait"]),
@@ -192,6 +192,9 @@ class KSScraper:
                                     f"https://api.eatsmarter.de/v2/json/search/recipe?hs=8&sort=voting&page={index}&f[0]=field_secondary_recipe_category%3A3855",
                                     headers=headers)
         items = response.json()["results"]
+        if len(items) == 0:
+            self.config.set_es_max(index)
+            return
         for recipeJson in items:
             try:
                 recipe_id = recipeJson["id"]
