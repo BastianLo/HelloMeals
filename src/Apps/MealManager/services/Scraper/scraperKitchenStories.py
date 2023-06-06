@@ -277,6 +277,7 @@ class KSScraper:
         response = requests.request("GET",
                                     f"https://web-bff.services.kitchenstories.io/api/recipes/?page={index}&page_size={self.PAGE_SIZE}&language={self.country}")
         items = response.json()["data"]
+        self.config.set_ks_max_page(response.json()["meta"]["pagination"]["pages"])
         for recipeJson in items:
             try:
                 temp = self.create_recipe(recipeJson)
