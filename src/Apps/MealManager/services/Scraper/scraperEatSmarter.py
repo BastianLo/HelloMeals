@@ -111,6 +111,8 @@ class KSScraper:
             recipe.ingredient_groups.add(ingredient_group)
             recipe.save()
             for ingredient_json in group_json["ingredients"]:
+                if ingredient_json["namePlural"] is None:
+                    continue
                 ingredient = Ingredient.objects.update_or_create(
                     helloFreshId="es" + str(ingredient_json["id"]),
                     defaults={
