@@ -44,8 +44,8 @@ class Scraper:
         }
 
     def work(self):
-        r = requests.request("GET", "https://api.chefkoch.de/v2/search-gateway/recipes?tags=21&minimumRating=4"
-                                    ".2&limit=0&offset=0")
+        r = requests.request("GET",
+                             f"https://api.chefkoch.de/v2/search-gateway/recipes?tags=21&minimumRating={global_preferences['scraper__Chefkoch_Minimum_Rating']}&limit=0&offset=0")
         tags = self.create_all_tags(r.json()["tagGroups"])
         for tag in tags:
             self.config.set_ck_index(0)

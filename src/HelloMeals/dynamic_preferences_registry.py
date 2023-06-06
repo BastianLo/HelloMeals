@@ -1,7 +1,7 @@
 from dynamic_preferences.api.viewsets import GlobalPreferencesViewSet
 from dynamic_preferences.preferences import Section
 from dynamic_preferences.registries import global_preferences_registry
-from dynamic_preferences.types import BooleanPreference
+from dynamic_preferences.types import BooleanPreference, FloatPreference
 from dynamic_preferences.users.registries import user_preferences_registry
 from dynamic_preferences.users.viewsets import UserPreferencesViewSet
 from rest_framework.response import Response
@@ -76,6 +76,14 @@ scraper = Section('scraper')
 
 
 # We start with a global preference
+@global_preferences_registry.register
+class ScraperDownloadRecipeImages(FloatPreference):
+    help_text = 'Minimum Rating for Chefkoch'
+    section = scraper
+    name = 'Chefkoch_Minimum_Rating'
+    default = 4.0
+
+
 @global_preferences_registry.register
 class ScraperDownloadRecipeImages(BooleanPreference):
     help_text = 'Download images for recipes'
