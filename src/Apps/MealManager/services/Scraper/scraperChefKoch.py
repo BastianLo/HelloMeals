@@ -50,7 +50,7 @@ class Scraper:
         for tag in tags:
             self.config.set_ck_index(0)
             try:
-                while self.active and self.config.ck_index < self.config.ck_skip:
+                while (self.active and self.config.ck_index < self.config.ck_skip) or self.config.ck_index == 0:
                     self.scrape(self.config.ck_index, tag)
                     self.config.set_ck_index(self.config.ck_index + self.limit)
             except Exception as e:
