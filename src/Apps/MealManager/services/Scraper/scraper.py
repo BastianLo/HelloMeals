@@ -156,6 +156,14 @@ class Scraper:
         return recipe
 
     def create_ingredients(self, recipe_json, recipe):
+        ingredient_group = IngredientGroup.objects.update_or_create(
+            id=recipe.helloFreshId + "0",
+            defaults={
+                "name": None,
+            }
+        )[0]
+        recipe.ingredient_groups.add(ingredient_group)
+        recipe.save()
         yields = recipe_json["yields"][-1]["ingredients"]
         for ingredient_json in recipe_json["ingredients"]:
             if "imagePath" in ingredient_json and ingredient_json["imagePath"] is not None:
@@ -180,9 +188,9 @@ class Scraper:
             ingredient_id = ingredient_json["id"]
             ingredient_yield = [y for y in yields if y["id"] == ingredient_id][0]
             recipe_ingredient = RecipeIngredient.objects.update_or_create(
-                id=ingredient_id + recipe.helloFreshId,
+                id=ingredient_id + ingredient_group.id,
                 defaults={
-                    "recipe": recipe,
+                    "ingredient_group": ingredient_group,
                     "ingredient": ingredient,
                     "amount": ingredient_yield["amount"],
                     "unit": ingredient_yield["unit"],

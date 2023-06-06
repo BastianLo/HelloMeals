@@ -16,7 +16,7 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RecipeIngredient
-        exclude = ["recipe"]
+        exclude = ["ingredient_group"]
 
 
 ### Utensil ###
@@ -116,29 +116,44 @@ class RecipeBaseSerializer(serializers.ModelSerializer):
             similarity = obj.similarity or obj.calculate_similarity(search)
             return similarity
         return None
+
     def get_relevancy(self, obj):
         search = self.context.get('request').query_params.get('srch')
         if search:
             relevancy = obj.relevancy or obj.calculate_similarity(search)
             return relevancy
         return None
+
     def get_ingredient_count(self, instance):
-        ingredient_count = len(RecipeIngredient.objects.filter(recipe=instance))
+        ingredient_count = len(RecipeIngredient.objects.filter(ingredient_group__in=instance.ingredient_groups.all()))
         return ingredient_count
 
 
-class RecipeFullSerializer(serializers.ModelSerializer):
+class IngredientGroupBaseSerializer(serializers.ModelSerializer):
     ingredients = RecipeIngredientSerializer(many=True, read_only=True)
+
+    def get_ingredients(self, instance):
+        recipe_ingredients = RecipeIngredient.objects.filter(ingredient_group=instance)
+        ingredient_serializer = RecipeIngredientSerializer(recipe_ingredients, many=True)
+        return ingredient_serializer.data
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['ingredients'] = self.get_ingredients(instance)
+        return representation
+
+    class Meta:
+        model = IngredientGroup
+        fields = "__all__"
+
+
+class RecipeFullSerializer(serializers.ModelSerializer):
     utensils = RecipeUtensilSerializer(many=True, read_only=True)
+    ingredient_groups = IngredientGroupBaseSerializer(read_only=True, many=True)
 
     class Meta:
         model = Recipe
         exclude = []
-
-    def get_ingredients(self, instance):
-        recipe_ingredients = RecipeIngredient.objects.filter(recipe=instance)
-        ingredient_serializer = RecipeIngredientSerializer(recipe_ingredients, many=True)
-        return ingredient_serializer.data
 
     def get_utensils(self, instance):
         recipe_utensils = RecipeUtensil.objects.filter(recipe=instance)
@@ -162,7 +177,7 @@ class RecipeFullSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['ingredients'] = self.get_ingredients(instance)
+        # representation['ingredients'] = self.get_ingredients(instance)
         representation['utensils'] = self.get_utensils(instance)
         representation['nutrients'] = self.get_nutrients(instance)
         representation['tags'] = self.get_tag(instance)

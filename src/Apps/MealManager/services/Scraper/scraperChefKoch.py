@@ -136,7 +136,15 @@ class Scraper:
         return recipe
 
     def create_ingredients(self, recipe_json, recipe):
-        for group_json in recipe_json["ingredientGroups"]:
+        for i, group_json in enumerate(recipe_json["ingredientGroups"]):
+            ingredient_group = IngredientGroup.objects.update_or_create(
+                id=recipe.helloFreshId + str(i),
+                defaults={
+                    "name": group_json["header"] if str(group_json["header"]).strip() != "" else None,
+                }
+            )[0]
+            recipe.ingredient_groups.add(ingredient_group)
+            recipe.save()
             for ingredient_json in group_json["ingredients"]:
                 ingredient = Ingredient.objects.filter(name=ingredient_json["name"]).first()
                 if ingredient is None:
@@ -149,9 +157,9 @@ class Scraper:
                 # Create RecipeIngredient
                 ingredient_id = ingredient_json["id"]
                 recipe_ingredient = RecipeIngredient.objects.update_or_create(
-                    id=ingredient_id + recipe.helloFreshId,
+                    id=ingredient_id + ingredient_group.id,
                     defaults={
-                        "recipe": recipe,
+                        "ingredient_group": ingredient_group,
                         "ingredient": ingredient,
                         "amount": ingredient_json["amount"],
                         "unit": ingredient_json["unit"],

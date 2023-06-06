@@ -158,6 +158,14 @@ class KSScraper:
         return recipe
 
     def create_ingredients(self, recipe_json, recipe):
+        ingredient_group = IngredientGroup.objects.update_or_create(
+            id=recipe.helloFreshId + "0",
+            defaults={
+                "name": None,
+            }
+        )[0]
+        recipe.ingredient_groups.add(ingredient_group)
+        recipe.save()
         for ingredient_block in recipe_json["ingredients"]:
             for ingredient_json in ingredient_block["list"]:
                 ingredient_id = ingredient_json["id"] if "id" in ingredient_json else str(
@@ -170,9 +178,9 @@ class KSScraper:
                 )[0]
                 # Create RecipeIngredient
                 recipe_ingredient = RecipeIngredient.objects.update_or_create(
-                    id=ingredient_id + recipe.helloFreshId,
+                    id=ingredient_id + ingredient_group.id,
                     defaults={
-                        "recipe": recipe,
+                        "ingredient_group": ingredient_group,
                         "ingredient": ingredient,
                         "amount": ingredient_json["measurement"]["metric"][
                             "amount"] if "measurement" in ingredient_json and "metric" in ingredient_json[

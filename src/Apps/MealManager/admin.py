@@ -1,14 +1,13 @@
 from django.contrib import admin
+
 from .models import *
+
 # Register your models here.
-
-
-from django.contrib import admin
-
 
 admin.site.register(Recipe)
 admin.site.register(Nutrients)
 admin.site.register(Ingredient)
+admin.site.register(IngredientGroup)
 admin.site.register(Utensil)
 admin.site.register(TagMerge)
 admin.site.register(Tag)
