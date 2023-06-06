@@ -92,8 +92,8 @@ class Scraper:
                                                                                   "totalTime"] and is_valid_iso_duration(
                     recipe_paragraph["totalTime"]) and recipe_paragraph["totalTime"] != "0" else None,
                 "difficulty": difficulty,
-                "createdAt": recipe_paragraph["datePublished"],
-                "updatedAt": recipe_paragraph["dateModified"],
+                "createdAt": recipe_paragraph["datePublished"] if "datePublished" in recipe_paragraph else None,
+                "updatedAt": recipe_paragraph["dateModified"] if "dateModified" in recipe_paragraph else None,
 
                 "averageRating": recipe_paragraph["aggregateRating"][
                     "ratingValue"] if "aggregateRating" in recipe_paragraph else 0,
