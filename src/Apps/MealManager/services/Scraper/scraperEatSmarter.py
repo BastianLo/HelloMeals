@@ -66,6 +66,8 @@ class KSScraper:
         return self.work_thread.is_alive()
 
     def create_recipe(self, recipe_json):
+        if recipe_json["title"] is None:
+            return None
         image_url = recipe_json["image"]["url"]
         difficulty = 1 if recipe_json["difficulty"] == "leicht" else 2 if recipe_json[
                                                                               "difficulty"] == "mittel" else 3 if \
