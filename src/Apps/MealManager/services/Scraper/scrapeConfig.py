@@ -36,6 +36,12 @@ class ScrapeConfig:
         self.lk_max = self.config_data["lecker"][
             "max"] if "lecker" in self.config_data and "max" in self.config_data[
             "lecker"] else 1000000
+        self.es_index = self.config_data["eatsmarter"][
+            "index"] if "eatsmarter" in self.config_data and "index" in self.config_data[
+            "eatsmarter"] else 0
+        self.es_max = self.config_data["eatsmarter"][
+            "max"] if "eatsmarter" in self.config_data and "max" in self.config_data[
+            "eatsmarter"] else 100
 
     def set_hf_start_index(self, start_index):
         self.hf_start_index = start_index
@@ -69,6 +75,14 @@ class ScrapeConfig:
         self.lk_max = max
         self.save_file()
 
+    def set_es_index(self, index):
+        self.es_index = index
+        self.save_file()
+
+    def set_es_max(self, max):
+        self.es_max = max
+        self.save_file()
+
     def save_file(self):
         if not os.path.exists(os.path.dirname(self.path)):
             os.mkdir(os.path.dirname(self.path))
@@ -89,6 +103,10 @@ class ScrapeConfig:
                 "lecker": {
                     "index": self.lk_index,
                     "max": self.lk_max,
+                },
+                "eatsmarter": {
+                    "index": self.es_index,
+                    "max": self.es_max,
                 },
             }, f)
 

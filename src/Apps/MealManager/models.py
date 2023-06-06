@@ -175,6 +175,9 @@ class Recipe(models.Model):
     viewCount = models.IntegerField(blank=True, null=True)
     isPlus = models.BooleanField(blank=True, null=True)
 
+    # EatSmarter only
+    healthScore = models.IntegerField(blank=True, null=True)
+
     def __str__(self):
         return f"{self.name} ({self.helloFreshId})"
 

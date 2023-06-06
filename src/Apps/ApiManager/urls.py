@@ -77,4 +77,10 @@ urlpatterns = [
     path('Scraper/lecker/restart', scraperView.restart_lecker_scraper),
     path('Scraper/lecker/setprogress/<int:index>', scraperView.set_lecker_index),
 
+    path('Scraper/eatsmarter/status', scraperView.get_es_status),
+    path('Scraper/eatsmarter/start', scraperView.start_es_scraper),
+    path('Scraper/eatsmarter/stop', scraperView.stop_es_scraper),
+    path('Scraper/eatsmarter/restart', scraperView.restart_es_scraper),
+    path('Scraper/eatsmarter/setprogress/<int:index>', scraperView.set_es_index),
+
 ]
