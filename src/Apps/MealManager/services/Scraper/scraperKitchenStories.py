@@ -1,27 +1,17 @@
 import logging
 import os
-import re
 import threading
 import uuid
 from datetime import timedelta
-from io import BytesIO
-from tempfile import NamedTemporaryFile
-from urllib.request import urlopen
 
 import requests
-from PIL import Image
-from django.core.files.base import File
 from dynamic_preferences.registries import global_preferences_registry
 
+from .common import get_image
 from .scrapeConfig import scrapeConfig
 from ...models import *
 
 global_preferences = global_preferences_registry.manager()
-
-
-def is_valid_iso_duration(duration_str):
-    pattern = r'^P(?:\d+Y)?(?:\d+M)?(?:\d+W)?(?:\d+D)?(?:T(?:\d+H)?(?:\d+M)?(?:\d+S)?)?$'
-    return re.match(pattern, duration_str) is not None
 
 
 class KSScraper:
@@ -78,36 +68,6 @@ class KSScraper:
     def is_running(self):
         return self.work_thread.is_alive()
 
-    def get_image(self, url):
-        if url is None:
-            return None
-
-        try:
-            with urlopen(url) as uo:
-                assert uo.status == 200
-                image_data = uo.read()
-
-            # Open the image using Pillow
-            image = Image.open(BytesIO(image_data))
-
-            # Resize the image
-            max_width = 720
-            if image.width > max_width:
-                ratio = max_width / float(image.width)
-                new_height = int(image.height * ratio)
-                image = image.resize((max_width, new_height), Image.ANTIALIAS)
-
-            # Save the resized image to a temporary file
-            img_tmp = NamedTemporaryFile(delete=True)
-            image.save(img_tmp, format='JPEG')
-
-            # Create a Django File object from the temporary file
-            img = File(img_tmp)
-
-            return img
-        except:
-            return None
-
     def create_recipe(self, recipe_json):
         if "tags" not in recipe_json or "amount" not in recipe_json["servings"] or "duration" not in recipe_json:
             return None
@@ -152,7 +112,7 @@ class KSScraper:
             }
         )
         if (not (recipe[0].image and recipe[0].image.file)) and global_preferences['scraper__Download_Recipe_Images']:
-            image = self.get_image(image_url)
+            image = get_image(image_url)
             if image is not None:
                 recipe[0].image.save(str(uuid.uuid4()) + ".png", image)
         return recipe
@@ -277,7 +237,7 @@ class KSScraper:
             if (not (step.image and step.image.file)) and global_preferences[
                 'scraper__Download_Process_Step_Images'] and image_url is not None:
                 try:
-                    step.image.save(str(uuid.uuid4()) + ".png", self.get_image(image_url))
+                    step.image.save(str(uuid.uuid4()) + ".png", get_image(image_url))
                 except:
                     print(f"Could not save process-step-image for step {step}")
 

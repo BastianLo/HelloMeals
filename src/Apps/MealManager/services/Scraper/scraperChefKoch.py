@@ -1,25 +1,17 @@
 import logging
 import os
-import re
 import threading
 import uuid
 from datetime import timedelta
-from tempfile import NamedTemporaryFile
-from urllib.request import urlopen
 
 import requests
-from django.core.files.base import File
 from dynamic_preferences.registries import global_preferences_registry
 
+from .common import get_image
 from .scrapeConfig import scrapeConfig
 from ...models import *
 
 global_preferences = global_preferences_registry.manager()
-
-
-def is_valid_iso_duration(duration_str):
-    pattern = r'^P(?:\d+Y)?(?:\d+M)?(?:\d+W)?(?:\d+D)?(?:T(?:\d+H)?(?:\d+M)?(?:\d+S)?)?$'
-    return re.match(pattern, duration_str) is not None
 
 
 # TODO: for scraper functionality:
@@ -85,20 +77,6 @@ class Scraper:
     def is_running(self):
         return self.work_thread.is_alive()
 
-    def get_image(self, url):
-        if url is None:
-            return None
-        try:
-            img_tmp = NamedTemporaryFile(delete=True)
-            with urlopen(url) as uo:
-                assert uo.status == 200
-                img_tmp.write(uo.read())
-                img_tmp.flush()
-            img = File(img_tmp)
-            return img
-        except:
-            return None
-
     def create_recipe(self, recipe_json):
         if recipe_json["previewImageUrlTemplate"] is None or recipe_json["rating"] is None:
             return None
@@ -130,7 +108,7 @@ class Scraper:
             }
         )
         if (not (recipe[0].image and recipe[0].image.file)) and global_preferences['scraper__Download_Recipe_Images']:
-            image = self.get_image(image_url)
+            image = get_image(image_url)
             if image is not None:
                 recipe[0].image.save(str(uuid.uuid4()) + ".png", image)
         return recipe

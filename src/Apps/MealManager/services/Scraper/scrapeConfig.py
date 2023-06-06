@@ -1,5 +1,6 @@
 import json
 import os
+
 from HelloMeals import settings
 
 
@@ -24,11 +25,17 @@ class ScrapeConfig:
             "max_page"] if "kitchenstories" in self.config_data and "max_page" in self.config_data[
             "kitchenstories"] else 1000000
         self.ck_index = self.config_data["chefkoch"][
-            "index"] if "chefkoch" in self.config_data and "page" in self.config_data[
+            "index"] if "chefkoch" in self.config_data and "index" in self.config_data[
             "chefkoch"] else 1
         self.ck_skip = self.config_data["chefkoch"][
-            "skip"] if "chefkoch" in self.config_data and "max_page" in self.config_data[
+            "skip"] if "chefkoch" in self.config_data and "skip" in self.config_data[
             "chefkoch"] else 1000000
+        self.lk_index = self.config_data["lecker"][
+            "index"] if "lecker" in self.config_data and "index" in self.config_data[
+            "lecker"] else 0
+        self.lk_max = self.config_data["lecker"][
+            "max"] if "lecker" in self.config_data and "max" in self.config_data[
+            "lecker"] else 1000000
 
     def set_hf_start_index(self, start_index):
         self.hf_start_index = start_index
@@ -54,6 +61,14 @@ class ScrapeConfig:
         self.ks_max_page = max_page
         self.save_file()
 
+    def set_lk_index(self, index):
+        self.lk_index = index
+        self.save_file()
+
+    def set_lk_max(self, max):
+        self.lk_max = max
+        self.save_file()
+
     def save_file(self):
         if not os.path.exists(os.path.dirname(self.path)):
             os.mkdir(os.path.dirname(self.path))
@@ -70,6 +85,10 @@ class ScrapeConfig:
                 "chefkoch": {
                     "index": self.ck_index,
                     "skip": self.ck_skip,
+                },
+                "lecker": {
+                    "index": self.lk_index,
+                    "max": self.lk_max,
                 },
             }, f)
 

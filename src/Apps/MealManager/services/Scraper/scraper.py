@@ -1,25 +1,17 @@
 import logging
 import os
-import re
 import threading
 import uuid
-from tempfile import NamedTemporaryFile
-from urllib.request import urlopen
 
 import requests
-from django.core.files.base import File
 from dynamic_preferences.registries import global_preferences_registry
 from isodate import parse_duration
 
+from .common import get_image, is_valid_iso_duration
 from .scrapeConfig import scrapeConfig
 from ...models import *
 
 global_preferences = global_preferences_registry.manager()
-
-
-def is_valid_iso_duration(duration_str):
-    pattern = r'^P(?:\d+Y)?(?:\d+M)?(?:\d+W)?(?:\d+D)?(?:T(?:\d+H)?(?:\d+M)?(?:\d+S)?)?$'
-    return re.match(pattern, duration_str) is not None
 
 
 # TagMerge.objects.create(source="57ebbc17b7e8697d4b3053ac", target="57ebbc17b7e8697d4b3053b5")
@@ -94,20 +86,6 @@ class Scraper:
         bearer_token = token
         return bearer_token
 
-    def get_image(self, url):
-        if url is None:
-            return None
-        try:
-            img_tmp = NamedTemporaryFile(delete=True)
-            with urlopen(url) as uo:
-                assert uo.status == 200
-                img_tmp.write(uo.read())
-                img_tmp.flush()
-            img = File(img_tmp)
-            return img
-        except:
-            return None
-
     def create_recipe(self, recipe_json):
         if recipe_json["imagePath"] is None:
             return None
@@ -150,7 +128,7 @@ class Scraper:
             }
         )
         if (not (recipe[0].image and recipe[0].image.file)) and global_preferences['scraper__Download_Recipe_Images']:
-            image = self.get_image(image_url)
+            image = get_image(image_url)
             if image is not None:
                 recipe[0].image.save(str(uuid.uuid4()) + ".png", image)
         return recipe
@@ -181,7 +159,7 @@ class Scraper:
             )[0]
             if (not (ingredient.image and ingredient.image.file)) and global_preferences[
                 'scraper__Download_Ingredient_Images']:
-                image = self.get_image(image_url)
+                image = get_image(image_url)
                 if image is not None:
                     ingredient.image.save(str(uuid.uuid4()) + ".png", image)
             # Create RecipeIngredient
@@ -312,7 +290,7 @@ class Scraper:
             if (not (step.image and step.image.file)) and (len(step_json["images"]) > 0) and global_preferences[
                 'scraper__Download_Process_Step_Images']:
                 try:
-                    step.image.save(str(uuid.uuid4()) + ".png", self.get_image(image_url))
+                    step.image.save(str(uuid.uuid4()) + ".png", get_image(image_url))
                 except:
                     print(f"Could not save process-step-image for step {step}")
 
