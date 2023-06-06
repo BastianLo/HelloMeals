@@ -161,5 +161,6 @@ def get_all_status(request):
         "Chefkoch": scraperChefKoch.get_scraper().get_status(),
         "KitchenStories": scraperKitchenStories.get_scraper().get_status(),
         "HelloFresh": scraper.get_scraper().get_status(),
+        "Lecker": scraperLecker.get_scraper().get_status(),
     }
     return HttpResponse(json.dumps(response), content_type='application/json')
