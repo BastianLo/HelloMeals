@@ -128,6 +128,16 @@ class RecipeBaseSerializer(serializers.ModelSerializer):
         ingredient_count = len(RecipeIngredient.objects.filter(ingredient_group__in=instance.ingredient_groups.all()))
         return ingredient_count
 
+    def get_nutrients(self, instance):
+        recipe_nutrients = Nutrients.objects.filter(recipe=instance).first()
+        utensil_serializer = NutrientSerializer(recipe_nutrients, many=False)
+        return utensil_serializer.data
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['nutrients'] = self.get_nutrients(instance)
+        return representation
+
 
 class IngredientGroupBaseSerializer(serializers.ModelSerializer):
     ingredients = RecipeIngredientSerializer(many=True, read_only=True)

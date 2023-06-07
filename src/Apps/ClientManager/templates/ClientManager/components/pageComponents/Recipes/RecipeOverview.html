@@ -11,7 +11,7 @@
         page: 1,
         pageSize: 24,
         searchString: '',
-        fields: ['name', 'headline', 'averageRating', 'ratingCount', 'image', 'source', 'helloFreshId']
+        fields: ['name', 'headline', 'averageRating', 'ratingCount', 'image', 'source', 'helloFreshId', 'healthScore', 'nutrients']
     },
     tag_groups: [],
     show: false,
@@ -359,14 +359,38 @@
                         reviews</p>
                 </div>
                 <div class="flex items-center mt-2 ml-2">
-                    <template x-if="recipe.source=='1'"><span
-                            class="bg-lime-500 text-black text-xs font-medium mr-2 px-2.5 py-0.5 rounded ">HelloFresh</span>
+                    <template x-if="recipe.source=='1'">
+                        <div>
+                            <span class="bg-lime-500 text-black text-xs font-medium mr-2 px-2.5 py-0.5 rounded ">HelloFresh</span>
+                        </div>
                     </template>
-                    <template x-if="recipe.source=='2'"><span
-                            class="bg-yellow-500 text-black text-xs font-medium mr-2 px-2.5 py-0.5 rounded ">KitchenStories</span>
+                    <template x-if="recipe.source=='2'">
+                        <div>
+                            <span class="bg-yellow-500 text-black text-xs font-medium mr-2 px-2.5 py-0.5 rounded ">KitchenStories</span>
+                        </div>
                     </template>
-                    <template x-if="recipe.source=='3'"><span
-                            class="bg-green-700 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded ">Chefkoch</span>
+                    <template x-if="recipe.source=='3'">
+                        <div>
+                            <span class="bg-green-700 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded ">Chefkoch</span>
+                        </div>
+                    </template>
+                    <template x-if="recipe.source=='4'">
+                        <div>
+                            <span class="bg-pink-700 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded ">Lecker</span>
+                        </div>
+                    </template>
+                    <template x-if="recipe.source=='5'">
+                        <div>
+                            <span class="bg-orange-600 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded ">EatSmarter</span>
+                        </div>
+                    </template>
+                    <template x-if="recipe.nutrients.energyKcal!==null">
+                        <div>
+                            <span class=" text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded"
+                                  :class="{'bg-red-500': recipe.nutrients.energyKcal > 700, 'bg-green-500': recipe.nutrients.energyKcal < 500, 'bg-orange-600': recipe.nutrients.energyKcal >= 500 && recipe.nutrients.energyKcal <= 700}"
+                                  x-text="recipe.nutrients.energyKcal + ' Kcal'">
+                            </span>
+                        </div>
                     </template>
                 </div>
                 <div class="p-5">
