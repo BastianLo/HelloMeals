@@ -26,6 +26,9 @@ class RecipeFilterSet(filters.FilterSet):
     )
     relevancy = django_filters.CharFilter(method='filter_relevancy')
 
+    calories_gt = django_filters.NumberFilter(field_name='nutrients__energyKcal', lookup_expr='gt')
+    calories_lt = django_filters.NumberFilter(field_name='nutrients__energyKcal', lookup_expr='lt')
+
     def filter_search(self, queryset, name, value):
         return queryset.annotate(
             similarity=(TrigramSimilarity('name', value) * 5 + Coalesce(TrigramSimilarity('description', value), 0.0,
@@ -49,7 +52,8 @@ class RecipeFilterSet(filters.FilterSet):
 
     class Meta:
         model = Recipe
-        fields = ['srch', 'tag', 'cloned_from_null', 'difficulty', 'ingredient_count__lt', 'relevancy']
+        fields = ['srch', 'tag', 'cloned_from_null', 'difficulty', 'ingredient_count__lt', 'relevancy', 'calories_gt',
+                  'calories_lt']
 
 
 ### Views ###
