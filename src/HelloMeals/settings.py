@@ -9,13 +9,12 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
+import os
 from datetime import timedelta
 from pathlib import Path
-import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -24,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-r#se5okdi6e$n9oae3jl8)%%erl#-q4wymb0@9@r5_14&0v$02'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 MEDIA_ROOT = BASE_DIR / 'data' / 'media'
 
@@ -61,15 +60,13 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'pwa',
     'django_cleanup.apps.CleanupConfig',
-    'graphene_django',
+    'dynamic_preferences',
+    'dynamic_preferences.users.apps.UserPreferencesConfig',
 
     'Apps.MealManager',
     'Apps.ClientManager',
+    'HelloMeals',
 ]
-
-GRAPHENE = {
-    'SCHEMA': 'Apps.ApiManager.schema.schema'
-}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -112,6 +109,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'dynamic_preferences.processors.global_preferences',
             ],
         },
     },
@@ -125,9 +123,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'hellomeals',
-        'USER': os.getenv("POSTGRES_USER", "user123"),
-        'PASSWORD': os.getenv("POSTGRES_PASSWORD", "CURIECNRUICNWBcr39bun98BNcfdeui"),
-        'HOST': os.getenv("POSTGRES_HOST", "172.19.0.44"),
+        'USER': os.getenv("POSTGRES_USER", "root"),
+        'PASSWORD': os.getenv("POSTGRES_PASSWORD", "root"),
+        'HOST': os.getenv("POSTGRES_HOST", "127.0.0.1"),
         'PORT': "5432",
     }
 }
@@ -243,7 +241,6 @@ LOGGING = {
         'level': 'DEBUG',
     }
 }
-
 
 PWA_APP_NAME = 'HelloMeals'
 PWA_APP_DESCRIPTION = "Selfhosted HelloFresh recipe manager"

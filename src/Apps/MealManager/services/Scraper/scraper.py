@@ -1,30 +1,24 @@
-import json
+import logging
 import os
 import threading
-import logging
 import uuid
-from tempfile import NamedTemporaryFile
-from urllib.request import urlopen
 
 import requests
-from HelloMeals import settings
-from ...models import *
+from dynamic_preferences.registries import global_preferences_registry
 from isodate import parse_duration
-from django.core.files.base import File
-import re
+
+from .common import get_image, is_valid_iso_duration
 from .scrapeConfig import scrapeConfig
+from ...models import *
+
+global_preferences = global_preferences_registry.manager()
 
 
-def is_valid_iso_duration(duration_str):
-    pattern = r'^P(?:\d+Y)?(?:\d+M)?(?:\d+W)?(?:\d+D)?(?:T(?:\d+H)?(?:\d+M)?(?:\d+S)?)?$'
-    return re.match(pattern, duration_str) is not None
+# TagMerge.objects.create(source="57ebbc17b7e8697d4b3053ac", target="57ebbc17b7e8697d4b3053b5")
 
-
-#TagMerge.objects.create(source="57ebbc17b7e8697d4b3053ac", target="57ebbc17b7e8697d4b3053b5")
-
-#TODO: for scraper functionality:
-#eg: functionality to redownload images (to improve quality)
-#Possibly increase recipe quality compared to other images
+# TODO: for scraper functionality:
+# eg: functionality to redownload images (to improve quality)
+# Possibly increase recipe quality compared to other images
 class Scraper:
     def __init__(self):
         self.exception = None
@@ -35,7 +29,6 @@ class Scraper:
         self.country = os.getenv('COUNTRY') if os.getenv('COUNTRY') else "DE"
         self.HELLO_FRESH_URL = f"https://www.hellofresh.de/gw/api/recipes?country={self.country}&order=-date&take=1&skip="
         self.bearer_token = None
-        self.download_images = os.getenv('DOWNLOAD_IMAGES') if os.getenv('DOWNLOAD_IMAGES') else True
 
     def get_status(self):
         return {
@@ -55,6 +48,7 @@ class Scraper:
             self.active = False
             self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
             raise e
+
     def start(self):
         self.bearer_token = None
         self.exception = None
@@ -72,6 +66,7 @@ class Scraper:
 
     def set_progress(self, index):
         self.config.set_hf_start_index(index)
+
     def restart(self):
         self.stop()
         self.config.set_hf_start_index(0)
@@ -91,25 +86,11 @@ class Scraper:
         bearer_token = token
         return bearer_token
 
-    def get_image(self, url):
-        if url is None:
-            return None
-        try:
-            img_tmp = NamedTemporaryFile(delete=True)
-            with urlopen(url) as uo:
-                assert uo.status == 200
-                img_tmp.write(uo.read())
-                img_tmp.flush()
-            img = File(img_tmp)
-            return img
-        except:
-            return None
-
     def create_recipe(self, recipe_json):
         if recipe_json["imagePath"] is None:
             return None
         image_url = "https://img.hellofresh.com/q_40,w_720,f_auto,c_limit,fl_lossy/hellofresh_s3" + recipe_json[
-                    "imagePath"]
+            "imagePath"]
         if recipe_json["yields"] is None or len(recipe_json["yields"]) == 0:
             return None
         recipe = Recipe.objects.update_or_create(
@@ -130,8 +111,12 @@ class Scraper:
                 "description": recipe_json["description"],
                 "cardLink": recipe_json["cardLink"],
                 "websiteLink": recipe_json["canonicalLink"],
-                "prepTime": parse_duration(recipe_json["prepTime"]) if recipe_json["prepTime"] and is_valid_iso_duration(recipe_json["prepTime"]) and recipe_json["prepTime"] != "0" else None,
-                "totalTime": parse_duration(recipe_json["totalTime"]) if recipe_json["totalTime"] and is_valid_iso_duration(recipe_json["totalTime"]) and recipe_json["totalTime"] != "0" else None,
+                "prepTime": parse_duration(recipe_json["prepTime"]) if recipe_json[
+                                                                           "prepTime"] and is_valid_iso_duration(
+                    recipe_json["prepTime"]) and recipe_json["prepTime"] != "0" else None,
+                "totalTime": parse_duration(recipe_json["totalTime"]) if recipe_json[
+                                                                             "totalTime"] and is_valid_iso_duration(
+                    recipe_json["totalTime"]) and recipe_json["totalTime"] != "0" else None,
                 "difficulty": recipe_json["difficulty"],
                 "createdAt": recipe_json["createdAt"],
                 "updatedAt": recipe_json["updatedAt"],
@@ -142,38 +127,48 @@ class Scraper:
                 "HelloFreshImageUrl": image_url
             }
         )
-        if (not (recipe[0].image and recipe[0].image.file)) and self.download_images:
-            image = self.get_image(image_url)
+        if (not (recipe[0].image and recipe[0].image.file)) and global_preferences['scraper__Download_Recipe_Images']:
+            image = get_image(image_url)
             if image is not None:
                 recipe[0].image.save(str(uuid.uuid4()) + ".png", image)
         return recipe
 
     def create_ingredients(self, recipe_json, recipe):
+        ingredient_group = IngredientGroup.objects.update_or_create(
+            id=recipe.helloFreshId + "0",
+            defaults={
+                "name": None,
+            }
+        )[0]
+        recipe.ingredient_groups.add(ingredient_group)
+        recipe.save()
         yields = recipe_json["yields"][-1]["ingredients"]
         for ingredient_json in recipe_json["ingredients"]:
             if "imagePath" in ingredient_json and ingredient_json["imagePath"] is not None:
-                image_url = "https://img.hellofresh.com/q_40,w_480,f_auto,c_limit,fl_lossy/hellofresh_s3" + ingredient_json[
-                            "imagePath"]
+                image_url = "https://img.hellofresh.com/q_40,w_480,f_auto,c_limit,fl_lossy/hellofresh_s3" + \
+                            ingredient_json[
+                                "imagePath"]
             else:
                 image_url = None
             ingredient = Ingredient.objects.update_or_create(
                 helloFreshId=ingredient_json["id"],
                 defaults={
-                    "name": ingredient_json["name"].replace("*",""),
+                    "name": ingredient_json["name"].replace("*", ""),
                     "HelloFreshImageUrl": image_url
                 }
             )[0]
-            if (not (ingredient.image and ingredient.image.file)) and self.download_images:
-                image = self.get_image(image_url)
+            if (not (ingredient.image and ingredient.image.file)) and global_preferences[
+                'scraper__Download_Ingredient_Images']:
+                image = get_image(image_url)
                 if image is not None:
                     ingredient.image.save(str(uuid.uuid4()) + ".png", image)
             # Create RecipeIngredient
             ingredient_id = ingredient_json["id"]
             ingredient_yield = [y for y in yields if y["id"] == ingredient_id][0]
             recipe_ingredient = RecipeIngredient.objects.update_or_create(
-                id=ingredient_id + recipe.helloFreshId,
+                id=ingredient_id + ingredient_group.id,
                 defaults={
-                    "recipe": recipe,
+                    "ingredient_group": ingredient_group,
                     "ingredient": ingredient,
                     "amount": ingredient_yield["amount"],
                     "unit": ingredient_yield["unit"],
@@ -202,13 +197,17 @@ class Scraper:
         nutrient = Nutrients.objects.update_or_create(
             id=recipe.helloFreshId + "nutrients",
             defaults={
-                "energyKj": next(iter([n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b30530d"]), 0),
-                "energyKcal": next(iter([n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b305304"]), 0),
+                "energyKj": next(iter([n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b30530d"]),
+                                 0),
+                "energyKcal": next(
+                    iter([n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b305304"]), 0),
                 "fat": next(iter([n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b305307"]), 0),
-                "fatSaturated": next(iter([n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b305308"]), 0),
+                "fatSaturated": next(
+                    iter([n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b305308"]), 0),
                 "carbs": next(iter([n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b305305"]), 0),
                 "sugar": next(iter([n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b305306"]), 0),
-                "protein": next(iter([n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b305309"]), 0),
+                "protein": next(iter([n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b305309"]),
+                                0),
                 "salt": next(iter([n["amount"] for n in nutrient_json if n["type"] == "57b42a48b7e8697d4b30530b"]), 0),
             }
         )[0]
@@ -249,13 +248,15 @@ class Scraper:
             if tag is None:
                 continue
             tag = tag[0]
-            recipe_tag = RecipeTag.objects.update_or_create(
-                id=recipe.helloFreshId + tag.helloFreshId,
-                defaults={
-                    "recipe": recipe,
-                    "tag": tag,
-                }
-            )
+            temp = RecipeTag.objects.filter(recipe=recipe, tag=tag)
+            if len(temp) == 0:
+                recipe_tag = RecipeTag.objects.update_or_create(
+                    id=recipe.helloFreshId + tag.helloFreshId,
+                    defaults={
+                        "recipe": recipe,
+                        "tag": tag,
+                    }
+                )
 
     def create_categories(self, recipe_json, recipe):
         if recipe_json["category"] is None:
@@ -273,7 +274,8 @@ class Scraper:
     def create_work_steps(self, recipe_json, recipe):
         for step_json in recipe_json["steps"]:
             if (len(step_json["images"]) > 0) and step_json["images"][0]["link"] is not None:
-                image_url = "https://img.hellofresh.com/q_40,w_480,f_auto,c_limit,fl_lossy/hellofresh_s3" + step_json["images"][0]["path"]
+                image_url = "https://img.hellofresh.com/q_40,w_480,f_auto,c_limit,fl_lossy/hellofresh_s3" + \
+                            step_json["images"][0]["path"]
             else:
                 image_url = None
             step = WorkSteps.objects.update_or_create(
@@ -285,9 +287,10 @@ class Scraper:
                     "HelloFreshImageUrl": image_url
                 }
             )[0]
-            if (not (step.image and step.image.file)) and (len(step_json["images"]) > 0) and self.download_images:
+            if (not (step.image and step.image.file)) and (len(step_json["images"]) > 0) and global_preferences[
+                'scraper__Download_Process_Step_Images']:
                 try:
-                    step.image.save(str(uuid.uuid4()) + ".png", self.get_image(image_url))
+                    step.image.save(str(uuid.uuid4()) + ".png", get_image(image_url))
                 except:
                     print(f"Could not save process-step-image for step {step}")
 
@@ -331,7 +334,6 @@ class Scraper:
                 else:
                     logging.error(f"Recipe with skip '{index}' failed second time. Canceling")
                     raise e
-
 
 
 s = Scraper()

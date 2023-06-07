@@ -1,6 +1,5 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from django.views.decorators.cache import cache_control
 from django.contrib.auth.decorators import login_required
 
 
@@ -29,10 +28,22 @@ def index(request):
 
 
 @login_required(login_url='/accounts/login/')
+def recipe_index(request):
+    navigation_history(request)
+    context = get_base_context()
+    return render(request, "ClientManager/pages/Recipes/RecipeIndex.html", context)
+
+@login_required(login_url='/accounts/login/')
 def recipe_overview(request):
     navigation_history(request)
     context = get_base_context()
     return render(request, "ClientManager/pages/Recipes/RecipeOverview.html", context)
+
+@login_required(login_url='/accounts/login/')
+def recipe_details(request, recipe_id):
+    navigation_history(request)
+    context = get_base_context()
+    return render(request, "ClientManager/pages/Recipes/RecipeDetails.html", context)
 
 
 @login_required(login_url='/accounts/login/')
@@ -58,3 +69,16 @@ def settings_downloader(request):
     navigation_history(request)
     context = get_base_context()
     return render(request, "ClientManager/pages/Settings/SettingsDownloader.html", context)
+
+
+
+def handler404(request, *args, **argv):
+    response = render(request, 'ClientManager/errors/404.html', {})
+    response.status_code = 404
+    return response
+
+
+def handler500(request, *args, **argv):
+    response = render(request, 'ClientManager/errors/500.html', {})
+    response.status_code = 500
+    return response

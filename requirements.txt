@@ -8,6 +8,7 @@ coreschema==0.0.4
 Django==4.2.1
 django-cleanup==7.0.0
 django-cors-headers==4.0.0
+django-dynamic-preferences==1.15.0
 django-filter==23.2
 django-pwa==1.1.0
 django-rql==4.3.0
@@ -18,10 +19,6 @@ djangorestframework-jwt==1.11.0
 djangorestframework-simplejwt==5.2.2
 drf-yasg==1.21.5
 grako==3.12.1
-graphene==3.2.2
-graphene-django==3.1.1
-graphql-core==3.2.3
-graphql-relay==3.2.0
 gunicorn==20.1.0
 idna==3.4
 inflection==0.5.1
@@ -33,6 +30,7 @@ lark-parser==0.11.0
 lib-rql==1.1.8
 MarkupSafe==2.1.2
 packaging==23.1
+persisting-theory==1.0
 Pillow==9.5.0
 promise==2.3
 psycopg2==2.9.6

@@ -1,42 +1,41 @@
 version: '3.3'
 services:
-    db:
-        container_name: hello-meals-db
-        image: postgres
-        restart: always
-        healthcheck:
-          test: ["CMD-SHELL", "pg_isready -U postgres"]
-          interval: 5s
-          timeout: 5s
-          retries: 5
-        environment:
-            POSTGRES_USER: ${POSTGRES_USER}
-            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-            POSTGRES_DB: hellomeals
-        ports:
-            - "5482:5432"
-        volumes:
-          - ../dev_container_data/postgres-data:/var/lib/postgresql/data
-    hello-meals:
-        container_name: hello-meals-dev
-        depends_on:
-          db:
-            condition: service_healthy
-        environment:
-            - USERNAME=${USERNAME}
-            - PASSWORD=${PASSWORD}
-            - EMAIL=${EMAIL}
-            - DEBUG=False
-            - APP_URL=${APP_URL}
-            - TIMEZONE=${TIMEZONE}
-            - COUNTRY=${COUNTRY}
-            - POSTGRES_USER=${POSTGRES_USER}
-            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-            - POSTGRES_HOST=db
-            - POSTGRES_PORT=${POSTGRES_PORT}
-            - DOWNLOAD_IMAGES=${DOWNLOAD_IMAGES}
-        ports:
-            - '6753:6753'
-        image: 'hellomeals:localdev'
-        volumes:
-            - ../dev_container_data:/HelloMeals/src/data
+  db:
+    container_name: hello-meals-db
+    image: postgres
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: hellomeals
+    ports:
+      - "5482:5432"
+    volumes:
+      - ../dev_container_data/postgres-data:/var/lib/postgresql/data
+  hello-meals:
+    container_name: hello-meals-dev
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - USERNAME=${USERNAME}
+      - PASSWORD=${PASSWORD}
+      - EMAIL=${EMAIL}
+      - DEBUG=False
+      - APP_URL=${APP_URL}
+      - TIMEZONE=${TIMEZONE}
+      - COUNTRY=${COUNTRY}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=${POSTGRES_PORT}
+    ports:
+      - '6753:6753'
+    image: 'hellomeals:localdev'
+    volumes:
+      - ../dev_container_data:/HelloMeals/src/data

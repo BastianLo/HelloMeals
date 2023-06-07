@@ -1,12 +1,18 @@
-from django.urls import path
+import os
+
+from HelloMeals.dynamic_preferences_registry import CustomGlobalPreferencesViewSet, CustomUserPreferencesViewSet
+from django.urls import path, include
 from django.views.generic import RedirectView
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
-import os
-from graphene_django.views import GraphQLView
+from rest_framework.routers import SimpleRouter
 
 from .views import scraperView, recipeView, tagView, authentification_view
+
+router = SimpleRouter()
+router.register(r'global', CustomGlobalPreferencesViewSet, basename='global')
+router.register(r'user', CustomUserPreferencesViewSet, basename='global')
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -26,6 +32,8 @@ urlpatterns = [
     path('swagger<str:format>', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+
+    path('settings/', include(router.urls)),
 
     ### --- API Authentification --- ###
     path('auth/login/', authentification_view.api_login, name='api_login'),
@@ -63,5 +71,16 @@ urlpatterns = [
     path('Scraper/chefkoch/restart', scraperView.restart_chefkoch_scraper),
     path('Scraper/chefkoch/setprogress/<int:index>', scraperView.set_chefkoch_index),
 
-    path('graphql/', GraphQLView.as_view(graphiql=True)),
+    path('Scraper/lecker/status', scraperView.get_lecker_status),
+    path('Scraper/lecker/start', scraperView.start_lecker_scraper),
+    path('Scraper/lecker/stop', scraperView.stop_lecker_scraper),
+    path('Scraper/lecker/restart', scraperView.restart_lecker_scraper),
+    path('Scraper/lecker/setprogress/<int:index>', scraperView.set_lecker_index),
+
+    path('Scraper/eatsmarter/status', scraperView.get_es_status),
+    path('Scraper/eatsmarter/start', scraperView.start_es_scraper),
+    path('Scraper/eatsmarter/stop', scraperView.stop_es_scraper),
+    path('Scraper/eatsmarter/restart', scraperView.restart_es_scraper),
+    path('Scraper/eatsmarter/setprogress/<int:index>', scraperView.set_es_index),
+
 ]

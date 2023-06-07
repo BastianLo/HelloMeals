@@ -1,6 +1,6 @@
-from django.contrib import admin
-
 from django.db import models
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 
 
 class Ingredient(models.Model):
@@ -61,6 +61,7 @@ class TagMergeManager(models.Manager):
             source.delete()
         return super().create(**kwargs)
 
+
 class TagMerge(models.Model):
     source = models.CharField(max_length=255, unique=True)
     target = models.CharField(max_length=255, null=True)
@@ -92,6 +93,7 @@ class TagQuerySet(models.query.QuerySet):
             tagMerge = TagMerge.objects.filter(source=tagMerge.target).first()
         return super().get(**kwargs)
 
+
 class TagManager(models.Manager):
     def get_queryset(self):
         return TagQuerySet(self.model)
@@ -118,6 +120,11 @@ class Category(models.Model):
         return f"{self.name} ({self.helloFreshId})"
 
 
+class IngredientGroup(models.Model):
+    id = models.TextField(primary_key=True, max_length=255, unique=True)
+    name = models.CharField(max_length=255, null=True, blank=True)
+
+
 class Recipe(models.Model):
     helloFreshId = models.TextField(primary_key=True, max_length=255, unique=True)
 
@@ -126,6 +133,8 @@ class Recipe(models.Model):
 
     nutrients = models.ForeignKey(Nutrients, on_delete=models.SET_NULL, blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True)
+
+    ingredient_groups = models.ManyToManyField(IngredientGroup)
 
     ### Shared ###
     # All
@@ -166,8 +175,16 @@ class Recipe(models.Model):
     viewCount = models.IntegerField(blank=True, null=True)
     isPlus = models.BooleanField(blank=True, null=True)
 
+    # EatSmarter only
+    healthScore = models.IntegerField(blank=True, null=True)
+
     def __str__(self):
         return f"{self.name} ({self.helloFreshId})"
+
+    def delete(self, *args, **kwargs):
+        # Delete related ingredient groups before deleting the recipe
+        self.ingredient_groups.all().delete()
+        super().delete(*args, **kwargs)
 
 
 class WorkSteps(models.Model):
@@ -185,14 +202,14 @@ class WorkSteps(models.Model):
 
 class RecipeIngredient(models.Model):
     id = models.TextField(primary_key=True, max_length=255, unique=True)
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    ingredient_group = models.ForeignKey(IngredientGroup, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
 
     amount = models.DecimalField(max_digits=7, decimal_places=1, null=True, blank=True)
     unit = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.ingredient} ({self.recipe})"
+        return f"{self.ingredient} ({self.ingredient_group})"
 
 
 class RecipeTag(models.Model):
@@ -200,8 +217,8 @@ class RecipeTag(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
 
-    class Meta:
-        unique_together = ('recipe', 'tag',)
+    # class Meta:
+    #    unique_together = ('recipe', 'tag',)
     def __str__(self):
         return f"{self.recipe} ({self.tag})"
 
@@ -213,3 +230,8 @@ class RecipeUtensil(models.Model):
 
     def __str__(self):
         return f"{self.recipe} ({self.utensil})"
+
+
+@receiver(pre_delete, sender=Recipe)
+def delete_related_ingredient_groups(sender, instance, **kwargs):
+    instance.ingredient_groups.all().delete()

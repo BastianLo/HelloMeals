@@ -1,25 +1,17 @@
-import json
+import logging
 import os
 import threading
-import logging
 import uuid
-from tempfile import NamedTemporaryFile
-from urllib.request import urlopen
-
-import requests
-from HelloMeals import settings
-from ...models import *
-from isodate import parse_duration
-from django.core.files.base import File
-import re
-from .scrapeConfig import scrapeConfig
-from PIL import Image
-from io import BytesIO
 from datetime import timedelta
 
-def is_valid_iso_duration(duration_str):
-    pattern = r'^P(?:\d+Y)?(?:\d+M)?(?:\d+W)?(?:\d+D)?(?:T(?:\d+H)?(?:\d+M)?(?:\d+S)?)?$'
-    return re.match(pattern, duration_str) is not None
+import requests
+from dynamic_preferences.registries import global_preferences_registry
+
+from .common import get_image
+from .scrapeConfig import scrapeConfig
+from ...models import *
+
+global_preferences = global_preferences_registry.manager()
 
 
 class KSScraper:
@@ -31,7 +23,6 @@ class KSScraper:
         self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
         self.config = scrapeConfig()
         self.active = False
-        self.download_images = os.getenv('DOWNLOAD_IMAGES') if os.getenv('DOWNLOAD_IMAGES') else True
 
     def get_status(self):
         return {
@@ -77,40 +68,10 @@ class KSScraper:
     def is_running(self):
         return self.work_thread.is_alive()
 
-    def get_image(self, url):
-        if url is None:
-            return None
-
-        try:
-            with urlopen(url) as uo:
-                assert uo.status == 200
-                image_data = uo.read()
-
-            # Open the image using Pillow
-            image = Image.open(BytesIO(image_data))
-
-            # Resize the image
-            max_width = 720
-            if image.width > max_width:
-                ratio = max_width / float(image.width)
-                new_height = int(image.height * ratio)
-                image = image.resize((max_width, new_height), Image.ANTIALIAS)
-
-            # Save the resized image to a temporary file
-            img_tmp = NamedTemporaryFile(delete=True)
-            image.save(img_tmp, format='JPEG')
-
-            # Create a Django File object from the temporary file
-            img = File(img_tmp)
-
-            return img
-        except:
-            return None
-
     def create_recipe(self, recipe_json):
         if "tags" not in recipe_json or "amount" not in recipe_json["servings"] or "duration" not in recipe_json:
             return None
-        #Skip recipes that are not main recipes:
+        # Skip recipes that are not main recipes:
         if len([tag for tag in recipe_json["tags"] if tag["id"] == "f622a099-d5c2-4db2-a689-e7f856db38a8"]) == 0:
             logging.info(f"Skipping recipe {recipe_json['id']} because recipe is not main")
             return None
@@ -136,8 +97,11 @@ class KSScraper:
                 "cardLink": None,
                 "websiteLink": recipe_json["url"],
                 "prepTime": timedelta(minutes=recipe_json["duration"]["preparation"]),
-                "totalTime": timedelta(minutes=recipe_json["duration"]["preparation"]+recipe_json["duration"]["resting"]),
-                "difficulty": 1 if recipe_json["difficulty"] == "easy" else 2 if recipe_json["difficulty"] == "medium" else 3 if recipe_json["difficulty"] == "hard" else None,
+                "totalTime": timedelta(
+                    minutes=recipe_json["duration"]["preparation"] + recipe_json["duration"]["resting"]),
+                "difficulty": 1 if recipe_json["difficulty"] == "easy" else 2 if recipe_json[
+                                                                                     "difficulty"] == "medium" else 3 if
+                recipe_json["difficulty"] == "hard" else None,
                 "createdAt": recipe_json["publishing"]["created"],
                 "updatedAt": recipe_json["publishing"]["updated"],
                 "favoritesCount": recipe_json["user_reactions"]["like_count"],
@@ -147,16 +111,25 @@ class KSScraper:
                 "HelloFreshImageUrl": image_url
             }
         )
-        if (not (recipe[0].image and recipe[0].image.file)) and self.download_images:
-            image = self.get_image(image_url)
+        if (not (recipe[0].image and recipe[0].image.file)) and global_preferences['scraper__Download_Recipe_Images']:
+            image = get_image(image_url)
             if image is not None:
                 recipe[0].image.save(str(uuid.uuid4()) + ".png", image)
         return recipe
 
     def create_ingredients(self, recipe_json, recipe):
+        ingredient_group = IngredientGroup.objects.update_or_create(
+            id=recipe.helloFreshId + "0",
+            defaults={
+                "name": None,
+            }
+        )[0]
+        recipe.ingredient_groups.add(ingredient_group)
+        recipe.save()
         for ingredient_block in recipe_json["ingredients"]:
             for ingredient_json in ingredient_block["list"]:
-                ingredient_id = ingredient_json["id"] if "id" in ingredient_json else str(hash(ingredient_json["name"]["rendered"]))
+                ingredient_id = ingredient_json["id"] if "id" in ingredient_json else str(
+                    hash(ingredient_json["name"]["rendered"]))
                 ingredient = Ingredient.objects.update_or_create(
                     helloFreshId=ingredient_id,
                     defaults={
@@ -165,12 +138,16 @@ class KSScraper:
                 )[0]
                 # Create RecipeIngredient
                 recipe_ingredient = RecipeIngredient.objects.update_or_create(
-                    id=ingredient_id + recipe.helloFreshId,
+                    id=ingredient_id + ingredient_group.id,
                     defaults={
-                        "recipe": recipe,
+                        "ingredient_group": ingredient_group,
                         "ingredient": ingredient,
-                        "amount": ingredient_json["measurement"]["metric"]["amount"] if "measurement" in ingredient_json and "metric" in ingredient_json["measurement"] and "amount" in ingredient_json["measurement"]["metric"] else None,
-                        "unit": ingredient_json["measurement"]["metric"]["unit"]["name"]["rendered"] if "measurement" in ingredient_json and "unit" in ingredient_json["measurement"]["metric"] else None,
+                        "amount": ingredient_json["measurement"]["metric"][
+                            "amount"] if "measurement" in ingredient_json and "metric" in ingredient_json[
+                            "measurement"] and "amount" in ingredient_json["measurement"]["metric"] else None,
+                        "unit": ingredient_json["measurement"]["metric"]["unit"]["name"][
+                            "rendered"] if "measurement" in ingredient_json and "unit" in
+                                           ingredient_json["measurement"]["metric"] else None,
                     }
                 )[0]
 
@@ -257,16 +234,18 @@ class KSScraper:
                     "HelloFreshImageUrl": image_url
                 }
             )[0]
-            if (not (step.image and step.image.file)) and self.download_images and image_url is not None:
+            if (not (step.image and step.image.file)) and global_preferences[
+                'scraper__Download_Process_Step_Images'] and image_url is not None:
                 try:
-                    step.image.save(str(uuid.uuid4()) + ".png", self.get_image(image_url))
+                    step.image.save(str(uuid.uuid4()) + ".png", get_image(image_url))
                 except:
                     print(f"Could not save process-step-image for step {step}")
 
     def scrape(self, index):
-        response = requests.request("GET", f"https://web-bff.services.kitchenstories.io/api/recipes/?page={index}&page_size={self.PAGE_SIZE}&language={self.country}")
+        response = requests.request("GET",
+                                    f"https://web-bff.services.kitchenstories.io/api/recipes/?page={index}&page_size={self.PAGE_SIZE}&language={self.country}")
         items = response.json()["data"]
-        self.config.set_hf_max_recipes(response.json()["meta"]["pagination"]["pages"])
+        self.config.set_ks_max_page(response.json()["meta"]["pagination"]["pages"])
         for recipeJson in items:
             try:
                 temp = self.create_recipe(recipeJson)
@@ -292,6 +271,7 @@ class KSScraper:
                 else:
                     logging.error(f"Recipe with skip '{index}' failed second time. Canceling")
                     raise e
+
 
 s = KSScraper()
 

@@ -1,7 +1,7 @@
 {% load i18n %}
 <div class="fixed bottom-0 left-0 z-50 w-full h-16 bg-white border-t border-gray-200 dark:bg-gray-700 dark:border-gray-600">
     <div class="grid h-full max-w-lg grid-cols-4 mx-auto font-medium">
-        <button hx-get="/Home/Recipe/" hx-replace-url="true" hx-swap="innerHTML" hx-target="#body" hx-trigger="click" hx-push-url="true" hx-ext="true"
+        <button hx-get="{% url 'recipe.overview' %}" hx-replace-url="true" hx-swap="innerHTML" hx-target="#body" hx-trigger="click" hx-push-url="true" hx-ext="true"
                 class="inline-flex flex-col items-center justify-center px-5 border-gray-200 border-x hover:bg-gray-50 dark:hover:bg-gray-800 group dark:border-gray-600">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 mb-1 text-gray-500 dark:text-gray-400">
               <path d="M3.375 3C2.339 3 1.5 3.84 1.5 4.875v.75c0 1.036.84 1.875 1.875 1.875h17.25c1.035 0 1.875-.84 1.875-1.875v-.75C22.5 3.839 21.66 3 20.625 3H3.375z" />
