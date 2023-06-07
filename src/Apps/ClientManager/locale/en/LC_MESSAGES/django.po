@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-04 21:56+0000\n"
+"POT-Creation-Date: 2023-06-07 16:05+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,7 +35,7 @@ msgid "base.profile"
 msgstr "Profile"
 
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:28
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:128
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:148
 msgid "common.loading.label"
 msgstr "Loading"
 
@@ -47,86 +47,98 @@ msgstr "All Recipes"
 msgid "recipe.seeMore"
 msgstr "See more"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:144
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:164
 msgid "filter.label"
 msgstr "Filter"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:148
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:168
 msgid "filter.apply"
 msgstr "Apply"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:152
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:172
 msgid "filter.reset"
 msgstr "Reset"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:165
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:180
+msgid "nutrients.calories"
+msgstr "Kalorien"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:203
 msgid "filter.source.label"
 msgstr "Source"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:217
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:275
 msgid "filter.categories.label"
 msgstr "Categories"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:276
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:291
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:334
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:349
 msgid "search"
 msgstr "Search"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:288
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:346
 msgid "recipe.name"
 msgstr "Recipe name"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:299
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:363
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:357
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:448
 msgid "common.navigation.showing"
 msgstr "Showing"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:299
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:363
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:358
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:449
 msgid "common.navigation.to"
 msgstr "to"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:300
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:364
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:360
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:451
 msgid "common.navigation.of"
 msgstr "of"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:301
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:365
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:362
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:453
 msgid "common.navigation.entries"
 msgstr "Entries"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:306
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:370
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:367
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:458
 msgid "common.navigation.previous"
 msgstr "prev"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:310
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:374
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:371
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:462
 msgid "common.navigation.next"
 msgstr "next"
 
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:56
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:114
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:172
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:230
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:288
 msgid "of"
 msgstr "of"
 
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:67
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:125
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:183
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:241
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:299
 msgid "settings.scraper.start"
 msgstr "Start"
 
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:71
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:129
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:187
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:245
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:303
 msgid "settings.scraper.restart"
 msgstr "Restart"
 
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:75
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:133
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:191
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:249
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:307
 msgid "settings.scraper.stop"
 msgstr "Stop"
 

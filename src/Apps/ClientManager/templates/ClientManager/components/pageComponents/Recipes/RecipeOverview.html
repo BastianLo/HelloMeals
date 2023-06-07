@@ -19,6 +19,13 @@
     nav: {},
     initialized: false,
     loading: false,
+    sliders: {
+        calorySlider: {
+            element: null,
+            min: null,
+            max: null,
+        },
+    },
     parseUrlParams(){
         const urlParams = new URLSearchParams(window.location.search);
         this.params.searchString = urlParams.get('srch') || '';
@@ -26,6 +33,8 @@
         this.params.pageSize = urlParams.get('page_size') || 24;
         this.params.filter.sources = (urlParams.get('source') || '').split(',')
         this.params.filter.tags = (urlParams.get('tags') || '').split(',')
+        this.sliders.calorySlider.min = (urlParams.get('calory_min') || 0)
+        this.sliders.calorySlider.max = (urlParams.get('calory_max') || 2000)
 
     },
     parseParameters(){
@@ -39,7 +48,12 @@
         if (this.params.filter.tags.filter(s => s !== '').length > 0)
             filter += '&tags=' + this.params.filter.tags.filter(t => t !== '').join('_')
         filter += '&fields=' + this.params.fields.join(',')
-        //filter += this.getTagFilter()
+        if (this.sliders.calorySlider.min !== null && this.sliders.calorySlider.min !== this.sliders.calorySlider.element.min()){
+            filter += '&calory_min=' + this.sliders.calorySlider.min;
+        }
+        if (this.sliders.calorySlider.max !== null && this.sliders.calorySlider.max !== this.sliders.calorySlider.element.max()){
+            filter += '&calory_max=' + this.sliders.calorySlider.max;
+        }
         this.addParameterToURL(filter)
         return filter
     },
@@ -57,6 +71,7 @@
         await this.requestRecipe(`/api/Recipe${params}`)
     },
     async requestRecipe(url){
+        console.log(this.sliders.calorySlider)
         this.loading = true;
         const urlParams = new URLSearchParams(url);
         this.params.page = urlParams.get('page') ? urlParams.get('page') : 1;
@@ -77,16 +92,28 @@
         this.tag_groups = temp.results
         this.loading = false;
     },
+    initSliders(){
+        this.sliders.calorySlider.element = rangeSlider(document.querySelector('#calorySlider'), {
+            value: [this.sliders.calorySlider.min, this.sliders.calorySlider.max],
+            min: 0,
+            max: 2000,
+            onInput: (value) => {
+                this.sliders.calorySlider.min = value[0];
+                this.sliders.calorySlider.max = value[1];
+            }
+        })
+    },
     async init() {
         await this.getTagGroups()
         await this.parseUrlParams()
+        this.initSliders()
         await this.getRecipes(this.parseParameters())
     },
     addParameterToURL(paramsString){
     _url = location.href.split('?')[0] + paramsString;
     history.pushState({}, null, _url);
     },
-    clearFilter() {history.pushState({}, null, location.href.split('?')[0]);this.parseUrlParams()},
+    clearFilter() {history.pushState({}, null, location.href.split('?')[0]);this.parseUrlParams(); this.initSliders() },
     async search(){this.params.page=1;await this.getRecipes(this.parseParameters())},
     async next() {
         if (this.nav.next){
@@ -154,6 +181,24 @@
                         </div>
                         <!-- Popup body -->
                         <div class="mt-5">
+                            <div class="mb-4">
+                                <div class="flex items-center mb-4 justify-between">
+                                    <p class="mr-4 text-lg font-extrabold leading-none tracking-tight text-gray-900 dark:text-white">
+                                        {% trans 'nutrients.calories' %}
+                                    </p>
+                                    <div class="flex items-center">
+                                      <span class="mr-2 text-lg font-extrabold leading-none tracking-tight text-gray-900 dark:text-white"
+                                            x-text="store.sliders.calorySlider.min"></span>
+                                        <span class="mr-2 text-lg font-extrabold leading-none tracking-tight text-gray-900 dark:text-white">-</span>
+                                        <span class="text-lg font-extrabold leading-none tracking-tight text-gray-900 dark:text-white"
+                                              x-text="store.sliders.calorySlider.max"></span>
+                                    </div>
+                                </div>
+                                <div id="calorySlider"></div>
+                            </div>
+
+
+                            <!-- Sources -->
                             <div>
                                 <div class="mb-5" x-data="{open: false}">
                                     <h2 id="accordion-collapse-heading-2">
