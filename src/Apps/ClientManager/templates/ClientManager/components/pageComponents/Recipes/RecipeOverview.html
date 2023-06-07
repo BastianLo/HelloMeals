@@ -71,7 +71,6 @@
         await this.requestRecipe(`/api/Recipe${params}`)
     },
     async requestRecipe(url){
-        console.log(this.sliders.calorySlider)
         this.loading = true;
         const urlParams = new URLSearchParams(url);
         this.params.page = urlParams.get('page') ? urlParams.get('page') : 1;
