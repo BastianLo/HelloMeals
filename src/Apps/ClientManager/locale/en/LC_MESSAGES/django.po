@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-08 18:14+0000\n"
+"POT-Creation-Date: 2023-06-08 19:12+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,10 +34,38 @@ msgstr "Settings"
 msgid "base.profile"
 msgstr "Profile"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:28
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:30
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:159
 msgid "common.loading.label"
 msgstr "Loading"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:43
+msgid "nutrients.kcal"
+msgstr "Kalorien"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:48
+msgid "nutrients.fat"
+msgstr "Fat"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:53
+msgid "nutrients.fat_saturated"
+msgstr "Saturated Fat"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:58
+msgid "nutrients.carbs"
+msgstr "Carbs"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:63
+msgid "nutrients.sugar"
+msgstr "Sugar"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:68
+msgid "nutrients.protein"
+msgstr "Protein"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:73
+msgid "nutrients.salt"
+msgstr "Salt"
 
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeIndex.html:6
 msgid "recipe.all.label"

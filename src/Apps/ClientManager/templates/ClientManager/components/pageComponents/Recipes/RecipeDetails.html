@@ -1,7 +1,9 @@
 {% load i18n %}
-<div style="position: absolute; left:20px;right:20px;" x-data="{
+<div class="m-6 mb-24" x-data="{
   store: {
-    recipe: {},
+    recipe: {
+        nutrients: []
+    },
     async requestRecipe(url){
         console.log(url)
         this.loading = true;
@@ -29,5 +31,129 @@
             </button>
         </div>
     </div>
-    <p class="text-sm font-medium text-gray-900 dark:text-white" x-text="store.recipe.websiteLink"></p>
-</div>
+    <div class="bg-white dark:bg-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h1 class="text-3xl font-semibold text-white mb-4" x-text="store.recipe.name"></h1>
+                    <p class="text-base text-gray-700 dark:text-gray-400 mb-4" x-text="store.recipe.headline"></p>
+                    <div class="mb-4">
+                        <template x-if="store.recipe.nutrients.energyKcal">
+                            <span class="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300"
+                                  style="white-space: nowrap;"
+                                  x-text="store.recipe.nutrients.energyKcal + ` {% trans 'nutrients.kcal' %}`"></span>
+                        </template>
+                        <template x-if="store.recipe.nutrients.carbs">
+                            <span class="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300"
+                                  style="white-space: nowrap;"
+                                  x-text="store.recipe.nutrients.carbs + `g {% trans 'nutrients.carbs' %}`"></span>
+                        </template>
+                        <template x-if="store.recipe.nutrients.protein">
+                            <span class="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300"
+                                  style="white-space: nowrap;"
+                                  x-text="store.recipe.nutrients.protein + `g {% trans 'nutrients.protein' %}`"></span>
+                        </template>
+                        <template x-if="store.recipe.nutrients.fat">
+                            <span class="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300"
+                                  style="white-space: nowrap;"
+                                  x-text="store.recipe.nutrients.fat + `g {% trans 'nutrients.fat' %}`"></span>
+                        </template>
+                        <template x-if="store.recipe.nutrients.fatSaturated">
+                            <span class="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300"
+                                  style="white-space: nowrap;"
+                                  x-text="store.recipe.nutrients.fatSaturated + `g {% trans 'nutrients.fat_saturated' %}`"></span>
+                        </template>
+                        <template x-if="store.recipe.nutrients.sugar">
+                            <span class="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300"
+                                  style="white-space: nowrap;"
+                                  x-text="store.recipe.nutrients.sugar + `g {% trans 'nutrients.sugar' %}`"></span>
+                        </template>
+                        <template x-if="store.recipe.nutrients.salt">
+                            <span class="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300"
+                                  style="white-space: nowrap;"
+                                  x-text="store.recipe.nutrients.salt + `g {% trans 'nutrients.salt' %}`"></span>
+                        </template>
+                    </div>
+                    <div class="mb-4">
+                        <template x-for="utensil in store.recipe.utensils">
+                            <span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300"
+                                  x-text="utensil.utensil.name" style="white-space: nowrap;"></span>
+                        </template>
+                    </div>
+                    <p class="text-sm text-gray-900 dark:text-white mb-4" x-text="store.recipe.description"></p>
+                    <div class="mb-4">
+                        <img class="w-full" :src="store.recipe.image" alt="Recipe Image">
+                    </div>
+                </div>
+                <div>
+                    <div>
+                        <h2 class="text-2xl font-semibold text-white mb-4">Ingredients</h2>
+                        <template x-for="group in store.recipe.ingredient_groups">
+                            <template x-if="group.ingredients.length > 0">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-white mb-2" x-text="group.name"></h3>
+                                    <table class="table-auto border-collapse border border-gray-300">
+                                        <thead>
+                                        <tr>
+                                            <th class="px-4 py-2 bg-gray-800 border border-gray-300 text-white">
+                                                Amount
+                                            </th>
+                                            <th class="px-4 py-2 bg-gray-800 border border-gray-300 text-white">
+                                                Unit
+                                            </th>
+                                            <th class="px-4 py-2 bg-gray-800 border border-gray-300 text-white">
+                                                Ingredient
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <template x-for="ingredient in group.ingredients">
+                                            <tr>
+                                                <td class="px-4 py-2 border border-gray-300 text-white"
+                                                    x-text="ingredient.amount"></td>
+                                                <td class="px-4 py-2 border border-gray-300 text-white"
+                                                    x-text="ingredient.unit"></td>
+                                                <td class="px-4 py-2 border border-gray-300 text-white"
+                                                    x-text="ingredient.ingredient.name"></td>
+                                            </tr>
+                                        </template>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </template>
+                        </template>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-14">
+                <h2 class="text-2xl font-semibold text-white mb-4">Work Steps</h2>
+                <hr class="mb-8 border-gray-300">
+                <div class="work-steps-container bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
+                    <div class="list-decimal list-inside text-gray-900 dark:text-white">
+                        <template x-for="(step, index) in store.recipe.work_steps">
+                            <div class="mb-8">
+                                <div class="flex items-start">
+                                    <template x-if="store.recipe.work_steps.length > 1">
+                                        <div x-data="{ completed: false }"
+                                             @click="completed = !completed"
+                                             class="cursor-pointer flex-shrink-0 w-8 h-8 text-white font-semibold rounded-full flex items-center justify-center"
+                                             :class="{'bg-blue-500': !completed, 'bg-green-500': completed}">
+                                            <span x-text="index + 1"></span>
+                                        </div>
+                                    </template>
+                                    <div class="ml-3">
+                        <span class="text-gray-900 dark:text-white ml-1"
+                              x-html="step.description.replaceAll('\n', '<br>').replaceAll('\r', '<br>')"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
