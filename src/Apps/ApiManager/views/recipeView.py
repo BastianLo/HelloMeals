@@ -36,7 +36,7 @@ class RecipeFilterSet(filters.FilterSet):
                                                                         output_field=FloatField()))
         ).filter(similarity__gt=0.5).annotate(
             relevancy=ExpressionWrapper(
-                F('averageRating') * ((F('ratingCount') * F('similarity')) ** 0.1),
+                F('similarity') * ((F('ratingCount') * F('averageRating')) ** 0.05),
                 output_field=FloatField()
             )
         ).order_by('-relevancy')
