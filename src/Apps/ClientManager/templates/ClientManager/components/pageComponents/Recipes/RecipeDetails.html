@@ -4,6 +4,7 @@
     recipe: {
         nutrients: []
     },
+    currentServings: null,
     async requestRecipe(url){
         console.log(url)
         this.loading = true;
@@ -12,6 +13,7 @@
     },
     async init() {
         await this.requestRecipe('/api/FullRecipe/' + location.href.split('/').at(-2))
+        this.currentServings = this.recipe.servings
     },
   }
 }" x-init="await store.init()">
@@ -87,7 +89,16 @@
                 </div>
                 <div>
                     <div>
-                        <h2 class="text-2xl font-semibold text-white mb-4">Ingredients</h2>
+                        <h2 class="text-2xl font-semibold text-white mb-4">{% trans 'settings.grouping.ingredients' %}</h2>
+                        <div class="mt-1">
+                            <div class="flex items-center mb-4">
+                                <label for="servings"
+                                       class="text-gray-900 dark:text-white mr-2">{% trans 'Servings' %}:</label>
+                                <input type="number" id="servings" min="1" step="1"
+                                       class="w-16 py-1 px-2 border border-gray-300 rounded text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                       x-model="store.currentServings">
+                            </div>
+                        </div>
                         <template x-for="group in store.recipe.ingredient_groups">
                             <template x-if="group.ingredients.length > 0">
                                 <div>
@@ -96,13 +107,13 @@
                                         <thead>
                                         <tr>
                                             <th class="px-4 py-2 bg-gray-800 border border-gray-300 text-white">
-                                                Amount
+                                                {% trans 'Amount' %}
                                             </th>
                                             <th class="px-4 py-2 bg-gray-800 border border-gray-300 text-white">
-                                                Unit
+                                                {% trans 'Unit' %}
                                             </th>
                                             <th class="px-4 py-2 bg-gray-800 border border-gray-300 text-white">
-                                                Ingredient
+                                                {% trans 'Ingredient' %}
                                             </th>
                                         </tr>
                                         </thead>
@@ -110,7 +121,7 @@
                                         <template x-for="ingredient in group.ingredients">
                                             <tr>
                                                 <td class="px-4 py-2 border border-gray-300 text-white"
-                                                    x-text="ingredient.amount"></td>
+                                                    x-text="ingredient.amount > 0 ? (ingredient.amount / store.recipe.servings * store.currentServings) : ''"></td>
                                                 <td class="px-4 py-2 border border-gray-300 text-white"
                                                     x-text="ingredient.unit"></td>
                                                 <td class="px-4 py-2 border border-gray-300 text-white"
@@ -126,7 +137,7 @@
                 </div>
             </div>
             <div class="mt-14">
-                <h2 class="text-2xl font-semibold text-white mb-4">Work Steps</h2>
+                <h2 class="text-2xl font-semibold text-white mb-4">{% trans 'Work Steps' %}</h2>
                 <hr class="mb-8 border-gray-300">
                 <div class="work-steps-container bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
                     <div class="list-decimal list-inside text-gray-900 dark:text-white">

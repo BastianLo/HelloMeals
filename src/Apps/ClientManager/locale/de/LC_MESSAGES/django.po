@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-08 19:12+0000\n"
+"POT-Creation-Date: 2023-06-08 20:49+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,38 +34,63 @@ msgstr "Einstellungen"
 msgid "base.profile"
 msgstr "Profil"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:30
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:32
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:159
 msgid "common.loading.label"
 msgstr "Lade"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:43
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:46
 msgid "nutrients.kcal"
 msgstr "Kalorien"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:48
-msgid "nutrients.fat"
-msgstr "Fett"
-
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:53
-msgid "nutrients.fat_saturated"
-msgstr "Gesättigte Fette"
-
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:58
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:51
 msgid "nutrients.carbs"
 msgstr "Kohlenhydrate"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:63
-msgid "nutrients.sugar"
-msgstr "Zucker"
-
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:68
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:56
 msgid "nutrients.protein"
 msgstr "Protein"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:73
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:61
+msgid "nutrients.fat"
+msgstr "Fett"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:66
+msgid "nutrients.fat_saturated"
+msgstr "Gesättigte Fette"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:71
+msgid "nutrients.sugar"
+msgstr "Zucker"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:76
 msgid "nutrients.salt"
 msgstr "Salz"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:92
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIndex.html:26
+msgid "settings.grouping.ingredients"
+msgstr "Zutaten"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:96
+msgid "Servings"
+msgstr "Portionen"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:110
+msgid "Amount"
+msgstr "Menge"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:113
+msgid "Unit"
+msgstr "Einheit"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:116
+msgid "Ingredient"
+msgstr "Zutat"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:140
+msgid "Work Steps"
+msgstr "Arbeitsschritte"
 
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeIndex.html:6
 msgid "recipe.all.label"
@@ -177,10 +202,6 @@ msgstr "Stop"
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIndex.html:15
 msgid "settings.grouping.tags"
 msgstr "Tags"
-
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIndex.html:26
-msgid "settings.grouping.ingredients"
-msgstr "Zutaten"
 
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:192
 msgid "common.delete"
