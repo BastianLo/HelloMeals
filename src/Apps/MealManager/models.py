@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
+from django.utils.translation import gettext_lazy as _
 
 
 class Ingredient(models.Model):
@@ -135,6 +136,15 @@ class Recipe(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True)
 
     ingredient_groups = models.ManyToManyField(IngredientGroup)
+
+    class RecipeTypes(models.IntegerChoices):
+        main = 0, _("Hauptgericht")
+        breakfast = 1, _("Frühstück")
+
+    recipeType = models.IntegerField(
+        choices=RecipeTypes.choices,
+        default=RecipeTypes.main,
+    )
 
     ### Shared ###
     # All

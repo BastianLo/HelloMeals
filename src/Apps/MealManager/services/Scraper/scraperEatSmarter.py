@@ -80,6 +80,7 @@ class KSScraper:
             defaults={
                 "name": recipe_json["title"],
                 "source": 5,
+                "recipeType": 1,
                 "healthScore": recipe_json["healthScore"],
                 "isPremium": recipe_json["isPremium"],
                 "headline": recipe_json["subtitle"],
@@ -191,9 +192,10 @@ class KSScraper:
             )[0]
 
     def scrape(self, index):
+        # TODO: Back to main course only
         headers = {"api-key": "c7f8ab363cdb3cd405cb41f79464d7b3d8089eab"}
         response = requests.request("GET",
-                                    f"https://api.eatsmarter.de/v2/json/search/recipe?hs=8&sort=voting&page={index}&f[0]=field_secondary_recipe_category%3A3855",
+                                    f"https://api.eatsmarter.de/v2/json/search/recipe?hs=8&sort=voting&page={index}&f[0]=field_secondary_recipe_category%3A3817",
                                     headers=headers)
         items = response.json()["results"]
         if len(items) == 0:

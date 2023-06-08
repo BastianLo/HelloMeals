@@ -20,6 +20,7 @@ class RecipeFilterSet(filters.FilterSet):
     cloned_from_null = filters.BooleanFilter(field_name='clonedFrom', lookup_expr='isnull')
     srch = django_filters.CharFilter(method='filter_search')
     difficulty = django_filters.NumberFilter(field_name='difficulty')
+    recipeType = django_filters.NumberFilter(field_name='recipeType')
     ingredient_count__lt = django_filters.NumberFilter(
         method='filter_ingredient_count',
         label='Ingredient Count less than',
