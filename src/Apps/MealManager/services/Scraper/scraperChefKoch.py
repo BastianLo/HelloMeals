@@ -40,8 +40,6 @@ class Scraper:
         for main_tag in main_tags:
             r = requests.request("GET",
                                  f"https://api.chefkoch.de/v2/search-gateway/recipes?tags={main_tag[0]}&minimumRating={global_preferences['scraper__Chefkoch_Minimum_Rating']}&limit=0&offset=0")
-            print(
-                f"https://api.chefkoch.de/v2/search-gateway/recipes?tags={main_tag[0]}&minimumRating={global_preferences['scraper__Chefkoch_Minimum_Rating']}&limit=0&offset=0")
             tags = self.create_all_tags(r.json()["tagGroups"])
             for tag in tags:
                 self.config.set_ck_index(0)
@@ -82,7 +80,6 @@ class Scraper:
         return self.work_thread.is_alive()
 
     def create_recipe(self, recipe_json, recipe_type):
-        print(recipe_type, recipe_json["title"])
         if recipe_json["previewImageUrlTemplate"] is None or recipe_json["rating"] is None:
             return None
         image_url = recipe_json["previewImageUrlTemplate"].replace("<format>", "crop-720x480")

@@ -173,6 +173,8 @@ class KSScraper:
         if "utensils" not in recipe_json:
             return None
         for utensil_json in recipe_json["utensils"]:
+            if "name" not in utensil_json:
+                continue
             utensil_id = utensil_json["id"] if "id" in utensil_json else str(
                 hash(utensil_json["name"]["rendered"]))
             utensil = Utensil.objects.update_or_create(
