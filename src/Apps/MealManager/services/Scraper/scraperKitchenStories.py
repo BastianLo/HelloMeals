@@ -72,11 +72,22 @@ class KSScraper:
         if "tags" not in recipe_json or "amount" not in recipe_json["servings"] or "duration" not in recipe_json:
             return None
 
-        # Only save recipes that are main meals or breakfast:
-        if len([tag for tag in recipe_json["tags"] if tag["id"] == "9d531987-ae3e-43c4-bc06-7848ddbc825f"]) > 0:
-            recipe_type = 1
-        elif len([tag for tag in recipe_json["tags"] if tag["id"] == "f622a099-d5c2-4db2-a689-e7f856db38a8"]) > 0:
+        # Only save recipes that have certain categories:
+        # Main meal
+        if len([tag for tag in recipe_json["tags"] if tag["id"] == "f622a099-d5c2-4db2-a689-e7f856db38a8"]) > 0:
             recipe_type = 0
+        # Breakfast
+        elif len([tag for tag in recipe_json["tags"] if tag["id"] == "9d531987-ae3e-43c4-bc06-7848ddbc825f"]) > 0:
+            recipe_type = 1
+        # Dessert
+        elif len([tag for tag in recipe_json["tags"] if tag["id"] == "add432c4-97ce-4562-b7e8-5b7495a4b0b9"]) > 0:
+            recipe_type = 2
+        # Baking
+        elif len([tag for tag in recipe_json["tags"] if tag["id"] == "5c724830-b552-4afe-9b87-3508f14b68be"]) > 0:
+            recipe_type = 3
+        # Drinks
+        elif len([tag for tag in recipe_json["tags"] if tag["id"] == "4e9fe650-bc22-47a6-8e2b-463b46e71da3"]) > 0:
+            recipe_type = 4
         else:
             logging.info(f"Skipping recipe {recipe_json['id']} because recipe is not main")
             return None

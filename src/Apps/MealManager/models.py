@@ -140,6 +140,9 @@ class Recipe(models.Model):
     class RecipeTypes(models.IntegerChoices):
         main = 0, _("Hauptgericht")
         breakfast = 1, _("Frühstück")
+        dessert = 2, _("Dessert")
+        baking = 3, _("Backen")
+        drink = 4, _("Getränke")
 
     recipeType = models.IntegerField(
         choices=RecipeTypes.choices,

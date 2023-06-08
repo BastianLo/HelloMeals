@@ -36,7 +36,7 @@ class Scraper:
         }
 
     def work(self):
-        main_tags = [(53, 1), (21, 0)]
+        main_tags = [(11, 4), (23, 3), (90, 2), (53, 1), (21, 0)]
         for main_tag in main_tags:
             r = requests.request("GET",
                                  f"https://api.chefkoch.de/v2/search-gateway/recipes?tags={main_tag[0]}&minimumRating={global_preferences['scraper__Chefkoch_Minimum_Rating']}&limit=0&offset=0")
