@@ -86,7 +86,7 @@ class KSScraper:
         elif len([tag for tag in recipe_json["tags"] if tag["id"] == "5c724830-b552-4afe-9b87-3508f14b68be"]) > 0:
             recipe_type = 3
         # Drinks
-        elif len([tag for tag in recipe_json["tags"] if tag["id"] == "4e9fe650-bc22-47a6-8e2b-463b46e71da3"]) > 0:
+        elif len([tag for tag in recipe_json["tags"] if tag["id"] == "7e7b2692-1a86-4883-9cd6-45625e434875"]) > 0:
             recipe_type = 4
         else:
             logging.info(f"Skipping recipe {recipe_json['id']} because recipe is not main")
