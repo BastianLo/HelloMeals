@@ -33,6 +33,7 @@ class KSScraper:
         categories = [(4161, 4), (4029, 3), (3857, 2), (3817, 1), (3855, 0)]
         for category in categories:
             self.config.set_es_index(0)
+            self.config.set_es_max(100)
             try:
                 while self.active and self.config.es_index < self.config.es_max:
                     self.scrape(self.config.es_index, category)
