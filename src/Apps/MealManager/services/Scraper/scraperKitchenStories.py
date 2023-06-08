@@ -245,6 +245,8 @@ class KSScraper:
                 image_url = step_json["image"]["url"]
             else:
                 image_url = None
+            if "text" not in step_json:
+                continue
             step = WorkSteps.objects.update_or_create(
                 id=recipe.helloFreshId + str(i),
                 defaults={
