@@ -1,6 +1,6 @@
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
 
 
 def get_base_context():
@@ -9,6 +9,7 @@ def get_base_context():
 
 def navigation_history(request):
     request.session['previous_url'] = request.META.get('HTTP_REFERER')
+
 
 def back_view(request):
     # Retrieve the previous URL from the session
@@ -19,6 +20,7 @@ def back_view(request):
     else:
         # Handle the case when there is no previous URL available
         return HttpResponse("Previous URL not found.")
+
 
 @login_required(login_url='/accounts/login/')
 def index(request):
@@ -33,11 +35,20 @@ def recipe_index(request):
     context = get_base_context()
     return render(request, "ClientManager/pages/Recipes/RecipeIndex.html", context)
 
+
 @login_required(login_url='/accounts/login/')
 def recipe_overview(request):
     navigation_history(request)
     context = get_base_context()
     return render(request, "ClientManager/pages/Recipes/RecipeOverview.html", context)
+
+
+@login_required(login_url='/accounts/login/')
+def recipe_favorite(request):
+    navigation_history(request)
+    context = get_base_context()
+    return render(request, "ClientManager/pages/Recipes/RecipeFavorites.html", context)
+
 
 @login_required(login_url='/accounts/login/')
 def recipe_details(request, recipe_id):
@@ -52,11 +63,13 @@ def settings_index(request):
     context = get_base_context()
     return render(request, "ClientManager/pages/Settings/SettingsIndex.html", context)
 
+
 @login_required(login_url='/accounts/login/')
 def settings_grouping_index(request):
     navigation_history(request)
     context = get_base_context()
     return render(request, "ClientManager/pages/Settings/SettingsGroupingIndex.html", context)
+
 
 @login_required(login_url='/accounts/login/')
 def settings_grouping_tag(request):
@@ -64,12 +77,12 @@ def settings_grouping_tag(request):
     context = get_base_context()
     return render(request, "ClientManager/pages/Settings/SettingsGroupingTag.html", context)
 
+
 @login_required(login_url='/accounts/login/')
 def settings_downloader(request):
     navigation_history(request)
     context = get_base_context()
     return render(request, "ClientManager/pages/Settings/SettingsDownloader.html", context)
-
 
 
 def handler404(request, *args, **argv):

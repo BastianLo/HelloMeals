@@ -8,8 +8,9 @@ from django.db.models import Count, F, FloatField, ExpressionWrapper, Q
 from django.db.models.functions import Coalesce
 from django_filters import rest_framework as filters
 from rest_framework import generics
-from rest_framework.decorators import permission_classes
+from rest_framework.decorators import permission_classes, api_view
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from util.pagination import RqlPagination
 
 
@@ -26,9 +27,19 @@ class RecipeFilterSet(filters.FilterSet):
         label='Ingredient Count less than',
     )
     relevancy = django_filters.CharFilter(method='filter_relevancy')
+    favorited = django_filters.BooleanFilter(field_name='favorited_by', method='filter_favorited')
 
     calories_gt = django_filters.NumberFilter(field_name='nutrients__energyKcal', lookup_expr='gt')
     calories_lt = django_filters.NumberFilter(field_name='nutrients__energyKcal', lookup_expr='lt')
+
+    def filter_favorited(self, queryset, name, value):
+        user = self.request.user
+        if user.is_authenticated:
+            if value:
+                return queryset.filter(favoriteBy=user)
+            else:
+                return queryset.exclude(favoriteBy=user)
+        return queryset.none()
 
     def filter_search(self, queryset, name, value):
         return queryset.annotate(
@@ -121,6 +132,7 @@ class RecipeBaseList(generics.ListAPIView):
             if fields:
                 fields = fields.split(',')
                 meta = RecipeBaseSerializer.Meta
+                meta.exclude = None
                 meta.fields = fields
                 return type('DynamicRecipeBaseSerializer', (RecipeBaseSerializer,), {'Meta': meta})
             else:
@@ -155,3 +167,26 @@ class RecipeBaseDetail(generics.RetrieveAPIView):
 
     def get_queryset(self):
         return Recipe.objects.all()
+
+
+@api_view(['POST'])
+def set_favorite(request, helloFreshId, favorite):
+    # Find the recipe with the specified helloFreshId
+    try:
+        recipe = Recipe.objects.get(helloFreshId=helloFreshId)
+    except Recipe.DoesNotExist:
+        return Response({'error': 'Recipe not found'}, status=404)
+
+    # Update the favorite status of the recipe
+    if favorite.lower() == 'true':
+        recipe.favoriteBy.add(request.user)
+    else:
+        recipe.favoriteBy.remove(request.user)
+    recipe.save()
+
+    response = {
+        'message': 'Favorite status updated successfully',
+        'helloFreshId': helloFreshId,
+    }
+
+    return Response(response)

@@ -104,11 +104,18 @@ class RecipeBaseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        exclude = []
-        fields = '__all__'
+        exclude = ['favoriteBy']
 
     similarity = serializers.SerializerMethodField()
     relevancy = serializers.SerializerMethodField()
+    favorited = serializers.SerializerMethodField()
+
+    def get_favorited(self, obj):
+        request = self.context.get('request')
+        user = request.user
+        if user.is_authenticated:
+            return obj.favoriteBy.filter(id=user.id).exists()
+        return False
 
     def get_similarity(self, obj):
         search = self.context.get('request').query_params.get('srch')
@@ -163,7 +170,16 @@ class RecipeFullSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        exclude = []
+        exclude = ['favoriteBy']
+
+    favorited = serializers.SerializerMethodField()
+
+    def get_favorited(self, obj):
+        request = self.context.get('request')
+        user = request.user
+        if user.is_authenticated:
+            return obj.favoriteBy.filter(id=user.id).exists()
+        return False
 
     def get_utensils(self, instance):
         recipe_utensils = RecipeUtensil.objects.filter(recipe=instance)

@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
@@ -136,6 +137,7 @@ class Recipe(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True)
 
     ingredient_groups = models.ManyToManyField(IngredientGroup)
+    favoriteBy = models.ManyToManyField(User, related_name='favorite_recipes')
 
     class RecipeTypes(models.IntegerChoices):
         main = 0, _("Hauptgericht")
