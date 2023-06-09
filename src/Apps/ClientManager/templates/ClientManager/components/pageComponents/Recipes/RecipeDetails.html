@@ -86,9 +86,9 @@
                                   x-text="store.recipe.nutrients.salt + `g {% trans 'nutrients.salt' %}`"></span>
                         </template>
                     </div>
-                    <div class="mb-4">
+                    <div class="mb-4 flex flex-wrap">
                         <template x-for="utensil in store.recipe.utensils">
-                            <span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300"
+                            <span class="bg-green-100 text-green-800 text-xs font-medium mr-2 mb-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300"
                                   x-text="utensil.utensil.name" style="white-space: nowrap;"></span>
                         </template>
                     </div>
@@ -113,36 +113,44 @@
                             <template x-if="group.ingredients.length > 0">
                                 <div>
                                     <h3 class="text-lg font-semibold text-white mb-2" x-text="group.name"></h3>
-                                    <table class="table-auto border-collapse border border-gray-300">
-                                        <thead>
-                                        <tr>
-                                            <th class="px-4 py-2 bg-gray-800 border border-gray-300 text-white">
-                                                {% trans 'Amount' %}
-                                            </th>
-                                            <th class="px-4 py-2 bg-gray-800 border border-gray-300 text-white">
-                                                {% trans 'Unit' %}
-                                            </th>
-                                            <th class="px-4 py-2 bg-gray-800 border border-gray-300 text-white">
-                                                {% trans 'Ingredient' %}
-                                            </th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <template x-for="ingredient in group.ingredients">
+                                    <div class="overflow-x-auto">
+                                        <table class="table-auto border-collapse border border-gray-300">
+                                            <colgroup>
+                                                <col class="w-1/6">
+                                                <col class="w-1/6">
+                                                <col class="w-4/6">
+                                            </colgroup>
+                                            <thead>
                                             <tr>
-                                                <td class="px-4 py-2 border border-gray-300 text-white"
-                                                    x-text="ingredient.amount > 0 ? (ingredient.amount / store.recipe.servings * store.currentServings) : ''"></td>
-                                                <td class="px-4 py-2 border border-gray-300 text-white"
-                                                    x-text="ingredient.unit"></td>
-                                                <td class="px-4 py-2 border border-gray-300 text-white"
-                                                    x-text="ingredient.ingredient.name"></td>
+                                                <th class="px-4 py-2 bg-gray-800 border border-gray-300 text-white">
+                                                    {% trans 'Amount' %}
+                                                </th>
+                                                <th class="px-4 py-2 bg-gray-800 border border-gray-300 text-white">
+                                                    {% trans 'Unit' %}
+                                                </th>
+                                                <th class="px-4 py-2 bg-gray-800 border border-gray-300 text-white">
+                                                    {% trans 'Ingredient' %}
+                                                </th>
                                             </tr>
-                                        </template>
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                            <template x-for="ingredient in group.ingredients">
+                                                <tr>
+                                                    <td class="px-2 py-2 border border-gray-300 text-white max-w-xs"
+                                                        x-text="ingredient.amount > 0 ? Math.round(ingredient.amount / store.recipe.servings * store.currentServings*100)/100 : ''"></td>
+                                                    <td class="px-4 py-2 border border-gray-300 text-white"
+                                                        x-text="ingredient.unit"></td>
+                                                    <td class="px-4 py-2 border border-gray-300 text-white break-all"
+                                                        x-text="ingredient.ingredient.name"></td>
+                                                </tr>
+                                            </template>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </template>
                         </template>
+
                     </div>
                 </div>
             </div>
