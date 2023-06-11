@@ -6,9 +6,16 @@ from .models import *
 ### Ingredient ###
 
 class IngredientSerializer(serializers.ModelSerializer):
+    children = serializers.SerializerMethodField()
+
+    def get_children(self, ingredient):
+        children = Ingredient.objects.filter(parent=ingredient)
+        serializer = IngredientSerializer(children, many=True)
+        return serializer.data
+
     class Meta:
         model = Ingredient
-        fields = "__all__"
+        fields = ["name", "children", "helloFreshId", "image", "HelloFreshImageUrl"]
 
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):

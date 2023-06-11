@@ -9,8 +9,8 @@ class Ingredient(models.Model):
     helloFreshId = models.TextField(primary_key=True, max_length=255, unique=True)
 
     name = models.CharField(max_length=255)
-    image = models.ImageField(upload_to="images/ingredients")
-    HelloFreshImageUrl = models.CharField(max_length=255, null=True)
+    image = models.ImageField(upload_to="images/ingredients", null=True, blank=True)
+    HelloFreshImageUrl = models.CharField(max_length=255, null=True, blank=True)
     parent = models.ForeignKey("Ingredient", on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):

@@ -25,5 +25,5 @@ class IngredientList(generics.ListAPIView):
         return IngredientSerializer
 
     def get_queryset(self):
-        recipes = Ingredient.objects.all()
+        recipes = Ingredient.objects.filter(parent=None)
         return recipes
