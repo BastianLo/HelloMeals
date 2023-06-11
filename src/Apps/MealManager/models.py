@@ -5,8 +5,19 @@ from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
 
+class IngredientManager(models.Manager):
+    def update_or_create(self, **kwargs):
+        name = kwargs.get('name')
+        existing_object = self.get_queryset().filter(name=name).first()
+        if existing_object:
+            return existing_object
+        return super().update_or_create(**kwargs)
+
+
 class Ingredient(models.Model):
     helloFreshId = models.TextField(primary_key=True, max_length=255, unique=True)
+
+    objects = IngredientManager()
 
     name = models.CharField(max_length=255)
     image = models.ImageField(upload_to="images/ingredients", null=True, blank=True)
