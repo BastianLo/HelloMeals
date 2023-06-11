@@ -37,13 +37,14 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
-                    <h1 class="text-3xl font-semibold text-white mb-4" x-text="store.recipe.name"></h1>
+                    <h1 class="text-3xl font-semibold dark:text-white mb-4" x-text="store.recipe.name"></h1>
                     <p class="text-base text-gray-700 dark:text-gray-400" x-text="store.recipe.headline"></p>
                     <template x-if="store.recipe.websiteLink !== null">
                         <a :href="store.recipe.websiteLink" target="_blank" rel="noopener noreferrer">
                             <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5"
                                  viewBox="0 0 24 24"
-                                 xmlns="http://www.w3.org/2000/svg" class="inline-block w-5 h-5 mb-1 mr-1 text-white">
+                                 xmlns="http://www.w3.org/2000/svg"
+                                 class="inline-block w-5 h-5 mb-1 mr-1 dark:text-white">
                                 <path d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"
                                       stroke-linecap="round" stroke-linejoin="round"></path>
                             </svg>
@@ -99,7 +100,7 @@
                 </div>
                 <div>
                     <div>
-                        <h2 class="text-2xl font-semibold text-white mb-4">{% trans 'settings.grouping.ingredients' %}</h2>
+                        <h2 class="text-2xl font-semibold dark:text-white mb-4">{% trans 'settings.grouping.ingredients' %}</h2>
                         <div class="mt-1">
                             <div class="flex items-center mb-4">
                                 <label for="servings"
@@ -112,7 +113,7 @@
                         <template x-for="group in store.recipe.ingredient_groups">
                             <template x-if="group.ingredients.length > 0">
                                 <div>
-                                    <h3 class="text-lg font-semibold text-white mb-2" x-text="group.name"></h3>
+                                    <h3 class="text-lg font-semibold dark:text-white mb-2" x-text="group.name"></h3>
                                     <div class="overflow-x-auto">
                                         <table class="table-auto border-collapse border border-gray-300">
                                             <colgroup>
@@ -136,11 +137,11 @@
                                             <tbody>
                                             <template x-for="ingredient in group.ingredients">
                                                 <tr>
-                                                    <td class="px-2 py-2 border border-gray-300 text-white max-w-xs"
+                                                    <td class="px-2 py-2 border border-gray-300 dark:text-white max-w-xs"
                                                         x-text="ingredient.amount > 0 ? Math.round(ingredient.amount / store.recipe.servings * store.currentServings*100)/100 : ''"></td>
-                                                    <td class="px-4 py-2 border border-gray-300 text-white"
+                                                    <td class="px-4 py-2 border border-gray-300 dark:text-white"
                                                         x-text="ingredient.unit"></td>
-                                                    <td class="px-4 py-2 border border-gray-300 text-white break-all"
+                                                    <td class="px-4 py-2 border border-gray-300 dark:text-white break-all"
                                                         x-text="ingredient.ingredient.name"></td>
                                                 </tr>
                                             </template>
@@ -155,7 +156,7 @@
                 </div>
             </div>
             <div class="mt-14">
-                <h2 class="text-2xl font-semibold text-white mb-4">{% trans 'Work Steps' %}</h2>
+                <h2 class="text-2xl font-semibold dark:text-white mb-4">{% trans 'Work Steps' %}</h2>
                 <hr class="mb-8 border-gray-300">
                 <div class="work-steps-container bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
                     <div class="list-decimal list-inside text-gray-900 dark:text-white">
