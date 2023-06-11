@@ -11,6 +11,7 @@ class Ingredient(models.Model):
     name = models.CharField(max_length=255)
     image = models.ImageField(upload_to="images/ingredients")
     HelloFreshImageUrl = models.CharField(max_length=255, null=True)
+    parent = models.ForeignKey("Ingredient", on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return f"{self.name} ({self.helloFreshId})"
@@ -113,15 +114,6 @@ class Tag(models.Model):
         return f"{self.name} ({self.helloFreshId})"
 
 
-class Category(models.Model):
-    helloFreshId = models.TextField(primary_key=True, max_length=255, unique=True)
-    type = models.CharField(max_length=255)
-    name = models.CharField(max_length=255)
-
-    def __str__(self):
-        return f"{self.name} ({self.helloFreshId})"
-
-
 class IngredientGroup(models.Model):
     id = models.TextField(primary_key=True, max_length=255, unique=True)
     name = models.CharField(max_length=255, null=True, blank=True)
@@ -134,7 +126,6 @@ class Recipe(models.Model):
     source = models.IntegerField(default=1)
 
     nutrients = models.ForeignKey(Nutrients, on_delete=models.SET_NULL, blank=True, null=True)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True)
 
     ingredient_groups = models.ManyToManyField(IngredientGroup)
     favoriteBy = models.ManyToManyField(User, related_name='favorite_recipes')
