@@ -7,10 +7,10 @@ from django.utils.translation import gettext_lazy as _
 
 class IngredientManager(models.Manager):
     def update_or_create(self, **kwargs):
-        name = kwargs.get('name')
+        name = kwargs["defaults"]["name"]
         existing_object = self.get_queryset().filter(name=name).first()
         if existing_object:
-            return existing_object
+            return existing_object, False
         return super().update_or_create(**kwargs)
 
 
