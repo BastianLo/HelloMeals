@@ -17,7 +17,7 @@ class IngredientFilterSet(filters.FilterSet):
     def filter_search(self, queryset, name, value):
         return queryset.annotate(
             similarity=(TrigramSimilarity('name', value))
-        ).filter(similarity__gt=0.5).annotate(
+        ).filter(similarity__gt=0.3).annotate(
             relevancy=ExpressionWrapper(
                 F('similarity'),
                 output_field=FloatField()
