@@ -13,6 +13,13 @@ class IngredientSerializer(serializers.ModelSerializer):
         serializer = IngredientSerializer(children, many=True)
         return serializer.data
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        print(instance.parent)
+        if instance.parent is not None and 'children' in data:
+            del data['children']
+        return data
+
     class Meta:
         model = Ingredient
         fields = ["name", "children", "helloFreshId", "image", "HelloFreshImageUrl"]

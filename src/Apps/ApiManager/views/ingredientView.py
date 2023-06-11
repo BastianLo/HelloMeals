@@ -5,8 +5,9 @@ from django.contrib.postgres.search import TrigramSimilarity
 from django.db.models import F, FloatField, ExpressionWrapper
 from django_filters import rest_framework as filters
 from rest_framework import generics
-from rest_framework.decorators import permission_classes
+from rest_framework.decorators import permission_classes, api_view
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from util.pagination import RqlPagination
 
 
@@ -56,3 +57,26 @@ class IngredientList(generics.ListAPIView):
     def get_queryset(self):
         recipes = Ingredient.objects.filter(parent=None)
         return recipes
+
+
+@api_view(['POST'])
+def assign_ingredient_parent(request, helloFreshId, parentId=None):
+    try:
+        source = Ingredient.objects.get(helloFreshId=helloFreshId)
+    except Ingredient.DoesNotExist:
+        return Response({'error': 'Recipe not found'}, status=404)
+    try:
+        parent = Ingredient.objects.get(helloFreshId=parentId)
+    except:
+        parent = None
+    if parent is not None and parent.parent is not None:
+        return Response({'error': 'Can not assign a parent which is already a child'}, status=400)
+
+    source.parent = parent
+    source.save()
+    response = {
+        'message': 'Ingredient assigned successfully',
+        'helloFreshId': helloFreshId,
+    }
+
+    return Response(response)

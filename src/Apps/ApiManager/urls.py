@@ -47,6 +47,8 @@ urlpatterns = [
     path('Recipe/<str:helloFreshId>/favorite/<str:favorite>', recipeView.set_favorite),
 
     path('Ingredient', ingredientView.IngredientList.as_view()),
+    path('Ingredient/<str:helloFreshId>/assign/<str:parentId>', ingredientView.assign_ingredient_parent),
+    path('Ingredient/<str:helloFreshId>/assign/', ingredientView.assign_ingredient_parent),
 
     path('Tag/Merge', tagView.TagMergeListCreate.as_view()),
     path('Tag/Group', tagView.TagGroupList.as_view()),
