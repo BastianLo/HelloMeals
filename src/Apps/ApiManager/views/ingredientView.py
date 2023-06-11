@@ -1,8 +1,7 @@
 import django_filters
 from Apps.MealManager.models import Ingredient
 from Apps.MealManager.serializers import IngredientSerializer
-from django.contrib.postgres.search import TrigramSimilarity
-from django.db.models import F, FloatField, ExpressionWrapper
+from django.db.models import F
 from django_filters import rest_framework as filters
 from rest_framework import generics
 from rest_framework.decorators import permission_classes, api_view
@@ -16,14 +15,7 @@ class IngredientFilterSet(filters.FilterSet):
     relevancy = django_filters.CharFilter(method='filter_relevancy')
 
     def filter_search(self, queryset, name, value):
-        return queryset.annotate(
-            similarity=(TrigramSimilarity('name', value))
-        ).filter(similarity__gt=0.3).annotate(
-            relevancy=ExpressionWrapper(
-                F('similarity'),
-                output_field=FloatField()
-            )
-        ).order_by('-relevancy')
+        return queryset.filter(name__icontains=value)
 
     def filter_relevancy(self, queryset, name, value):
         return queryset.annotate(
