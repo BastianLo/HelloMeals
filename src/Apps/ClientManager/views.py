@@ -79,6 +79,13 @@ def settings_grouping_tag(request):
 
 
 @login_required(login_url='/accounts/login/')
+def settings_grouping_ingredients(request):
+    navigation_history(request)
+    context = get_base_context()
+    return render(request, "ClientManager/pages/Settings/SettingsGroupingIngredients.html", context)
+
+
+@login_required(login_url='/accounts/login/')
 def settings_downloader(request):
     navigation_history(request)
     context = get_base_context()

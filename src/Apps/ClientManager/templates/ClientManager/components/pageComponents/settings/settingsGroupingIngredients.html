@@ -1,0 +1,140 @@
+{% load i18n %}
+
+<div x-data="{
+    store: {
+        overviewSearchString: null,
+        ingredients: [],
+        nav: {},
+
+        getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        },
+
+        async sendGet(url){
+            return (await (await fetch(url)).json());
+        },
+
+        async mergeTag(tag){
+        },
+        async mergeTags(){
+            await this.selected.forEach(tag => this.mergeTag(tag).then())
+            await this.getTagGroups()
+        },
+        async getIngredients(url=null){
+            params = ''
+            if (this.overviewSearchString !== null){params += '&srch=' + this.overviewSearchString}
+            furl = url ? url : '/api/Ingredient?ordering=name&page_size=24' + params
+            temp = (await this.sendGet(furl))
+            this.ingredients = temp.results
+            this.nav = temp
+
+        },
+        async init(){
+        await this.getIngredients()
+        },
+        async next() {
+        if (this.nav.next){
+            await this.getIngredients(this.nav.next);
+            window.scrollTo({ top: 0});
+            }
+        },
+        async previous() {
+            if (this.nav.previous){
+                await this.getIngredients(this.nav.previous);
+                window.scrollTo({ top: 0 });
+            }
+        },
+
+    }
+
+}" x-init="store.init()" class="mb-24">
+
+    <div class="mt-5 mb-5 flex flex-col items-center">
+        <label for="default-search"
+               class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">{% trans 'search' %}</label>
+        <div x-data="{searchString: ''}" class="relative" style="width: 400px">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none"
+                     stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+            <input type="search" id="default-search" @keypress="await store.getIngredients()"
+                   x-model="store.overviewSearchString"
+                   class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                   placeholder="{% trans 'recipe.name' %}" required>
+        </div>
+
+    </div>
+    <!-- Navigation -->
+    <div class="flex flex-col items-center">
+            <span class="text-sm text-gray-700 dark:text-gray-400">
+              {% trans 'common.navigation.showing' %} <span class="font-semibold text-gray-900 dark:text-white"
+                                                            x-text="store.nav.start"></span> {% trans 'common.navigation.to' %} <span
+                    class="font-semibold text-gray-900 dark:text-white"
+                    x-text="store.nav.end"></span> {% trans 'common.navigation.of' %} <span
+                    class="font-semibold text-gray-900 dark:text-white"
+                    x-text="store.nav.count"></span> {% trans 'common.navigation.entries' %}
+            </span>
+        <div class="inline-flex mt-2 xs:mt-0">
+            <button @click="await store.previous()"
+                    class="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-l hover:bg-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                {% trans 'common.navigation.previous' %}
+            </button>
+            <button @click="await store.next()"
+                    class="px-4 py-2 text-sm font-medium text-white bg-gray-800 border-0 border-l border-gray-700 rounded-r hover:bg-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                {% trans 'common.navigation.next' %}
+            </button>
+        </div>
+    </div>
+    <div class="mt-5 mb-5 flex flex-col items-center">
+        <ul>
+            <template x-for="ingredient in store.ingredients">
+                <div x-data="{ open: false }">
+                    <li class="px-2 hover:bg-secondary-100 dark:text-white flex items-center">
+                        <template x-if="ingredient.children.length > 0">
+                            <svg
+                                    @click="open = !open"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke-width="2.5"
+                                    stroke="currentColor"
+                                    class="h-4 w-4 mr-1 cursor-pointer"
+                                    :class="{ 'transform rotate-90': open }">
+                                <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        d="M8.25 4.5l7.5 7.5-7.5 7.5"
+                                />
+                            </svg>
+
+                        </template>
+                        <span x-text="ingredient.name"></span>
+                    </li>
+                    <template x-if="open && ingredient.children.length > 0">
+                        <template x-for="subingredient in ingredient.children">
+                            <ul class="ml-8">
+                                <li class="px-2 hover:bg-secondary-100 dark:text-white"
+                                    x-text="subingredient.name"></li>
+                            </ul>
+                        </template>
+                    </template>
+                </div>
+            </template>
+
+        </ul>
+    </div>
+</div>

@@ -13,6 +13,7 @@ from util.pagination import RqlPagination
 class IngredientFilterSet(filters.FilterSet):
     srch = django_filters.CharFilter(method='filter_search')
     relevancy = django_filters.CharFilter(method='filter_relevancy')
+    ordering = django_filters.OrderingFilter(fields=['name'])
 
     def filter_search(self, queryset, name, value):
         return queryset.filter(name__icontains=value)
