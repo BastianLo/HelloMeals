@@ -7,6 +7,7 @@
         ingredients: [],
         targetIngredients: [],
         nav: {},
+        tnav: {},
         mergeDialog: false,
         sourceIngredients: [],
         targetIngredient: null,
@@ -50,20 +51,25 @@
             })
             this.sourceIngredients = []
         },
-        async getIngredients(url=null){
+        async getIngredientsRequest(url=null){
             params = ''
             if (this.overviewSearchString !== null){params += '&srch=' + this.overviewSearchString}
             furl = url ? url : '/api/Ingredient?ordering=name&page_size=48' + params
             temp = (await this.sendGet(furl))
+            return temp
+        },
+        async getIngredients(url=null){
+            temp = await this.getIngredientsRequest(url)
             this.ingredients = temp.results
             this.nav = temp
         },
         async getTargetIngredients(){
             params = ''
             if (this.targetSearchString !== null){params += '&srch=' + this.targetSearchString}
-            furl = '/api/Ingredient?ordering=name&page_size=24' + params
+            furl = '/api/Ingredient?ordering=name&page_size=48' + params
             temp = (await this.sendGet(furl))
             this.targetIngredients = temp.results
+            this.tnav = temp
         },
         async init(){
         await this.getIngredients()
@@ -78,6 +84,21 @@
             if (this.nav.previous){
                 await this.getIngredients(this.nav.previous);
                 window.scrollTo({ top: 0 });
+            }
+        },
+        async targetNext() {
+        if (this.tnav.next){
+            temp = await this.getIngredientsRequest(this.tnav.next);
+            this.targetIngredients = temp.results
+            this.tnav = temp
+
+            }
+        },
+        async targetPrevious() {
+            if (this.tnav.previous){
+                temp = await this.getIngredientsRequest(this.tnav.previous);
+                this.targetIngredients = temp.results
+                this.tnav = temp
             }
         },
 
@@ -154,6 +175,31 @@
                            bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600
                            dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                            placeholder="Tag Group Name" required>
+                </div>
+                <!-- navbar -->
+                <div class="flex pt-6 flex-col items-center">
+                    <span class="text-sm text-gray-700 dark:text-gray-400">
+                      {% trans 'common.navigation.showing' %} <span class="font-semibold text-gray-900 dark:text-white"
+                                                                    x-text="store.tnav.start"></span>
+                        {% trans 'common.navigation.to' %}
+                        <span
+                                class="font-semibold text-gray-900 dark:text-white"
+                                x-text="store.tnav.end"></span> {% trans 'common.navigation.of' %}
+                        <span
+                                class="font-semibold text-gray-900 dark:text-white"
+                                x-text="store.tnav.count"></span>
+                        {% trans 'common.navigation.entries' %}
+                    </span>
+                    <div class="inline-flex mt-2 xs:mt-0">
+                        <button @click="await store.targetPrevious()"
+                                class="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-l hover:bg-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                            {% trans 'common.navigation.previous' %}
+                        </button>
+                        <button @click="await store.targetNext()"
+                                class="px-4 py-2 text-sm font-medium text-white bg-gray-800 border-0 border-l border-gray-700 rounded-r hover:bg-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                            {% trans 'common.navigation.next' %}
+                        </button>
+                    </div>
                 </div>
                 <div class="p-6">
                     <template x-for="ingr in store.targetIngredients" :key="ingr.helloFreshId">
