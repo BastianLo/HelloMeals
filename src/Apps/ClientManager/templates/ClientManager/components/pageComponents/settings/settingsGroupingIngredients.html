@@ -53,7 +53,7 @@
         async getIngredients(url=null){
             params = ''
             if (this.overviewSearchString !== null){params += '&srch=' + this.overviewSearchString}
-            furl = url ? url : '/api/Ingredient?ordering=name&page_size=24' + params
+            furl = url ? url : '/api/Ingredient?ordering=name&page_size=48' + params
             temp = (await this.sendGet(furl))
             this.ingredients = temp.results
             this.nav = temp
