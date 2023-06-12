@@ -207,7 +207,9 @@
                             <div>
                                 <input x-model="store.targetIngredient" type="radio" :value="ingr.helloFreshId"
                                        :id="ingr.helloFreshId">
-                                <label class="text-gray-900 dark:text-white" :for="ingr.helloFreshId"
+                                <label class="text-gray-900 dark:text-white"
+                                       :class="{'dark:text-lime-300 text-lime-600':ingr.children.length > 0}"
+                                       :for="ingr.helloFreshId"
                                        x-text="ingr.name"></label>
                             </div>
 
