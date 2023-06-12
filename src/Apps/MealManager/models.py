@@ -1,3 +1,4 @@
+from cached_property import cached_property_with_ttl
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import pre_delete
@@ -23,6 +24,11 @@ class Ingredient(models.Model):
     image = models.ImageField(upload_to="images/ingredients", null=True, blank=True)
     HelloFreshImageUrl = models.CharField(max_length=255, null=True, blank=True)
     parent = models.ForeignKey("Ingredient", on_delete=models.SET_NULL, null=True, blank=True)
+
+    @cached_property_with_ttl(ttl=60)
+    def get_usage_count(self):
+        count = RecipeIngredient.objects.filter(ingredient=self).count()
+        return count
 
     def __str__(self):
         return f"{self.name} ({self.helloFreshId})"

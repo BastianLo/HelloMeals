@@ -1,6 +1,7 @@
 import django_filters
-from Apps.MealManager.models import Ingredient
+from Apps.MealManager.models import Ingredient, RecipeIngredient
 from Apps.MealManager.serializers import IngredientSerializer
+from django.db.models import Count
 from django_filters import rest_framework as filters
 from rest_framework import generics
 from rest_framework.decorators import permission_classes, api_view
@@ -41,8 +42,19 @@ class IngredientList(generics.ListAPIView):
         return IngredientSerializer
 
     def get_queryset(self):
-        recipes = Ingredient.objects.filter(parent=None)
-        return recipes
+        queryset = Ingredient.objects.filter(parent=None)
+
+        usage_count_param = self.request.query_params.get('usage_count')
+        if usage_count_param:
+            try:
+                usage_count = int(usage_count_param)
+                ingredient_ids = RecipeIngredient.objects.values('ingredient').annotate(
+                    count=Count('ingredient')).filter(count__gte=usage_count).values_list('ingredient', flat=True)
+                queryset = queryset.filter(helloFreshId__in=ingredient_ids)
+            except ValueError:
+                pass
+
+        return queryset
 
 
 @api_view(['POST'])

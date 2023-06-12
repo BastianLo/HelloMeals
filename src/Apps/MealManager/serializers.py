@@ -7,11 +7,15 @@ from .models import *
 
 class IngredientSerializer(serializers.ModelSerializer):
     children = serializers.SerializerMethodField()
+    usage_count = serializers.SerializerMethodField()
 
     def get_children(self, ingredient):
         children = Ingredient.objects.filter(parent=ingredient)
         serializer = IngredientSerializer(children, many=True)
         return serializer.data
+
+    def get_usage_count(self, ingredient):
+        return ingredient.get_usage_count
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -21,7 +25,7 @@ class IngredientSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ingredient
-        fields = ["name", "children", "helloFreshId", "image", "HelloFreshImageUrl"]
+        fields = ["name", "children", "helloFreshId", "image", "HelloFreshImageUrl", "usage_count"]
 
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
