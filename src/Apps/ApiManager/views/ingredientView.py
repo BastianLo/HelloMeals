@@ -1,7 +1,6 @@
 import django_filters
 from Apps.MealManager.models import Ingredient
 from Apps.MealManager.serializers import IngredientSerializer
-from django.db.models import F
 from django_filters import rest_framework as filters
 from rest_framework import generics
 from rest_framework.decorators import permission_classes, api_view
@@ -12,20 +11,14 @@ from util.pagination import RqlPagination
 
 class IngredientFilterSet(filters.FilterSet):
     srch = django_filters.CharFilter(method='filter_search')
-    relevancy = django_filters.CharFilter(method='filter_relevancy')
     ordering = django_filters.OrderingFilter(fields=['name'])
 
     def filter_search(self, queryset, name, value):
         return queryset.filter(name__icontains=value)
 
-    def filter_relevancy(self, queryset, name, value):
-        return queryset.annotate(
-            relevancy=F('rating') * F('ratingCount')
-        ).order_by('-relevancy')
-
     class Meta:
         model = Ingredient
-        fields = ['srch', 'relevancy']
+        fields = ['srch']
 
 
 @permission_classes([IsAuthenticated])
