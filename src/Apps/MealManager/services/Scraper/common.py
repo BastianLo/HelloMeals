@@ -1,8 +1,8 @@
 import re
 from io import BytesIO
 from tempfile import NamedTemporaryFile
-from urllib.request import urlopen
 
+import requests
 from PIL import Image
 from django.core.files.base import File
 
@@ -16,9 +16,7 @@ def get_image(url):
     if url is None:
         return None
     try:
-        with urlopen(url) as uo:
-            assert uo.status == 200
-            image_data = uo.read()
+        image_data = requests.get(url).content
         # Open the image using Pillow
         image = Image.open(BytesIO(image_data))
         # Resize the image
@@ -33,5 +31,6 @@ def get_image(url):
         # Create a Django File object from the temporary file
         img = File(img_tmp)
         return img
-    except:
+    except Exception as e:
+        print(e)
         return None
