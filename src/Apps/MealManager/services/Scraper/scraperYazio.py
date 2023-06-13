@@ -5,9 +5,9 @@ import uuid
 from datetime import timedelta, datetime
 
 import pytz
+from HelloMeals.settings import BASE_DIR
 from dynamic_preferences.registries import global_preferences_registry
 
-from src.HelloMeals.settings import BASE_DIR
 from .common import get_image
 from ...models import *
 
