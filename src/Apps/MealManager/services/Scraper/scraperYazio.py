@@ -7,6 +7,7 @@ from datetime import timedelta, datetime
 import pytz
 from dynamic_preferences.registries import global_preferences_registry
 
+from src.HelloMeals.settings import BASE_DIR
 from .common import get_image
 from ...models import *
 
@@ -16,7 +17,8 @@ global_preferences = global_preferences_registry.manager()
 class Scraper:
     def run(self):
         tz = pytz.timezone("Europe/Berlin")
-        path = "src/data/recipes.db"
+        path = os.path.join(BASE_DIR, "data", "recipes.db")
+        print(f"Looking for yazio db at path: {path}")
         if not os.path.exists(path) or not global_preferences['general__General_Yazio_Scrape']:
             return
         print("starting to scrape yazio recipes from database")
