@@ -8,7 +8,7 @@ from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 from rest_framework.routers import SimpleRouter
 
-from .views import scraperView, recipeView, tagView, authentification_view, ingredientView
+from .views import scraperView, recipeView, tagView, authentification_view, ingredientView, stockView
 
 router = SimpleRouter()
 router.register(r'global', CustomGlobalPreferencesViewSet, basename='global')
@@ -45,6 +45,10 @@ urlpatterns = [
     path('Recipe', recipeView.RecipeBaseList.as_view()),
     path('Recipe/<str:helloFreshId>', recipeView.RecipeBaseDetail.as_view()),
     path('Recipe/<str:helloFreshId>/favorite/<str:favorite>', recipeView.set_favorite),
+
+    path('Stock', stockView.StockListCreate.as_view()),
+    path('Stock/<int:id>/membership', stockView.change_membership),
+    path('Stock/membership', stockView.remove_membership),
 
     path('Ingredient', ingredientView.IngredientList.as_view()),
     path('Ingredient/Stock', ingredientView.stockList.as_view()),

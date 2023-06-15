@@ -36,6 +36,12 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
         exclude = ["ingredient_group"]
 
 
+class StockSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Stock
+        fields = ["id", "name"]
+
+
 ### Utensil ###
 
 class UtensilSerializer(serializers.ModelSerializer):
