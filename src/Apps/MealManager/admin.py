@@ -4,6 +4,9 @@ from .models import *
 
 # Register your models here.
 
+admin.site.register(Profile)
+admin.site.register(Stock)
+admin.site.register(ShoppingList)
 admin.site.register(Recipe)
 admin.site.register(Nutrients)
 admin.site.register(Ingredient)

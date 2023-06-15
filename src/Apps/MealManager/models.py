@@ -1,7 +1,7 @@
 from cached_property import cached_property_with_ttl
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models.signals import pre_delete
+from django.db.models.signals import pre_delete, post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
@@ -258,3 +258,35 @@ class RecipeUtensil(models.Model):
 @receiver(pre_delete, sender=Recipe)
 def delete_related_ingredient_groups(sender, instance, **kwargs):
     instance.ingredient_groups.all().delete()
+
+
+class Stock(models.Model):
+    ingredients = models.ManyToManyField(Ingredient, blank=True)
+    owner = models.OneToOneField(User, on_delete=models.CASCADE)
+
+
+class ShoppingList(models.Model):
+    ingredients = models.ManyToManyField(Ingredient, blank=True)
+    stock = models.OneToOneField(Stock, on_delete=models.CASCADE)
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    stock = models.ForeignKey(Stock, on_delete=models.SET_NULL, null=True, blank=True)
+
+
+@receiver(post_save, sender=Stock)
+def create_shopping_list(sender, instance, created, **kwargs):
+    if created:
+        ShoppingList.objects.create(stock=instance)
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()
