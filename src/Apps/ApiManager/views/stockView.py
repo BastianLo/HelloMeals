@@ -56,5 +56,5 @@ def remove_membership(request):
             "successful": True
         }
     elif request.method == 'GET':
-        response = {"stockId": old_stock.id}
+        response = {"stockId": old_stock.id if old_stock else None}
     return Response(response)

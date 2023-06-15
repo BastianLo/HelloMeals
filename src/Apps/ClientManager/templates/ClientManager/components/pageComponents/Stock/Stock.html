@@ -1,1 +1,89 @@
-<p class="text-white">Stock page placeholder</p>
+{% load i18n %}
+<div style="position: absolute; left:20px;right:20px;" x-data="{
+    store: {
+        membershipId: null,
+        availableMemberships: null,
+        createStockName: null,
+        popups: {
+            create: false,
+            join: false
+        },
+        getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        },
+        async getMembership(){
+            let temp = await (await fetch('/api/Stock/Membership' ) ).json();
+            this.membershipId = temp.stockId
+            if (this.membershipId === null){
+                temp = await (await fetch('/api/Stock' ) ).json();
+                this.availableMemberships = temp
+            }
+        },
+        async createStock(){
+            let temp = await (await fetch(`/api/Stock`, {method: 'POST', body: JSON.stringify({'name': this.createStockName}), headers: {'X-CSRFToken': this.getCookie('csrftoken'), 'Content-Type': 'application/json'}} ) ).json();
+            let id = temp.id
+            temp = await (await fetch(`/api/Stock/${id}/Membership`, {method: 'POST', headers: {'X-CSRFToken': this.getCookie('csrftoken')}} ) ).json();
+            this.membershipId = id
+        },
+        async init() {
+            await this.getMembership()
+        }
+    }
+}" x-init="await store.init()" class="mt-5 mb-5 flex flex-col items-center">
+    <div class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true"
+         x-show="store.popups.create">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0 mb-40">
+                <div @click.outside="store.popups.create=false" style="width: 400px"
+                     class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                    <div class="w-lg shadow p-5 rounded-lg dark:bg-gray-800 flex flex-col items-center">
+                        <!-- Popup head -->
+                        <div class="flex items-center justify-between mt-4">
+                            <p class="text-xl font-bold dark:text-white">
+                                {% trans 'Name' %}
+                            </p>
+                        </div>
+                        <!-- Popup body -->
+                        <div class="mt-5 flex flex-col items-center">
+                            <label>
+                                <input placeholder="Name" x-model="store.createStockName"
+                                       class="text-white bg-gray-700 border border-gray-400 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"/>
+                            </label>
+                            <button @click="store.createStock(); store.popups.create=false"
+                                    class="mt-4 text-white px-4 py-2 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                {% trans 'common.dialog.create' %}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <template x-if="store.membershipId === null">
+        <div class="w-96 flex flex-col items-center">
+            <p class="mr-4 mb-2 text-center text-3xl font-bold text-gray-900 dark:text-white">{% trans 'stock.noStock.title' %}</p>
+            <p class="mr-4 text-l text-gray-900 dark:text-white">{% trans 'stock.noStock.description' %}</p>
+            <button type="button" @click="store.popups.create = true; console.log(store.popups.create)"
+                    class="mt-4 w-1/2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                {% trans 'stock.membership.create' %}
+            </button>
+            <button type="button"
+                    class="mt-4 w-1/2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                {% trans 'stock.membership.join' %}
+            </button>
+        </div>
+    </template>
+</div>

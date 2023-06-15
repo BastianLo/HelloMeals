@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-15 13:31+0000\n"
+"POT-Creation-Date: 2023-06-15 19:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -193,6 +193,24 @@ msgstr "Zurück"
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:272
 msgid "common.navigation.next"
 msgstr "Weiter"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:36
+msgid "stock.noStock.title"
+msgstr "Kein Vorrat erstellt"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:37
+msgid "stock.noStock.description"
+msgstr ""
+"Du hast noch keinen Vorrat erstellt. Du kannst entweder ein neuen Vorrat "
+"erstellen oder einem bestehenden Vorrat eines anderen Nutzers beitreten"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:40
+msgid "stock.membership.create"
+msgstr "Vorrat erstellen"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:44
+msgid "stock.membership.join"
+msgstr "Vorrat beitreten"
 
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:56
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:114

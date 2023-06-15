@@ -47,8 +47,8 @@ urlpatterns = [
     path('Recipe/<str:helloFreshId>/favorite/<str:favorite>', recipeView.set_favorite),
 
     path('Stock', stockView.StockListCreate.as_view()),
-    path('Stock/<int:id>/membership', stockView.change_membership),
-    path('Stock/membership', stockView.remove_membership),
+    path('Stock/<int:id>/Membership', stockView.change_membership),
+    path('Stock/Membership', stockView.remove_membership),
 
     path('Ingredient', ingredientView.IngredientList.as_view()),
     path('Ingredient/Stock', ingredientView.stockList.as_view()),
