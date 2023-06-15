@@ -54,7 +54,7 @@
         async getIngredientsRequest(url=null){
             params = ''
             if (this.overviewSearchString !== null){params += '&srch=' + this.overviewSearchString}
-            furl = url ? url : '/api/Ingredient?ordering=name&page_size=48' + params
+            furl = url ? url : '/api/Ingredient?ordering=name&page_size=48&fields=name,helloFreshId,usage_count,children' + params
             temp = (await this.sendGet(furl))
             return temp
         },
@@ -66,7 +66,7 @@
         async getTargetIngredients(){
             params = ''
             if (this.targetSearchString !== null){params += '&srch=' + this.targetSearchString}
-            furl = '/api/Ingredient?ordering=name&page_size=48' + params
+            furl = '/api/Ingredient?ordering=name&page_size=48&fields=name,helloFreshId,usage_count,children' + params
             temp = (await this.sendGet(furl))
             this.targetIngredients = temp.results
             this.tnav = temp
