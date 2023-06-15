@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-15 19:00+0000\n"
+"POT-Creation-Date: 2023-06-15 20:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -194,19 +194,43 @@ msgstr "prev"
 msgid "common.navigation.next"
 msgstr "next"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:36
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:62
+msgid "Name"
+msgstr "Name"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:73
+#, fuzzy
+#| msgid "common.dialog.cancel"
+msgid "common.dialog.create"
+msgstr "Create"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:93
+msgid "stock.join.dropdown.choose"
+msgstr "Choose Stock"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:100
+msgid "common.dropdown.choose"
+msgstr "Choose"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:108
+msgid "common.dialog.join"
+msgstr "Join"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:118
 msgid "stock.noStock.title"
 msgstr "No stock created"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:37
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:119
 msgid "stock.noStock.description"
-msgstr "You have not created a stock yet. You can either create or join an existing stock"
+msgstr ""
+"You have not created a stock yet. You can either create or join an existing "
+"stock"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:40
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:122
 msgid "stock.membership.create"
 msgstr "Create stock"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:44
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:126
 msgid "stock.membership.join"
 msgstr "Join stock"
 
