@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-15 20:22+0000\n"
+"POT-Creation-Date: 2023-06-15 21:23+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -154,6 +154,7 @@ msgstr "Recipe name"
 
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:440
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:559
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:241
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:182
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:258
 msgid "common.navigation.showing"
@@ -161,6 +162,7 @@ msgstr "Showing"
 
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:441
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:560
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:243
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:184
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:259
 msgid "common.navigation.to"
@@ -168,6 +170,7 @@ msgstr "to"
 
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:443
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:562
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:246
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:187
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:261
 msgid "common.navigation.of"
@@ -175,6 +178,7 @@ msgstr "of"
 
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:445
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:564
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:250
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:191
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:263
 msgid "common.navigation.entries"
@@ -182,6 +186,7 @@ msgstr "Entries"
 
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:450
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:569
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:255
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:196
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:268
 msgid "common.navigation.previous"
@@ -189,50 +194,77 @@ msgstr "prev"
 
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:454
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:573
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:259
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:200
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:272
 msgid "common.navigation.next"
 msgstr "next"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:62
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:113
 msgid "Name"
 msgstr "Name"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:73
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:124
 #, fuzzy
 #| msgid "common.dialog.cancel"
 msgid "common.dialog.create"
 msgstr "Create"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:93
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:144
 msgid "stock.join.dropdown.choose"
 msgstr "Choose Stock"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:100
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:151
 msgid "common.dropdown.choose"
 msgstr "Choose"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:108
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:159
 msgid "common.dialog.join"
 msgstr "Join"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:118
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:169
 msgid "stock.noStock.title"
 msgstr "No stock created"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:119
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:170
 msgid "stock.noStock.description"
 msgstr ""
 "You have not created a stock yet. You can either create or join an existing "
 "stock"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:122
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:173
 msgid "stock.membership.create"
 msgstr "Create stock"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:126
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:177
 msgid "stock.membership.join"
 msgstr "Join stock"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:206
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:147
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:337
+msgid "settings.grouping.groupInto"
+msgstr "Group into"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:285
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:226
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:251
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:318
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:382
+msgid "common.dialog.confirm"
+msgstr "Confirm"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:289
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:230
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:255
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:322
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:386
+msgid "common.dialog.cancel"
+msgstr "Cancel"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:297
+msgid "AvailableIngredients"
+msgstr "Available Ingredients"
 
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:56
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:114
@@ -274,25 +306,6 @@ msgstr "Tags"
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:212
 msgid "common.merge"
 msgstr "Merge"
-
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:147
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:337
-msgid "settings.grouping.groupInto"
-msgstr "Group into"
-
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:226
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:251
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:318
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:382
-msgid "common.dialog.confirm"
-msgstr "Confirm"
-
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:230
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:255
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:322
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:386
-msgid "common.dialog.cancel"
-msgstr "Cancel"
 
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingTag.html:192
 msgid "common.delete"
