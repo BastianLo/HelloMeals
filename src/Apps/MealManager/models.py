@@ -263,10 +263,42 @@ def delete_related_ingredient_groups(sender, instance, **kwargs):
 class Stock(models.Model):
     ingredients = models.ManyToManyField(Ingredient, blank=True)
 
+    def add(self, ingredient: Ingredient):
+        while ingredient.parent is not None:
+            ingredient = ingredient.parent
+        if self.ingredients.filter(helloFreshId=ingredient.helloFreshId).exists():
+            return False
+        self.ingredients.add(ingredient)
+        return True
+
+    def remove(self, ingredient: Ingredient):
+        while ingredient.parent is not None:
+            ingredient = ingredient.parent
+        if not self.ingredients.filter(helloFreshId=ingredient.helloFreshId).exists():
+            return False
+        self.ingredients.remove(ingredient)
+        return True
+
 
 class ShoppingList(models.Model):
     ingredients = models.ManyToManyField(Ingredient, blank=True)
     stock = models.OneToOneField(Stock, on_delete=models.CASCADE)
+
+    def add(self, ingredient: Ingredient):
+        while ingredient.parent is not None:
+            ingredient = ingredient.parent
+        if self.ingredients.filter(helloFreshId=ingredient.helloFreshId).exists():
+            return False
+        self.ingredients.add(ingredient)
+        return True
+
+    def remove(self, ingredient: Ingredient):
+        while ingredient.parent is not None:
+            ingredient = ingredient.parent
+        if not self.ingredients.filter(helloFreshId=ingredient.helloFreshId).exists():
+            return False
+        self.ingredients.remove(ingredient)
+        return True
 
 
 class Profile(models.Model):

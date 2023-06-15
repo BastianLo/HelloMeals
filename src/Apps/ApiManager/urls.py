@@ -48,7 +48,9 @@ urlpatterns = [
 
     path('Ingredient', ingredientView.IngredientList.as_view()),
     path('Ingredient/Stock', ingredientView.stockList.as_view()),
+    path('Ingredient/Stock/<str:ingredient_id>', ingredientView.add_ingredient_to_stock),
     path('Ingredient/ShoppingList', ingredientView.shoppingListView.as_view()),
+    path('Ingredient/ShoppingList/<str:ingredient_id>', ingredientView.add_ingredient_to_shopping_list),
     path('Ingredient/<str:helloFreshId>/assign/<str:parentId>', ingredientView.assign_ingredient_parent),
     path('Ingredient/<str:helloFreshId>/assign/', ingredientView.assign_ingredient_parent),
 

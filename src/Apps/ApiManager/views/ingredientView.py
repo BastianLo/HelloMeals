@@ -84,6 +84,22 @@ class stockList(generics.ListAPIView):
             return Ingredient.objects.none()
 
 
+@api_view(['POST', 'DELETE'])
+def add_ingredient_to_stock(request, ingredient_id):
+    successful = None
+    if request.method == 'POST':
+        ingredient = Ingredient.objects.get(helloFreshId=ingredient_id)
+        successful = request.user.profile.stock.add(ingredient)
+    elif request.method == 'DELETE':
+        ingredient = Ingredient.objects.get(helloFreshId=ingredient_id)
+        successful = request.user.profile.stock.remove(ingredient)
+
+    response = {
+        "successful": successful
+    }
+    return Response(response)
+
+
 @permission_classes([IsAuthenticated])
 class shoppingListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
@@ -109,6 +125,22 @@ class shoppingListView(generics.ListAPIView):
             return user.profile.stock.shoppinglist.ingredients
         else:
             return Ingredient.objects.none()
+
+
+@api_view(['POST', 'DELETE'])
+def add_ingredient_to_shopping_list(request, ingredient_id):
+    successful = None
+    if request.method == 'POST':
+        ingredient = Ingredient.objects.get(helloFreshId=ingredient_id)
+        successful = request.user.profile.stock.shoppinglist.add(ingredient)
+    elif request.method == 'DELETE':
+        ingredient = Ingredient.objects.get(helloFreshId=ingredient_id)
+        successful = request.user.profile.stock.shoppinglist.remove(ingredient)
+
+    response = {
+        "successful": successful
+    }
+    return Response(response)
 
 
 @api_view(['POST'])
