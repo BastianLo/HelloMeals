@@ -262,7 +262,6 @@ def delete_related_ingredient_groups(sender, instance, **kwargs):
 
 class Stock(models.Model):
     ingredients = models.ManyToManyField(Ingredient, blank=True)
-    owner = models.OneToOneField(User, on_delete=models.CASCADE)
 
 
 class ShoppingList(models.Model):
