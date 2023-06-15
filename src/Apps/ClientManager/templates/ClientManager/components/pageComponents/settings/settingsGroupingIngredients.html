@@ -211,6 +211,8 @@
                                        :class="{'dark:text-lime-300 text-lime-600':ingr.children.length > 0}"
                                        :for="ingr.helloFreshId"
                                        x-text="ingr.name"></label>
+                                <span class="text-gray-900 dark:text-white"
+                                      x-text=" '(' + ingr.usage_count + ')'"></span>
                             </div>
 
                         </template>
@@ -296,6 +298,7 @@
                             </svg>
                         </template>
                         <span x-text="ingredient.name"></span>
+                        <span x-text=" '(' + ingredient.usage_count + ')'"></span>
                     </li>
                     <template x-if="open && ingredient.children.length > 0">
                         <template x-for="subingredient in ingredient.children">
@@ -305,6 +308,7 @@
                                            x-model="store.sourceIngredients"
                                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                     <span x-text="subingredient.name"></span>
+                                    <span x-text=" '(' + subingredient.usage_count + ')'"></span>
                                 </li>
                             </ul>
                         </template>
