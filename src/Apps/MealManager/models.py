@@ -305,6 +305,9 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     stock = models.ForeignKey(Stock, on_delete=models.SET_NULL, null=True, blank=True)
 
+    def __str__(self):
+        return f"Profile {self.user}"
+
 
 @receiver(post_save, sender=Stock)
 def create_shopping_list(sender, instance, created, **kwargs):
