@@ -262,6 +262,7 @@ def delete_related_ingredient_groups(sender, instance, **kwargs):
 
 class Stock(models.Model):
     ingredients = models.ManyToManyField(Ingredient, blank=True)
+    name = models.CharField(max_length=255)
 
     def add(self, ingredient: Ingredient):
         while ingredient.parent is not None:
@@ -278,6 +279,9 @@ class Stock(models.Model):
             return False
         self.ingredients.remove(ingredient)
         return True
+
+    def __str__(self):
+        return f"Stock {self.name}"
 
 
 class ShoppingList(models.Model):
@@ -299,6 +303,9 @@ class ShoppingList(models.Model):
             return False
         self.ingredients.remove(ingredient)
         return True
+
+    def __str__(self):
+        return f"Shopping List {self.stock.name}"
 
 
 class Profile(models.Model):
