@@ -57,6 +57,60 @@ class IngredientList(generics.ListAPIView):
         return queryset
 
 
+@permission_classes([IsAuthenticated])
+class stockList(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    pagination_class = RqlPagination
+    filterset_class = IngredientFilterSet
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            fields = self.request.query_params.get('fields')
+            if fields:
+                fields = fields.split(',')
+                meta = IngredientSerializer.Meta
+                meta.exclude = None
+                meta.fields = fields
+                return type('DynamicRecipeBaseSerializer', (IngredientSerializer,), {'Meta': meta})
+            else:
+                return IngredientSerializer
+        return IngredientSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.profile.stock:
+            return user.profile.stock.ingredients
+        else:
+            return Ingredient.objects.none()
+
+
+@permission_classes([IsAuthenticated])
+class shoppingListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    pagination_class = RqlPagination
+    filterset_class = IngredientFilterSet
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            fields = self.request.query_params.get('fields')
+            if fields:
+                fields = fields.split(',')
+                meta = IngredientSerializer.Meta
+                meta.exclude = None
+                meta.fields = fields
+                return type('DynamicRecipeBaseSerializer', (IngredientSerializer,), {'Meta': meta})
+            else:
+                return IngredientSerializer
+        return IngredientSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.profile.stock and user.profile.stock.shoppinglist:
+            return user.profile.stock.shoppinglist.ingredients
+        else:
+            return Ingredient.objects.none()
+
+
 @api_view(['POST'])
 def assign_ingredient_parent(request, helloFreshId, parentId=None):
     try:
