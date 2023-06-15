@@ -42,15 +42,19 @@ def change_membership(request, id):
     return Response(response)
 
 
-@api_view(['DELETE'])
+@api_view(['DELETE', 'GET'])
 def remove_membership(request):
+    response = None
     old_stock = request.user.profile.stock
-    if old_stock is not None:
-        request.user.profile.stock = None
-        request.user.profile.save()
-        if len(Profile.objects.filter(stock=old_stock)) == 0:
-            old_stock.delete()
-    response = {
-        "successful": True
-    }
+    if request.method == 'DELETE':
+        if old_stock is not None:
+            request.user.profile.stock = None
+            request.user.profile.save()
+            if len(Profile.objects.filter(stock=old_stock)) == 0:
+                old_stock.delete()
+        response = {
+            "successful": True
+        }
+    elif request.method == 'GET':
+        response = {"stockId": old_stock.id}
     return Response(response)
