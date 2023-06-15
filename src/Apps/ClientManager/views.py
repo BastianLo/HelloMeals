@@ -58,6 +58,20 @@ def recipe_details(request, recipe_id):
 
 
 @login_required(login_url='/accounts/login/')
+def stock_stock(request):
+    navigation_history(request)
+    context = get_base_context()
+    return render(request, "ClientManager/pages/Stock/Stock.html", context)
+
+
+@login_required(login_url='/accounts/login/')
+def stock_shopping_list(request):
+    navigation_history(request)
+    context = get_base_context()
+    return render(request, "ClientManager/pages/Stock/ShoppingList.html", context)
+
+
+@login_required(login_url='/accounts/login/')
 def settings_index(request):
     navigation_history(request)
     context = get_base_context()

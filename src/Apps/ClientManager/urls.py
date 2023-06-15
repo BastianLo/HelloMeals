@@ -8,6 +8,10 @@ urlpatterns = [
     path("", views.index, name="recipe_index"),
     path('back/', back_view, name='back_view'),
 
+    path("Stock/", views.recipe_index, name="stock.overview"),
+    path("Stock/Stock", views.stock_stock, name="stock.stock"),
+    path("Stock/Shoppinglist", views.stock_shopping_list, name="stock.shoppinglist"),
+
     path("Recipe/", views.recipe_index, name="recipe.overview"),
     path("Recipe/All", views.recipe_overview, name="recipe.all"),
     path("Recipe/Favorites", views.recipe_favorite, name="recipe.favorites"),
