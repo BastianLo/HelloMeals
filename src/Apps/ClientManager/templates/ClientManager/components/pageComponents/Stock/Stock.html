@@ -262,17 +262,19 @@
                         </div>
                         <div class="p-6">
                             <template x-for="ingr in store.targetIngredients" :key="ingr.helloFreshId">
-                                <div>
-                                    <input x-model="store.targetIngredient" type="radio" :value="ingr.helloFreshId"
-                                           :id="ingr.helloFreshId">
-                                    <label class="text-gray-900 dark:text-white"
-                                           :class="{'dark:text-lime-300 text-lime-600':ingr.children.length > 0}"
-                                           :for="ingr.helloFreshId"
-                                           x-text="ingr.name"></label>
-                                    <span class="text-gray-900 dark:text-white"
-                                          x-text=" '(' + ingr.usage_count + ')'"></span>
-                                </div>
-
+                                <template
+                                        x-if="!store.ingredients.some(item => item.helloFreshId === ingr.helloFreshId)">
+                                    <div>
+                                        <input x-model="store.targetIngredient" type="radio" :value="ingr.helloFreshId"
+                                               :id="ingr.helloFreshId">
+                                        <label class="text-gray-900 dark:text-white"
+                                               :class="{'dark:text-lime-300 text-lime-600':ingr.children.length > 0}"
+                                               :for="ingr.helloFreshId"
+                                               x-text="ingr.name"></label>
+                                        <span class="text-gray-900 dark:text-white"
+                                              x-text=" '(' + ingr.usage_count + ')'"></span>
+                                    </div>
+                                </template>
                             </template>
                         </div>
 
