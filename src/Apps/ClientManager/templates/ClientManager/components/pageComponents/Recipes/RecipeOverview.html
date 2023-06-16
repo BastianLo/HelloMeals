@@ -55,7 +55,7 @@
             filter += '&source=' + this.params.filter.sources.filter(s => s !== '').join(',')
         if (this.params.filter.tags.filter(s => s !== '').length > 0)
             filter += '&tags=' + this.params.filter.tags.filter(t => t !== '').join('_')
-        filter += '&fields=' + this.params.fields.join(',')
+        filter += '&query={' + this.params.fields.join(',') + '}'
         if (this.sliders.calorySlider.min !== null && this.sliders.calorySlider.min !== this.sliders.calorySlider.element.min()){
             filter += '&calories_gt=' + this.sliders.calorySlider.min;
         }

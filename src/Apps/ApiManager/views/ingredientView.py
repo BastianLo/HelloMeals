@@ -29,16 +29,6 @@ class IngredientList(generics.ListAPIView):
     filterset_class = IngredientFilterSet
 
     def get_serializer_class(self):
-        if self.request.method == 'GET':
-            fields = self.request.query_params.get('fields')
-            if fields:
-                fields = fields.split(',')
-                meta = IngredientSerializer.Meta
-                meta.exclude = None
-                meta.fields = fields
-                return type('DynamicRecipeBaseSerializer', (IngredientSerializer,), {'Meta': meta})
-            else:
-                return IngredientSerializer
         return IngredientSerializer
 
     def get_queryset(self):
@@ -64,16 +54,6 @@ class stockList(generics.ListAPIView):
     filterset_class = IngredientFilterSet
 
     def get_serializer_class(self):
-        if self.request.method == 'GET':
-            fields = self.request.query_params.get('fields')
-            if fields:
-                fields = fields.split(',')
-                meta = IngredientSerializer.Meta
-                meta.exclude = None
-                meta.fields = fields
-                return type('DynamicRecipeBaseSerializer', (IngredientSerializer,), {'Meta': meta})
-            else:
-                return IngredientSerializer
         return IngredientSerializer
 
     def get_queryset(self):
@@ -107,16 +87,6 @@ class shoppingListView(generics.ListAPIView):
     filterset_class = IngredientFilterSet
 
     def get_serializer_class(self):
-        if self.request.method == 'GET':
-            fields = self.request.query_params.get('fields')
-            if fields:
-                fields = fields.split(',')
-                meta = IngredientSerializer.Meta
-                meta.exclude = None
-                meta.fields = fields
-                return type('DynamicRecipeBaseSerializer', (IngredientSerializer,), {'Meta': meta})
-            else:
-                return IngredientSerializer
         return IngredientSerializer
 
     def get_queryset(self):

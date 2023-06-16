@@ -1,4 +1,5 @@
 from django.db.models import Q
+from django_restql.mixins import DynamicFieldsMixin
 from rest_framework import serializers
 
 from .models import *
@@ -6,7 +7,7 @@ from .models import *
 
 ### Ingredient ###
 
-class IngredientSerializer(serializers.ModelSerializer):
+class IngredientSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     children = serializers.SerializerMethodField()
     usage_count = serializers.SerializerMethodField()
 
@@ -29,7 +30,7 @@ class IngredientSerializer(serializers.ModelSerializer):
         fields = ["name", "children", "helloFreshId", "image", "HelloFreshImageUrl", "usage_count"]
 
 
-class RecipeIngredientSerializer(serializers.ModelSerializer):
+class RecipeIngredientSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     ingredient = IngredientSerializer()
 
     class Meta:
@@ -37,7 +38,7 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
         exclude = ["ingredient_group"]
 
 
-class StockSerializer(serializers.ModelSerializer):
+class StockSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     class Meta:
         model = Stock
         fields = ["id", "name"]
@@ -45,13 +46,13 @@ class StockSerializer(serializers.ModelSerializer):
 
 ### Utensil ###
 
-class UtensilSerializer(serializers.ModelSerializer):
+class UtensilSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     class Meta:
         model = Utensil
         fields = "__all__"
 
 
-class RecipeUtensilSerializer(serializers.ModelSerializer):
+class RecipeUtensilSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     utensil = UtensilSerializer()
 
     class Meta:
@@ -61,25 +62,25 @@ class RecipeUtensilSerializer(serializers.ModelSerializer):
 
 ### Tag ###
 
-class TagMergeSerializer(serializers.ModelSerializer):
+class TagMergeSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     class Meta:
         model = TagMerge
         fields = "__all__"
 
 
-class TagSerializer(serializers.ModelSerializer):
+class TagSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = "__all__"
 
 
-class TagGroupSerializer(serializers.ModelSerializer):
+class TagGroupSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     class Meta:
         model = TagGroup
         fields = "__all__"
 
 
-class TagGroupFullSerializer(serializers.ModelSerializer):
+class TagGroupFullSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     tags = TagSerializer(many=True, read_only=True)
 
     class Meta:
@@ -97,7 +98,7 @@ class TagGroupFullSerializer(serializers.ModelSerializer):
         return representation
 
 
-class RecipeTagSerializer(serializers.ModelSerializer):
+class RecipeTagSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     tag = TagSerializer()
 
     class Meta:
@@ -107,7 +108,7 @@ class RecipeTagSerializer(serializers.ModelSerializer):
 
 ### Nutrients ###
 
-class NutrientSerializer(serializers.ModelSerializer):
+class NutrientSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     class Meta:
         model = Nutrients
         exclude = ["id"]
@@ -115,7 +116,7 @@ class NutrientSerializer(serializers.ModelSerializer):
 
 ### WorkSteps ###
 
-class WorkStepSerializer(serializers.ModelSerializer):
+class WorkStepSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     class Meta:
         model = WorkSteps
         exclude = []
@@ -123,7 +124,7 @@ class WorkStepSerializer(serializers.ModelSerializer):
 
 ### Recipe ###
 
-class RecipeBaseSerializer(serializers.ModelSerializer):
+class RecipeBaseSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     ingredient_count = serializers.SerializerMethodField()
     available_ingredient_count = serializers.SerializerMethodField()
 
@@ -178,7 +179,7 @@ class RecipeBaseSerializer(serializers.ModelSerializer):
         return representation
 
 
-class IngredientGroupBaseSerializer(serializers.ModelSerializer):
+class IngredientGroupBaseSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     ingredients = RecipeIngredientSerializer(many=True, read_only=True)
 
     def get_ingredients(self, instance):
@@ -196,7 +197,7 @@ class IngredientGroupBaseSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "ingredients"]
 
 
-class RecipeFullSerializer(serializers.ModelSerializer):
+class RecipeFullSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     utensils = RecipeUtensilSerializer(many=True, read_only=True)
     ingredient_groups = IngredientGroupBaseSerializer(read_only=True, many=True)
 

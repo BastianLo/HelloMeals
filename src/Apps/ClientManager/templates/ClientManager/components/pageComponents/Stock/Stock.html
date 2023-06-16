@@ -29,7 +29,7 @@
             return cookieValue;
         },
         async getIngredients(){
-            let temp = await (await fetch('/api/Ingredient/Stock?fields=name,helloFreshId,usage_count&ordering=name' ) ).json();
+            let temp = await (await fetch('/api/Ingredient/Stock?query={name,helloFreshId,usage_count}&ordering=name' ) ).json();
             this.ingredients = temp.results
         },
         async getMembership(){
@@ -62,14 +62,14 @@
         async getIngredientsRequest(url=null){
             params = ''
             if (this.targetSearchString !== null){params += '&srch=' + this.targetSearchString}
-            furl = url ? url : '/api/Ingredient?ordering=name&page_size=48&fields=helloFreshId,name,usage_count,children&usage_count=2' + params
+            furl = url ? url : '/api/Ingredient?ordering=name&page_size=48&query={helloFreshId,name,usage_count,children}&usage_count=2' + params
             temp = (await this.sendGet(furl))
             return temp
         },
         async getTargetIngredients(){
             params = ''
             if (this.targetSearchString !== null){params += '&srch=' + this.targetSearchString}
-            furl = '/api/Ingredient?ordering=name&page_size=48&fields=helloFreshId,name,usage_count,children&usage_count=2' + params
+            furl = '/api/Ingredient?ordering=name&page_size=48&query={helloFreshId,name,usage_count,children}&usage_count=2' + params
             temp = (await this.sendGet(furl))
             this.targetIngredients = temp.results
             this.tnav = temp
@@ -180,7 +180,7 @@
     </template>
 
     <!-- Ingredient list -->
-    <div>
+    <div class="mb-32">
         <div x-data="{show: false}" data-dial-init class="fixed right-6 bottom-6 group mb-24">
             <button @click="show = !show"
                     class="flex items-center justify-center text-white bg-blue-700 rounded-lg w-14 h-14 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:focus:ring-blue-800">
