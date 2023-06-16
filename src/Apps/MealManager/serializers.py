@@ -163,6 +163,8 @@ class RecipeBaseSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
 
     def get_available_ingredient_count(self, instance):
         request = self.context.get('request')
+        if request.user.profile.stock is None:
+            return 0
         ingredients = RecipeIngredient.objects.filter(ingredient_group__in=instance.ingredient_groups.all())
         ingredients = ingredients.filter(Q(ingredient__parent__in=request.user.profile.stock.ingredients.all()) | Q(
             ingredient__in=request.user.profile.stock.ingredients.all()))
