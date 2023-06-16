@@ -13,7 +13,7 @@
         page: 1,
         pageSize: 24,
         searchString: '',
-        fields: ['name', 'headline', 'averageRating', 'ratingCount', 'image', 'source', 'helloFreshId', 'healthScore', 'nutrients', 'favorited'],
+        fields: ['name', 'headline', 'averageRating', 'ratingCount', 'image', 'source', 'helloFreshId', 'healthScore', 'nutrients', 'favorited', 'ingredient_count', 'available_ingredient_count'],
         recipeTypes: [{name: 'Hauptgerichte', id: 0},{name: 'Frühstück', id: 1},{name: 'Dessert', id: 2},{name: 'Backen', id: 3},{name: 'Getränke', id: 4},]
     },
     tag_groups: [],
@@ -541,6 +541,11 @@
                                 </span>
                         </div>
                     </template>
+                    <div>
+                        <span class="text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded"
+                              :class="{'bg-red-500': recipe.available_ingredient_count/recipe.ingredient_count === 0, 'bg-green-500': recipe.available_ingredient_count/recipe.ingredient_count > 0.5, 'bg-orange-600': recipe.available_ingredient_count/recipe.ingredient_count > 0 && recipe.available_ingredient_count/recipe.ingredient_count <= 0.5}"
+                              x-text="recipe.available_ingredient_count + '/' + recipe.ingredient_count + ' Zutaten'"></span>
+                    </div>
                 </div>
                 <div class="p-5">
                     <a :href="recipe.helloFreshId">

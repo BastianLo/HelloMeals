@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework import serializers
 
 from .models import *
@@ -124,6 +125,7 @@ class WorkStepSerializer(serializers.ModelSerializer):
 
 class RecipeBaseSerializer(serializers.ModelSerializer):
     ingredient_count = serializers.SerializerMethodField()
+    available_ingredient_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Recipe
@@ -158,6 +160,13 @@ class RecipeBaseSerializer(serializers.ModelSerializer):
         ingredient_count = len(RecipeIngredient.objects.filter(ingredient_group__in=instance.ingredient_groups.all()))
         return ingredient_count
 
+    def get_available_ingredient_count(self, instance):
+        request = self.context.get('request')
+        ingredients = RecipeIngredient.objects.filter(ingredient_group__in=instance.ingredient_groups.all())
+        ingredients = ingredients.filter(Q(ingredient__parent__in=request.user.profile.stock.ingredients.all()) | Q(
+            ingredient__in=request.user.profile.stock.ingredients.all()))
+        return len(ingredients)
+
     def get_nutrients(self, instance):
         recipe_nutrients = Nutrients.objects.filter(recipe=instance).first()
         utensil_serializer = NutrientSerializer(recipe_nutrients, many=False)
@@ -184,7 +193,7 @@ class IngredientGroupBaseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = IngredientGroup
-        fields = "__all__"
+        fields = ["id", "name", "ingredients"]
 
 
 class RecipeFullSerializer(serializers.ModelSerializer):
