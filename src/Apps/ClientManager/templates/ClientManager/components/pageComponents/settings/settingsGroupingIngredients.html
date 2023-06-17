@@ -54,7 +54,7 @@
         async getIngredientsRequest(url=null){
             params = ''
             if (this.overviewSearchString !== null){params += '&srch=' + this.overviewSearchString}
-            furl = url ? url : '/api/Ingredient?ordering=name&page_size=48&query={name,helloFreshId,usage_count,children}' + params
+            furl = url ? url : '/api/Ingredient?ordering=name&page_size=48&usage_count=2&query={name,helloFreshId,usage_count,children}' + params
             temp = (await this.sendGet(furl))
             return temp
         },
@@ -66,7 +66,7 @@
         async getTargetIngredients(){
             params = ''
             if (this.targetSearchString !== null){params += '&srch=' + this.targetSearchString}
-            furl = '/api/Ingredient?ordering=name&page_size=48&query={name,helloFreshId,usage_count,children}' + params
+            furl = '/api/Ingredient?ordering=name&page_size=48&usage_count=2&query={name,helloFreshId,usage_count,children}' + params
             temp = (await this.sendGet(furl))
             this.targetIngredients = temp.results
             this.tnav = temp
@@ -131,6 +131,8 @@
             <span class="sr-only">Open actions menu</span>
         </button>
     </div>
+
+
     <!-- Merge Dialog -->
     <div :class="{ 'hidden': !store.mergeDialog }"
          x-init="$watch('store.mergeDialog', async value => {if (store.mergeDialog){ await store.getTargetIngredients()}})"
@@ -161,7 +163,7 @@
                 <!-- Modal body -->
                 <label for="default-search"
                        class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
-                <div class="relative">
+                <div class="relative p-6 flex-grow overflow-y-auto">
                     <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                         <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none"
                              stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -171,25 +173,23 @@
                     </div>
                     <input type="search" x-model="store.targetSearchString"
                            @keypress="await store.getTargetIngredients()"
-                           class=" block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg
-                           bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600
-                           dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                           class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                            placeholder="Tag Group Name" required>
                 </div>
                 <!-- navbar -->
                 <div class="flex pt-6 flex-col items-center">
-                    <span class="text-sm text-gray-700 dark:text-gray-400">
-                      {% trans 'common.navigation.showing' %} <span class="font-semibold text-gray-900 dark:text-white"
-                                                                    x-text="store.tnav.start"></span>
-                        {% trans 'common.navigation.to' %}
-                        <span
-                                class="font-semibold text-gray-900 dark:text-white"
-                                x-text="store.tnav.end"></span> {% trans 'common.navigation.of' %}
-                        <span
-                                class="font-semibold text-gray-900 dark:text-white"
-                                x-text="store.tnav.count"></span>
-                        {% trans 'common.navigation.entries' %}
-                    </span>
+                <span class="text-sm text-gray-700 dark:text-gray-400">
+                  {% trans 'common.navigation.showing' %} <span class="font-semibold text-gray-900 dark:text-white"
+                                                                x-text="store.tnav.start"></span>
+                    {% trans 'common.navigation.to' %}
+                    <span
+                            class="font-semibold text-gray-900 dark:text-white"
+                            x-text="store.tnav.end"></span> {% trans 'common.navigation.of' %}
+                    <span
+                            class="font-semibold text-gray-900 dark:text-white"
+                            x-text="store.tnav.count"></span>
+                    {% trans 'common.navigation.entries' %}
+                </span>
                     <div class="inline-flex mt-2 xs:mt-0">
                         <button @click="await store.targetPrevious()"
                                 class="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-l hover:bg-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
@@ -214,13 +214,11 @@
                                 <span class="text-gray-900 dark:text-white"
                                       x-text=" '(' + ingr.usage_count + ')'"></span>
                             </div>
-
                         </template>
                     </template>
                 </div>
-
                 <!-- Modal footer -->
-                <div class="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
+                <div class="max-sm:pb-24 flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
                     <button @click="store.mergeIngredients(); store.mergeDialog = false"
                             class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                         {% trans 'common.dialog.confirm' %}
@@ -233,6 +231,7 @@
             </div>
         </div>
     </div>
+
     <!-- Search bar -->
     <div class="mt-5 mb-5 flex flex-col items-center">
         <label for="default-search"
