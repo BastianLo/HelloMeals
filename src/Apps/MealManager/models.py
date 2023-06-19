@@ -152,6 +152,7 @@ class Tag(models.Model):
 class IngredientGroup(models.Model):
     id = models.TextField(primary_key=True, max_length=255, unique=True)
     name = models.CharField(max_length=255, null=True, blank=True)
+    related_recipe = models.ForeignKey("Recipe", on_delete=models.CASCADE, null=True, related_name='ingredient_groups')
 
 
 class Recipe(models.Model):
@@ -162,7 +163,6 @@ class Recipe(models.Model):
 
     nutrients = models.ForeignKey(Nutrients, on_delete=models.SET_NULL, blank=True, null=True)
 
-    ingredient_groups = models.ManyToManyField(IngredientGroup)
     favoriteBy = models.ManyToManyField(User, related_name='favorite_recipes')
 
     class RecipeTypes(models.IntegerChoices):
