@@ -298,6 +298,13 @@ class Stock(models.Model):
         self.ingredients.remove(ingredient)
         return True
 
+    def apply_parent(self, ingredient):
+        if ingredient.parent is None:
+            return
+        # if len(self.ingredients.filter(helloFreshId=ingredient.helloFreshId)) > 0:
+        self.ingredients.remove(ingredient)
+        self.ingredients.add(ingredient.parent)
+
     def __str__(self):
         return f"Stock {self.name}"
 

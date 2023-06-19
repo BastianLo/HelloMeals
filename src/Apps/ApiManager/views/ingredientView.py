@@ -1,5 +1,6 @@
 import django_filters
 from Apps.MealManager.models import Ingredient, RecipeIngredient
+from Apps.MealManager.models import Stock
 from Apps.MealManager.serializers import IngredientSerializer
 from django.db.models import Count
 from django_filters import rest_framework as filters
@@ -127,6 +128,7 @@ def assign_ingredient_parent(request, helloFreshId, parentId=None):
         return Response({'error': 'Can not assign a parent which is already a child'}, status=400)
 
     source.parent = parent
+    [stock.apply_parent(source) for stock in Stock.objects.all()]
     source.save()
     response = {
         'message': 'Ingredient assigned successfully',
