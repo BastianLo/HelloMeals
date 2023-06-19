@@ -30,6 +30,24 @@ class Ingredient(models.Model):
         count = RecipeIngredient.objects.filter(ingredient=self).count()
         return count
 
+    def get_related_recipes(self):
+        ingredients = [self]
+        if self.parent is not None:
+            ingredients += self.parent.get_descendants(include_self=True)
+
+        recipe_ingredients = RecipeIngredient.objects.filter(ingredient__in=ingredients).values_list(
+            'ingredient_group_id', flat=True)
+        related_recipes = Recipe.objects.filter(ingredient_groups__id__in=recipe_ingredients).distinct()
+        return related_recipes
+
+    def get_descendants(self, include_self=True):
+        descendants = []
+        if include_self:
+            descendants.append(self)
+        for child in Ingredient.objects.filter(parent=self):
+            descendants.extend(child.get_descendants(include_self=True))
+        return descendants
+
     def __str__(self):
         return f"{self.name} ({self.helloFreshId})"
 

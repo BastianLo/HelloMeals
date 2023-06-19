@@ -1,7 +1,7 @@
 import random
 
 import django_filters
-from Apps.MealManager.models import Recipe
+from Apps.MealManager.models import Recipe, Ingredient
 from Apps.MealManager.serializers import RecipeFullSerializer, RecipeBaseSerializer
 from django.contrib.postgres.search import TrigramSimilarity
 from django.db.models import Count, F, FloatField, ExpressionWrapper, Q
@@ -119,6 +119,17 @@ class RecipeBaseList(generics.ListAPIView):
             return queryset
         return queryset
 
+    def filter_ingredients(self, queryset):
+        ingredients = self.request.GET.get('ingredients')
+        if ingredients:
+            for ingredientString in ingredients.split(','):
+                if ingredientString == "":
+                    continue
+                ingredient = Ingredient.objects.get(helloFreshId=ingredientString)
+                queryset = queryset.filter(helloFreshId__in=[i.helloFreshId for i in ingredient.get_related_recipes()])
+            return queryset
+        return queryset
+
     def filter_relevancy(self, queryset):
         queryset = queryset.annotate(relevancy=F('averageRating') * F('ratingCount'))
         ordering = self.request.query_params.get('ordering', None)
@@ -132,6 +143,7 @@ class RecipeBaseList(generics.ListAPIView):
     def get_queryset(self):
         queryset = self.queryset
         queryset = self.filter_tags(queryset)
+        queryset = self.filter_ingredients(queryset)
         queryset = self.filter_source(queryset)
         queryset = queryset.filter(clonedFrom__isnull=True)
         queryset = queryset.exclude(Q(headline__contains="Inhalt"))
