@@ -50,6 +50,7 @@ class IngredientList(generics.ListAPIView):
 @permission_classes([IsAuthenticated])
 class stockList(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
+    pagination_class = RqlPagination
     filterset_class = IngredientFilterSet
 
     def get_serializer_class(self):
@@ -82,6 +83,7 @@ def add_ingredient_to_stock(request, ingredient_id):
 @permission_classes([IsAuthenticated])
 class shoppingListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
+    pagination_class = RqlPagination
     filterset_class = IngredientFilterSet
 
     def get_serializer_class(self):

@@ -29,7 +29,7 @@
             return cookieValue;
         },
         async getIngredients(){
-            let temp = await (await fetch('/api/Ingredient/Stock?query={name,helloFreshId,usage_count}&ordering=name' ) ).json();
+            let temp = await (await fetch('/api/Ingredient/Stock?query={name,helloFreshId,usage_count}&ordering=name&page_size=1000' ) ).json();
             this.ingredients = temp.results
         },
         async getMembership(){
