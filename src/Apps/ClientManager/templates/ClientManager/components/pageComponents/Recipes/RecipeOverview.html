@@ -5,6 +5,7 @@
     params: {
         filter: {
             sources: [],
+            ingredients: [],
             tags: [],
             recipeType: null,
             favorited: null,
@@ -35,6 +36,7 @@
         this.params.page = urlParams.get('page') || 1;
         this.params.pageSize = urlParams.get('page_size') || 24;
         this.params.filter.sources = (urlParams.get('source') || '').split(',')
+        this.params.filter.ingredients = (urlParams.get('ingredients') || '').split(',')
         this.params.filter.tags = (urlParams.get('tags') || '').split(',')
         this.sliders.calorySlider.min = (urlParams.get('calories_gt') || 0)
         this.sliders.calorySlider.max = (urlParams.get('calories_lt') || 2000)
@@ -53,6 +55,8 @@
             filter += '&recipeType=' + this.params.filter.recipeType
         if (this.params.filter.sources.filter(s => s !== '').length > 0)
             filter += '&source=' + this.params.filter.sources.filter(s => s !== '').join(',')
+        if (this.params.filter.ingredients.filter(s => s !== '').length > 0)
+            filter += '&ingredients=' + this.params.filter.ingredients.filter(s => s !== '').join(',')
         if (this.params.filter.tags.filter(s => s !== '').length > 0)
             filter += '&tags=' + this.params.filter.tags.filter(t => t !== '').join('_')
         filter += '&query={' + this.params.fields.join(',') + '}'

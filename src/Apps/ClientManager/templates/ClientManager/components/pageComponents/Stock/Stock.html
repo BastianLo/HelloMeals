@@ -312,7 +312,11 @@
                                       stroke-linecap="round" stroke-linejoin="round"></path>
                             </svg>
                         </button>
-                        <button @click="console.log('placeholder')"
+                        <button x-init="$nextTick(() => htmx.process($el))"
+                                :hx-get="`{% url 'recipe.all' %}?ingredients=`+ ingredient.helloFreshId"
+                                hx-replace-url="true" hx-swap="innerHTML"
+                                hx-target="#body"
+                                hx-trigger="click" hx-push-url="true" hx-ext="true"
                                 class="flex items-center justify-center p-1 rounded-lg bg-blue-500 hover:bg-blue-600 focus:outline-none">
                             <svg class="w-6 h-6 text-white" aria-hidden="true" fill="none" stroke="currentColor"
                                  stroke-width="1.5"
