@@ -30,8 +30,26 @@ class IngredientSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
         fields = ["name", "children", "helloFreshId", "image", "HelloFreshImageUrl", "usage_count"]
 
 
+class advancedIngredientSerializer(IngredientSerializer):
+    available = serializers.SerializerMethodField()
+
+    def get_available(self, ingredient):
+        request = self.context.get('request')
+        if request.user is None or request.user.profile.stock is None:
+            return False
+        stock = request.user.profile.stock.ingredients.all()
+        ingredients = stock.filter(
+            Q(helloFreshId=ingredient.parent.helloFreshId if ingredient.parent is not None else None) | Q(
+                helloFreshId=ingredient.helloFreshId))
+        return len(ingredients) > 0
+
+    class Meta:
+        model = Ingredient
+        fields = ["name", "children", "helloFreshId", "image", "HelloFreshImageUrl", "usage_count", "available"]
+
+
 class RecipeIngredientSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
-    ingredient = IngredientSerializer()
+    ingredient = advancedIngredientSerializer()
 
     class Meta:
         model = RecipeIngredient
@@ -186,7 +204,8 @@ class IngredientGroupBaseSerializer(DynamicFieldsMixin, serializers.ModelSeriali
 
     def get_ingredients(self, instance):
         recipe_ingredients = RecipeIngredient.objects.filter(ingredient_group=instance)
-        ingredient_serializer = RecipeIngredientSerializer(recipe_ingredients, many=True)
+        ingredient_context = {'request': self.context.get('request')}
+        ingredient_serializer = RecipeIngredientSerializer(recipe_ingredients, many=True, context=ingredient_context)
         return ingredient_serializer.data
 
     def to_representation(self, instance):
@@ -238,6 +257,13 @@ class RecipeFullSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
+
+        # Pass the context to the nested IngredientSerializer
+        ingredient_context = {'request': self.context.get('request')}
+        representation['ingredient_groups'] = IngredientGroupBaseSerializer(
+            instance.ingredient_groups.all(), many=True, context=ingredient_context
+        ).data
+
         # representation['ingredients'] = self.get_ingredients(instance)
         representation['utensils'] = self.get_utensils(instance)
         representation['nutrients'] = self.get_nutrients(instance)

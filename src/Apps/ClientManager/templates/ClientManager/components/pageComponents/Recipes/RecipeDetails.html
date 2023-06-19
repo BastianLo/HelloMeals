@@ -5,8 +5,28 @@
         nutrients: []
     },
     currentServings: null,
+
+    getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    },
+    async toggleAvailability(ingredient){
+        let method = ingredient.available ? 'DELETE' : 'POST'
+        await (await fetch(`/api/Ingredient/Stock/${ingredient.helloFreshId}`, {method: method, headers: {'X-CSRFToken': this.getCookie('csrftoken')}} ) ).json();
+        await this.requestRecipe('/api/FullRecipe/' + location.href.split('/').at(-2))
+    },
     async requestRecipe(url){
-        console.log(url)
         this.loading = true;
         this.recipe = await (await fetch(url)).json();
         this.loading = false;
@@ -141,8 +161,29 @@
                                                         x-text="ingredient.amount > 0 ? Math.round(ingredient.amount / store.recipe.servings * store.currentServings*100)/100 : ''"></td>
                                                     <td class="px-4 py-2 border border-gray-300 dark:text-white"
                                                         x-text="ingredient.unit"></td>
-                                                    <td class="px-4 py-2 border border-gray-300 dark:text-white break-all"
-                                                        x-text="ingredient.ingredient.name"></td>
+                                                    <td class=" border border-gray-300">
+                                                        <div class="h-max px-4 py-2 dark:text-white break-all flex items-center">
+                                                            <button @click="store.toggleAvailability(ingredient.ingredient)"
+                                                                    class="flex-grow"
+                                                                    x-text="ingredient.ingredient.name"></button>
+                                                            <template x-if="ingredient.ingredient.available">
+                                                                <button @click="store.toggleAvailability(ingredient.ingredient)"
+                                                                        class="p-1 rounded-lg bg-lime-500 hover:bg-lime-600 focus:outline-none">
+                                                                    <svg class="w-6 h-6 text-black" aria-hidden="true"
+                                                                         fill="none" stroke="currentColor"
+                                                                         stroke-width="1.5"
+                                                                         viewBox="0 0 24 24"
+                                                                         xmlns="http://www.w3.org/2000/svg">
+                                                                        <path d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z"
+                                                                              stroke-linecap="round"
+                                                                              stroke-linejoin="round"></path>
+                                                                    </svg>
+                                                                </button>
+                                                            </template>
+                                                        </div>
+
+                                                    </td>
+
                                                 </tr>
                                             </template>
                                             </tbody>
