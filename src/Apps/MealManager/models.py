@@ -34,7 +34,8 @@ class Ingredient(models.Model):
         ingredients = [self]
         if self.parent is not None:
             ingredients += self.parent.get_descendants(include_self=True)
-
+        else:
+            ingredients += self.get_descendants(include_self=False)
         recipe_ingredients = RecipeIngredient.objects.filter(ingredient__in=ingredients).values_list(
             'ingredient_group_id', flat=True)
         related_recipes = Recipe.objects.filter(ingredient_groups__id__in=recipe_ingredients).distinct()
