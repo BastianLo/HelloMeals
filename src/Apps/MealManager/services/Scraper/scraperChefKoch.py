@@ -42,7 +42,6 @@ class Scraper:
                                  f"https://api.chefkoch.de/v2/search-gateway/recipes?tags={main_tag[0]}&minimumRating={global_preferences['scraper__Chefkoch_Minimum_Rating']}&limit=0&offset=0")
             tags = self.create_all_tags(r.json()["tagGroups"])
             for tag in tags[self.config.ck_tag_index:]:
-                self.config.set_ck_index(0)
                 try:
                     while self.active and (self.config.ck_index < self.config.ck_skip or self.config.ck_index == 0):
                         self.scrape(self.config.ck_index, tag, main_tag)
@@ -54,6 +53,7 @@ class Scraper:
                     raise e
                 if not self.active:
                     return
+                self.config.set_ck_index(0)
                 self.config.set_ck_tag_index(self.config.ck_tag_index + 1)
             self.config.set_ck_tag_index(0)
             self.config.set_ck_main_tag_index(self.config.ck_main_tag_index + 1)
