@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-21 20:18+0000\n"
+"POT-Creation-Date: 2023-06-21 20:39+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -268,6 +268,18 @@ msgstr "Abbrechen"
 msgid "AvailableIngredients"
 msgstr "Verfügbare Zutaten"
 
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsAdmin.html:15
+msgid "settings.downloader.label"
+msgstr "Rezept-Download"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsAdmin.html:26
+msgid "settings.grouping.label"
+msgstr "Gruppierungen"
+
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsAdmin.html:37
+msgid "settings.settingsGlobal.label"
+msgstr "Einstellungen"
+
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:56
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:114
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsDownloader.html:172
@@ -325,17 +337,13 @@ msgstr "Ausgewählte Tags wirklich löschen?"
 msgid "settings.grouping.mergeinto"
 msgstr "Mergen in"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsIndex.html:12
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsIndex.html:14
 msgid "settings.profile.label"
 msgstr "Profil"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsIndex.html:22
-msgid "settings.downloader.label"
-msgstr "Rezept-Download"
-
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsIndex.html:32
-msgid "settings.grouping.label"
-msgstr "Gruppierungen"
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsIndex.html:41
+msgid "settings.usersettings.label"
+msgstr "Einstellungen"
 
 #: Apps/ClientManager/templates/ClientManager/pages/registration/login.html:18
 msgid "login.description"

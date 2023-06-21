@@ -18,10 +18,16 @@ urlpatterns = [
     path("Recipe/<str:recipe_id>/", views.recipe_details),
 
     path("Settings/", RedirectView.as_view(url='/Home/Settings/Index/')),
+    # todo: implement actual view
+    path("Settings/User", views.settings_index, name="settings.usersettings"),
     path("Settings/Index/", views.settings_index),
-    path("Settings/Downloader/", views.settings_downloader, name="settings.downloader"),
-    path("Settings/Profile/", views.settings_index, name="settings.profile"),
-    path("Settings/Grouping/", views.settings_grouping_index, name="settings.grouping"),
-    path("Settings/Grouping/Tag", views.settings_grouping_tag, name="settings.grouping.tag"),
-    path("Settings/Grouping/Ingredient", views.settings_grouping_ingredients, name="settings.grouping.ingredient"),
+    path("Settings/Admin", views.settings_admin, name="settings.admin"),
+    # todo: Implement actual view
+    path("Settings/Admin/Global", views.settings_admin, name="settings.global"),
+    path("Settings/Admin/Downloader/", views.settings_downloader, name="settings.downloader"),
+    path("Settings/Admin/Profile/", views.settings_index, name="settings.profile"),
+    path("Settings/Admin/Grouping/", views.settings_grouping_index, name="settings.grouping"),
+    path("Settings/Admin/Grouping/Tag", views.settings_grouping_tag, name="settings.grouping.tag"),
+    path("Settings/Admin/Grouping/Ingredient", views.settings_grouping_ingredients,
+         name="settings.grouping.ingredient"),
 ]

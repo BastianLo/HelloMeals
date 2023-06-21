@@ -79,6 +79,13 @@ def settings_index(request):
 
 
 @login_required(login_url='/accounts/login/')
+def settings_admin(request):
+    navigation_history(request)
+    context = get_base_context()
+    return render(request, "ClientManager/pages/Settings/SettingsAdmin.html", context)
+
+
+@login_required(login_url='/accounts/login/')
 def settings_grouping_index(request):
     navigation_history(request)
     context = get_base_context()
