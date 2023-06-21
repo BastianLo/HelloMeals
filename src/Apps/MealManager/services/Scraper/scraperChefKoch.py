@@ -37,12 +37,11 @@ class Scraper:
 
     def work(self):
         main_tags = [(11, 4), (23, 3), (90, 2), (53, 1), (21, 0)]
-        for main_tag in main_tags:
+        for main_tag in main_tags[self.config.ck_main_tag_index:]:
             r = requests.request("GET",
                                  f"https://api.chefkoch.de/v2/search-gateway/recipes?tags={main_tag[0]}&minimumRating={global_preferences['scraper__Chefkoch_Minimum_Rating']}&limit=0&offset=0")
             tags = self.create_all_tags(r.json()["tagGroups"])
-            for tag in tags:
-                self.config.set_ck_index(0)
+            for tag in tags[self.config.ck_tag_index:]:
                 try:
                     while (self.active and self.config.ck_index < self.config.ck_skip) or self.config.ck_index == 0:
                         self.scrape(self.config.ck_index, tag, main_tag)
@@ -52,6 +51,8 @@ class Scraper:
                     self.active = False
                     self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
                     raise e
+                self.config.set_ck_tag_index(0)
+            self.config.set_ck_main_tag_index(self.config.ck_main_tag_index + 1)
 
     def start(self):
         self.bearer_token = None
@@ -74,6 +75,8 @@ class Scraper:
     def restart(self):
         self.stop()
         self.config.set_ck_index(0)
+        self.config.set_ck_main_tag_index(0)
+        self.config.set_ck_tag_index(0)
         self.start()
 
     def is_running(self):
