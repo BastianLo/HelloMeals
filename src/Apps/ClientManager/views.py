@@ -1,3 +1,4 @@
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -12,13 +13,10 @@ def navigation_history(request):
 
 
 def back_view(request):
-    # Retrieve the previous URL from the session
     previous_url = request.session.get('previous_url')
     if previous_url:
-        # Redirect the user to the previous URL
         return redirect(previous_url)
     else:
-        # Handle the case when there is no previous URL available
         return HttpResponse("Previous URL not found.")
 
 
@@ -78,6 +76,7 @@ def settings_index(request):
     return render(request, "ClientManager/pages/Settings/SettingsIndex.html", context)
 
 
+@staff_member_required
 @login_required(login_url='/accounts/login/')
 def settings_admin(request):
     navigation_history(request)
@@ -85,6 +84,7 @@ def settings_admin(request):
     return render(request, "ClientManager/pages/Settings/SettingsAdmin.html", context)
 
 
+@staff_member_required
 @login_required(login_url='/accounts/login/')
 def settings_grouping_index(request):
     navigation_history(request)
@@ -92,6 +92,7 @@ def settings_grouping_index(request):
     return render(request, "ClientManager/pages/Settings/SettingsGroupingIndex.html", context)
 
 
+@staff_member_required
 @login_required(login_url='/accounts/login/')
 def settings_grouping_tag(request):
     navigation_history(request)
@@ -99,6 +100,7 @@ def settings_grouping_tag(request):
     return render(request, "ClientManager/pages/Settings/SettingsGroupingTag.html", context)
 
 
+@staff_member_required
 @login_required(login_url='/accounts/login/')
 def settings_grouping_ingredients(request):
     navigation_history(request)
@@ -106,6 +108,7 @@ def settings_grouping_ingredients(request):
     return render(request, "ClientManager/pages/Settings/SettingsGroupingIngredients.html", context)
 
 
+@staff_member_required
 @login_required(login_url='/accounts/login/')
 def settings_downloader(request):
     navigation_history(request)
