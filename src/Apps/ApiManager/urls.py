@@ -23,8 +23,8 @@ schema_view = get_schema_view(
         license=openapi.License(name="Apache-2.0 license "),
     ),
     url=os.getenv("APP_URL", "http://127.0.0.1:8000"),
-    public=True,
-    permission_classes=[permissions.AllowAny, ],
+    public=False,
+    permission_classes=[permissions.IsAuthenticated, ],
 )
 
 urlpatterns = [
