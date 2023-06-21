@@ -65,7 +65,7 @@ class RecipeFilterSet(filters.FilterSet):
     class Meta:
         model = Recipe
         fields = ['srch', 'tag', 'cloned_from_null', 'difficulty', 'ingredient_count__lt', 'relevancy', 'calories_gt',
-                  'calories_lt']
+                  'calories_lt', 'isPlus']
 
 
 ### Views ###
