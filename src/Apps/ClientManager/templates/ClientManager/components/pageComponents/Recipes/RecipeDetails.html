@@ -6,6 +6,10 @@
     },
     currentServings: null,
 
+    async setFavorite(){
+        await (await fetch(`/api/Recipe/${this.recipe.helloFreshId}/favorite/${!this.recipe.favorited}`, {method: 'POST', headers: {'X-CSRFToken': this.getCookie('csrftoken')}} ) ).json();
+        await this.requestRecipe('/api/FullRecipe/' + location.href.split('/').at(-2))
+    },
     getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -59,17 +63,37 @@
                 <div>
                     <h1 class="text-3xl font-semibold dark:text-white mb-4" x-text="store.recipe.name"></h1>
                     <p class="text-base text-gray-700 dark:text-gray-400" x-text="store.recipe.headline"></p>
-                    <template x-if="store.recipe.websiteLink !== null">
-                        <a :href="store.recipe.websiteLink" target="_blank" rel="noopener noreferrer">
-                            <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5"
-                                 viewBox="0 0 24 24"
-                                 xmlns="http://www.w3.org/2000/svg"
-                                 class="inline-block w-5 h-5 mb-1 mr-1 dark:text-white">
-                                <path d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"
-                                      stroke-linecap="round" stroke-linejoin="round"></path>
-                            </svg>
-                        </a>
-                    </template>
+                    <!-- Top menu buttons -->
+                    <div class="flex items-center gap-2">
+                        <button @click="await store.setFavorite()">
+                            <template x-if="store.recipe.favorited">
+                                <svg class="w-8 h-8 mb-1 text-red-400" aria-hidden="true"
+                                     fill="currentColor" viewBox="0 0 24 24"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z"></path>
+                                </svg>
+                            </template>
+                            <template x-if="!store.recipe.favorited">
+                                <svg class="w-8 h-8 mb-1 text-gray-500 dark:text-red-400" aria-hidden="true" fill="none"
+                                     stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
+                                          stroke-linecap="round" stroke-linejoin="round"></path>
+                                </svg>
+                            </template>
+                        </button>
+                        <template x-if="store.recipe.websiteLink !== null">
+                            <a :href="store.recipe.websiteLink" target="_blank" rel="noopener noreferrer">
+                                <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5"
+                                     viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+                                     class="inline-block w-8 h-8 mb-1 mr-1 dark:text-white">
+                                    <path d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"
+                                          stroke-linecap="round" stroke-linejoin="round"></path>
+                                </svg>
+                            </a>
+                        </template>
+                    </div>
+
                     <div class="mb-4">
                         <template x-if="store.recipe.nutrients.energyKcal">
                             <span class="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300"
