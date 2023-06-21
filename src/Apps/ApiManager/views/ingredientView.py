@@ -2,6 +2,7 @@ import django_filters
 from Apps.MealManager.models import Ingredient, RecipeIngredient
 from Apps.MealManager.models import Stock
 from Apps.MealManager.serializers import IngredientSerializer
+from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import Count
 from django_filters import rest_framework as filters
 from rest_framework import generics
@@ -114,6 +115,7 @@ def add_ingredient_to_shopping_list(request, ingredient_id):
     return Response(response)
 
 
+@staff_member_required
 @api_view(['POST'])
 def assign_ingredient_parent(request, helloFreshId, parentId=None):
     try:
