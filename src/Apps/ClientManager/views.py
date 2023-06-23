@@ -78,6 +78,13 @@ def settings_index(request):
     return render(request, "ClientManager/pages/Settings/SettingsIndex.html", context)
 
 
+@login_required(login_url='/accounts/login/')
+def settings_profile(request):
+    navigation_history(request)
+    context = get_base_context()
+    return render(request, "ClientManager/pages/Settings/SettingsProfile.html", context)
+
+
 @staff_member_required
 @login_required(login_url='/accounts/login/')
 def settings_admin(request):
