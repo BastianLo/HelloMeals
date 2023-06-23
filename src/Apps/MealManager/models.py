@@ -1,3 +1,5 @@
+import uuid
+
 from cached_property import cached_property_with_ttl
 from django.contrib.auth.models import User
 from django.db import models
@@ -340,6 +342,11 @@ class Profile(models.Model):
 
     def __str__(self):
         return f"Profile {self.user}"
+
+
+class InviteToken(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    issuer = models.OneToOneField(User, on_delete=models.CASCADE)
 
 
 @receiver(post_save, sender=Stock)

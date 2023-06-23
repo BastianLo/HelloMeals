@@ -10,6 +10,7 @@ urlpatterns = [
 
     path("login/", views.login_view, name="auth.login"),
     path("logout/", views.logout_view, name="auth.logout"),
+    path('register/<str:token>/', views.registration_view, name='register'),
 
     path("Stock/", views.recipe_index, name="stock.overview"),
     path("Stock/Stock", views.stock_stock, name="stock.stock"),

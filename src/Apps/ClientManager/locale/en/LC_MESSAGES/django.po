@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-21 20:39+0000\n"
+"POT-Creation-Date: 2023-06-23 16:32+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,61 +42,61 @@ msgstr "Planner"
 msgid "base.settings"
 msgstr "Settings"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:56
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:71
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:194
 msgid "common.loading.label"
 msgstr "Loading"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:101
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:197
 msgid "nutrients.kcal"
 msgstr "Kalorien"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:106
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:202
 msgid "nutrients.carbs"
 msgstr "Carbs"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:111
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:207
 msgid "nutrients.protein"
 msgstr "Protein"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:116
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:212
 msgid "nutrients.fat"
 msgstr "Fat"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:121
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:217
 msgid "nutrients.fat_saturated"
 msgstr "Saturated Fat"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:126
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:222
 msgid "nutrients.sugar"
 msgstr "Sugar"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:131
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:227
 msgid "nutrients.salt"
 msgstr "Salt"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:147
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:243
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIndex.html:26
 msgid "settings.grouping.ingredients"
 msgstr "Ingredients"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:151
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:247
 msgid "Servings"
 msgstr "Servings"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:171
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:267
 msgid "Amount"
 msgstr "Amount"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:174
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:270
 msgid "Unit"
 msgstr "Unit"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:177
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:273
 msgid "Ingredient"
 msgstr "Ingredient"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:224
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:320
 msgid "Work Steps"
 msgstr "Work Steps"
 
@@ -278,7 +278,7 @@ msgstr "Recipe-Download"
 msgid "settings.grouping.label"
 msgstr "Grouping"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsAdmin.html:37
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsAdmin.html:39
 msgid "settings.settingsGlobal.label"
 msgstr "Global settings"
 
@@ -347,31 +347,47 @@ msgstr "Profile"
 msgid "settings.usersettings.label"
 msgstr "Settings"
 
-#: Apps/ClientManager/templates/ClientManager/pages/registration/login.html:18
+#: Apps/ClientManager/templates/ClientManager/pages/registration/login.html:17
 msgid "login.description"
 msgstr "Log into your account"
 
-#: Apps/ClientManager/templates/ClientManager/pages/registration/login.html:32
+#: Apps/ClientManager/templates/ClientManager/pages/registration/login.html:38
 msgid "login.submit"
 msgstr "Log in"
 
-#: Apps/MealManager/models.py:170
+#: Apps/ClientManager/templates/ClientManager/pages/registration/registration.html:16
+msgid "registration.description"
+msgstr "Create a new account"
+
+#: Apps/ClientManager/templates/ClientManager/pages/registration/registration.html:36
+msgid "registration.submit"
+msgstr "Register"
+
+#: Apps/ClientManager/templates/ClientManager/pages/registration/registrationInvalidToken.html:15
+msgid "Invalid Token"
+msgstr "Invalid link"
+
+#: Apps/ClientManager/templates/ClientManager/pages/registration/registrationInvalidToken.html:18
+msgid "The token you provided is invalid."
+msgstr "The invite link is not valid!"
+
+#: Apps/MealManager/models.py:172
 msgid "Hauptgericht"
 msgstr "Main Course"
 
-#: Apps/MealManager/models.py:171
+#: Apps/MealManager/models.py:173
 msgid "Frühstück"
 msgstr "Breakfast"
 
-#: Apps/MealManager/models.py:172
+#: Apps/MealManager/models.py:174
 msgid "Dessert"
 msgstr "Dessert"
 
-#: Apps/MealManager/models.py:173
+#: Apps/MealManager/models.py:175
 msgid "Backen"
 msgstr "Baking"
 
-#: Apps/MealManager/models.py:174
+#: Apps/MealManager/models.py:176
 msgid "Getränke"
 msgstr "Drinks"
 

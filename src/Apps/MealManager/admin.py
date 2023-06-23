@@ -5,6 +5,7 @@ from .models import *
 # Register your models here.
 
 admin.site.register(Profile)
+admin.site.register(InviteToken)
 admin.site.register(Stock)
 admin.site.register(ShoppingList)
 admin.site.register(Recipe)

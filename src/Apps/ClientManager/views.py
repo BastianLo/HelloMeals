@@ -1,3 +1,4 @@
+from Apps.MealManager.models import InviteToken
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -129,7 +130,7 @@ def handler500(request, *args, **argv):
     return response
 
 
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 
 
 def login_view(request):
@@ -154,3 +155,22 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('/')
+
+
+def registration_view(request, token):
+    try:
+        invite_token = InviteToken.objects.get(id=token)
+    except InviteToken.DoesNotExist:
+        return render(request, 'ClientManager/pages/registration/registrationInvalidToken.html')
+
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            invite_token.delete()
+            login(request, user)
+            return redirect('/')
+    else:
+        form = UserCreationForm()
+
+    return render(request, 'ClientManager/pages/registration/registration.html', {'form': form})
