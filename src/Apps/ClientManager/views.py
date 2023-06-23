@@ -1,4 +1,5 @@
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -126,3 +127,30 @@ def handler500(request, *args, **argv):
     response = render(request, 'ClientManager/errors/500.html', {})
     response.status_code = 500
     return response
+
+
+from django.contrib.auth.forms import AuthenticationForm
+
+
+def login_view(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = authenticate(request, username=form.cleaned_data.get('username'),
+                                password=form.cleaned_data.get('password'))
+            if user is not None:
+                login(request, user)
+                return redirect('/')
+            else:
+                form.add_error(None, "Ungültiger Benutzername oder Passwort")
+        else:
+            form.add_error(None, "Ungültiger Benutzername oder Passwort")
+
+    else:
+        form = AuthenticationForm(request)
+    return render(request, 'ClientManager/pages/registration/login.html', {'form': form})
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('/')
