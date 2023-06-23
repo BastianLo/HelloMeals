@@ -148,7 +148,7 @@ def login_view(request):
                                 password=form.cleaned_data.get('password'))
             if user is not None:
                 login(request, user)
-                return redirect('/')
+                return redirect(request.GET.get('next', '/'))
             else:
                 form.add_error(None, "Ungültiger Benutzername oder Passwort")
         else:
