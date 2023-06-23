@@ -13,7 +13,7 @@
     },
     async share(){
         try{
-            await navigator.share({title:store.recipe.name, url: location.href});
+            await navigator.share({title:this.recipe.name, url: location.href});
         }
         catch{
             this.showAlert=true;
