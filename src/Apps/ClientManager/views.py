@@ -95,6 +95,14 @@ def settings_admin(request):
 
 @staff_member_required
 @login_required(login_url='/accounts/login/')
+def settings_invite(request):
+    navigation_history(request)
+    context = get_base_context()
+    return render(request, "ClientManager/pages/Settings/SettingsInvite.html", context)
+
+
+@staff_member_required
+@login_required(login_url='/accounts/login/')
 def settings_grouping_index(request):
     navigation_history(request)
     context = get_base_context()

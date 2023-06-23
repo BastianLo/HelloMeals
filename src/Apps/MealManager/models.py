@@ -346,7 +346,7 @@ class Profile(models.Model):
 
 class InviteToken(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    issuer = models.OneToOneField(User, on_delete=models.CASCADE)
+    issuer = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
 @receiver(post_save, sender=Stock)

@@ -25,6 +25,17 @@
             </svg>
             {% trans 'settings.grouping.label' %}
         </button>
+        <button hx-get="{% url 'settings.invite' %}" hx-replace-url="true" hx-swap="innerHTML" hx-target="#body"
+                hx-trigger="click" hx-push-url="true" hx-ext="true"
+                class="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium rounded-b-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white">
+            <svg aria-hidden="true" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" stroke-width="1.5"
+                 viewBox="0 0 24 24"
+                 xmlns="http://www.w3.org/2000/svg">
+                <path d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
+                      stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            {% trans 'settings.invite.label' %}
+        </button>
         <button hx-get="{% url 'settings.global' %}" hx-replace-url="true" hx-swap="innerHTML" hx-target="#body"
                 hx-trigger="click" hx-push-url="true" hx-ext="true"
                 class="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium rounded-b-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white">

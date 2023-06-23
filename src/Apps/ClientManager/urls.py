@@ -29,7 +29,8 @@ urlpatterns = [
     path("Settings/Index/", views.settings_index),
     path("Settings/Admin", views.settings_admin, name="settings.admin"),
     # todo: Implement actual view
-    path("Settings/Admin/Global", views.settings_admin, name="settings.global"),
+    path("Settings/Admin/Global/", views.settings_admin, name="settings.global"),
+    path("Settings/Admin/Invite/", views.settings_invite, name="settings.invite"),
     path("Settings/Admin/Downloader/", views.settings_downloader, name="settings.downloader"),
     path("Settings/Admin/Grouping/", views.settings_grouping_index, name="settings.grouping"),
     path("Settings/Admin/Grouping/Tag", views.settings_grouping_tag, name="settings.grouping.tag"),

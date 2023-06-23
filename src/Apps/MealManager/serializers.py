@@ -140,6 +140,14 @@ class WorkStepSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
         exclude = []
 
 
+### InviteToken ###
+
+class InviteTokenSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
+    class Meta:
+        model = InviteToken
+        exclude = []
+
+
 ### Recipe ###
 
 class RecipeBaseSerializer(DynamicFieldsMixin, serializers.ModelSerializer):

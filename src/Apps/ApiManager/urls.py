@@ -38,6 +38,8 @@ urlpatterns = [
     ### --- API Authentification --- ###
     path('auth/login/', authentification_view.api_login, name='api_login'),
     path('auth/token/', authentification_view.ObtainTokenPairView.as_view(), name='token_obtain_pair'),
+    path('auth/invites/', authentification_view.InviteListCreate.as_view()),
+    path('auth/invites/<str:id>', authentification_view.InviteDetail.as_view()),
 
     path('FullRecipe', recipeView.RecipeFullList.as_view()),
     path('FullRecipe/<str:helloFreshId>', recipeView.RecipeFullDetail.as_view()),
