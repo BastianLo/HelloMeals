@@ -15,7 +15,10 @@
         try{
             await navigator.share({title:this.recipe.name, url: location.href});
         }
-        catch{
+        catch (e){
+            if (!(e instanceof TypeError)){
+                return
+            }
             this.showAlert=true;
             await navigator.clipboard.writeText(location.href);
             setTimeout(() => {
