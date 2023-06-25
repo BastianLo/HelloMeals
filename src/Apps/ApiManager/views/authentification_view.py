@@ -3,7 +3,7 @@ from Apps.MealManager.serializers import InviteTokenSerializer
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.decorators import permission_classes, api_view
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -20,7 +20,7 @@ def api_login(request):
     return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsAdminUser])
 class InviteListCreate(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
@@ -38,7 +38,7 @@ class InviteListCreate(generics.ListCreateAPIView):
         return super().create(request, *args, **kwargs)
 
 
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsAdminUser])
 class InviteDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = InviteTokenSerializer
     lookup_field = 'id'
