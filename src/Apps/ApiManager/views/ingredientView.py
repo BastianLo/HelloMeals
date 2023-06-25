@@ -7,7 +7,7 @@ from django.db.models import Count
 from django_filters import rest_framework as filters
 from rest_framework import generics
 from rest_framework.decorators import permission_classes, api_view
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from util.pagination import RqlPagination
 
@@ -117,6 +117,7 @@ def add_ingredient_to_shopping_list(request, ingredient_id):
 
 @staff_member_required
 @api_view(['POST'])
+@permission_classes([IsAuthenticated, IsAdminUser])
 def assign_ingredient_parent(request, helloFreshId, parentId=None):
     try:
         source = Ingredient.objects.get(helloFreshId=helloFreshId)
