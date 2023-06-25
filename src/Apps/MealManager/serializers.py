@@ -1,3 +1,5 @@
+from django.db.models import Q
+from django_restql.mixins import DynamicFieldsMixin
 from rest_framework import serializers
 
 from .models import *
@@ -5,29 +7,70 @@ from .models import *
 
 ### Ingredient ###
 
-class IngredientSerializer(serializers.ModelSerializer):
+class IngredientSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
+    children = serializers.SerializerMethodField()
+    usage_count = serializers.SerializerMethodField()
+
+    def get_children(self, ingredient):
+        children = Ingredient.objects.filter(parent=ingredient)
+        serializer = IngredientSerializer(children, many=True)
+        return serializer.data
+
+    def get_usage_count(self, ingredient):
+        return ingredient.get_usage_count
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        if instance.parent is not None and 'children' in data:
+            del data['children']
+        return data
+
     class Meta:
         model = Ingredient
-        fields = "__all__"
+        fields = ["name", "children", "helloFreshId", "image", "HelloFreshImageUrl", "usage_count"]
 
 
-class RecipeIngredientSerializer(serializers.ModelSerializer):
-    ingredient = IngredientSerializer()
+class advancedIngredientSerializer(IngredientSerializer):
+    available = serializers.SerializerMethodField()
+
+    def get_available(self, ingredient):
+        request = self.context.get('request')
+        if request.user is None or request.user.profile.stock is None:
+            return False
+        stock = request.user.profile.stock.ingredients.all()
+        ingredients = stock.filter(
+            Q(helloFreshId=ingredient.parent.helloFreshId if ingredient.parent is not None else None) | Q(
+                helloFreshId=ingredient.helloFreshId))
+        return len(ingredients) > 0
+
+    class Meta:
+        model = Ingredient
+        fields = ["name", "children", "helloFreshId", "image", "HelloFreshImageUrl", "usage_count", "available"]
+
+
+class RecipeIngredientSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
+    ingredient = advancedIngredientSerializer()
 
     class Meta:
         model = RecipeIngredient
         exclude = ["ingredient_group"]
 
 
+class StockSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
+    class Meta:
+        model = Stock
+        fields = ["id", "name"]
+
+
 ### Utensil ###
 
-class UtensilSerializer(serializers.ModelSerializer):
+class UtensilSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     class Meta:
         model = Utensil
         fields = "__all__"
 
 
-class RecipeUtensilSerializer(serializers.ModelSerializer):
+class RecipeUtensilSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     utensil = UtensilSerializer()
 
     class Meta:
@@ -37,25 +80,25 @@ class RecipeUtensilSerializer(serializers.ModelSerializer):
 
 ### Tag ###
 
-class TagMergeSerializer(serializers.ModelSerializer):
+class TagMergeSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     class Meta:
         model = TagMerge
         fields = "__all__"
 
 
-class TagSerializer(serializers.ModelSerializer):
+class TagSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = "__all__"
 
 
-class TagGroupSerializer(serializers.ModelSerializer):
+class TagGroupSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     class Meta:
         model = TagGroup
         fields = "__all__"
 
 
-class TagGroupFullSerializer(serializers.ModelSerializer):
+class TagGroupFullSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     tags = TagSerializer(many=True, read_only=True)
 
     class Meta:
@@ -73,7 +116,7 @@ class TagGroupFullSerializer(serializers.ModelSerializer):
         return representation
 
 
-class RecipeTagSerializer(serializers.ModelSerializer):
+class RecipeTagSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     tag = TagSerializer()
 
     class Meta:
@@ -83,7 +126,7 @@ class RecipeTagSerializer(serializers.ModelSerializer):
 
 ### Nutrients ###
 
-class NutrientSerializer(serializers.ModelSerializer):
+class NutrientSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     class Meta:
         model = Nutrients
         exclude = ["id"]
@@ -91,24 +134,40 @@ class NutrientSerializer(serializers.ModelSerializer):
 
 ### WorkSteps ###
 
-class WorkStepSerializer(serializers.ModelSerializer):
+class WorkStepSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     class Meta:
         model = WorkSteps
         exclude = []
 
 
+### InviteToken ###
+
+class InviteTokenSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
+    class Meta:
+        model = InviteToken
+        exclude = []
+
+
 ### Recipe ###
 
-class RecipeBaseSerializer(serializers.ModelSerializer):
+class RecipeBaseSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     ingredient_count = serializers.SerializerMethodField()
+    available_ingredient_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Recipe
-        exclude = []
-        fields = '__all__'
+        exclude = ['favoriteBy']
 
     similarity = serializers.SerializerMethodField()
     relevancy = serializers.SerializerMethodField()
+    favorited = serializers.SerializerMethodField()
+
+    def get_favorited(self, obj):
+        request = self.context.get('request')
+        user = request.user
+        if user.is_authenticated:
+            return obj.favoriteBy.filter(id=user.id).exists()
+        return False
 
     def get_similarity(self, obj):
         search = self.context.get('request').query_params.get('srch')
@@ -128,6 +187,15 @@ class RecipeBaseSerializer(serializers.ModelSerializer):
         ingredient_count = len(RecipeIngredient.objects.filter(ingredient_group__in=instance.ingredient_groups.all()))
         return ingredient_count
 
+    def get_available_ingredient_count(self, instance):
+        request = self.context.get('request')
+        if request.user.profile.stock is None:
+            return 0
+        ingredients = RecipeIngredient.objects.filter(ingredient_group__in=instance.ingredient_groups.all())
+        ingredients = ingredients.filter(Q(ingredient__parent__in=request.user.profile.stock.ingredients.all()) | Q(
+            ingredient__in=request.user.profile.stock.ingredients.all()))
+        return len(ingredients)
+
     def get_nutrients(self, instance):
         recipe_nutrients = Nutrients.objects.filter(recipe=instance).first()
         utensil_serializer = NutrientSerializer(recipe_nutrients, many=False)
@@ -139,12 +207,13 @@ class RecipeBaseSerializer(serializers.ModelSerializer):
         return representation
 
 
-class IngredientGroupBaseSerializer(serializers.ModelSerializer):
+class IngredientGroupBaseSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     ingredients = RecipeIngredientSerializer(many=True, read_only=True)
 
     def get_ingredients(self, instance):
         recipe_ingredients = RecipeIngredient.objects.filter(ingredient_group=instance)
-        ingredient_serializer = RecipeIngredientSerializer(recipe_ingredients, many=True)
+        ingredient_context = {'request': self.context.get('request')}
+        ingredient_serializer = RecipeIngredientSerializer(recipe_ingredients, many=True, context=ingredient_context)
         return ingredient_serializer.data
 
     def to_representation(self, instance):
@@ -154,16 +223,25 @@ class IngredientGroupBaseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = IngredientGroup
-        fields = "__all__"
+        fields = ["id", "name", "ingredients"]
 
 
-class RecipeFullSerializer(serializers.ModelSerializer):
+class RecipeFullSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     utensils = RecipeUtensilSerializer(many=True, read_only=True)
     ingredient_groups = IngredientGroupBaseSerializer(read_only=True, many=True)
 
     class Meta:
         model = Recipe
-        exclude = []
+        exclude = ['favoriteBy']
+
+    favorited = serializers.SerializerMethodField()
+
+    def get_favorited(self, obj):
+        request = self.context.get('request')
+        user = request.user
+        if user.is_authenticated:
+            return obj.favoriteBy.filter(id=user.id).exists()
+        return False
 
     def get_utensils(self, instance):
         recipe_utensils = RecipeUtensil.objects.filter(recipe=instance)
@@ -187,6 +265,13 @@ class RecipeFullSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
+
+        # Pass the context to the nested IngredientSerializer
+        ingredient_context = {'request': self.context.get('request')}
+        representation['ingredient_groups'] = IngredientGroupBaseSerializer(
+            instance.ingredient_groups.all(), many=True, context=ingredient_context
+        ).data
+
         # representation['ingredients'] = self.get_ingredients(instance)
         representation['utensils'] = self.get_utensils(instance)
         representation['nutrients'] = self.get_nutrients(instance)

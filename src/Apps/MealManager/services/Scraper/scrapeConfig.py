@@ -27,6 +27,12 @@ class ScrapeConfig:
         self.ck_index = self.config_data["chefkoch"][
             "index"] if "chefkoch" in self.config_data and "index" in self.config_data[
             "chefkoch"] else 1
+        self.ck_main_tag_index = self.config_data["chefkoch"][
+            "main_tag_index"] if "chefkoch" in self.config_data and "main_tag_index" in self.config_data[
+            "chefkoch"] else 0
+        self.ck_tag_index = self.config_data["chefkoch"][
+            "tag_index"] if "chefkoch" in self.config_data and "tag_index" in self.config_data[
+            "chefkoch"] else 0
         self.ck_skip = self.config_data["chefkoch"][
             "skip"] if "chefkoch" in self.config_data and "skip" in self.config_data[
             "chefkoch"] else 1000000
@@ -53,6 +59,14 @@ class ScrapeConfig:
 
     def set_ck_index(self, index):
         self.ck_index = index
+        self.save_file()
+
+    def set_ck_main_tag_index(self, index):
+        self.ck_main_tag_index = index
+        self.save_file()
+
+    def set_ck_tag_index(self, index):
+        self.ck_tag_index = index
         self.save_file()
 
     def set_ck_skip(self, skip):
@@ -99,6 +113,8 @@ class ScrapeConfig:
                 "chefkoch": {
                     "index": self.ck_index,
                     "skip": self.ck_skip,
+                    "main_tag_index": self.ck_main_tag_index,
+                    "tag_index": self.ck_tag_index,
                 },
                 "lecker": {
                     "index": self.lk_index,

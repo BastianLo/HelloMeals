@@ -1,15 +1,16 @@
 import random
 
 import django_filters
-from Apps.MealManager.models import Recipe
+from Apps.MealManager.models import Recipe, Ingredient
 from Apps.MealManager.serializers import RecipeFullSerializer, RecipeBaseSerializer
 from django.contrib.postgres.search import TrigramSimilarity
 from django.db.models import Count, F, FloatField, ExpressionWrapper, Q
 from django.db.models.functions import Coalesce
 from django_filters import rest_framework as filters
 from rest_framework import generics
-from rest_framework.decorators import permission_classes
+from rest_framework.decorators import permission_classes, api_view
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from util.pagination import RqlPagination
 
 
@@ -20,14 +21,25 @@ class RecipeFilterSet(filters.FilterSet):
     cloned_from_null = filters.BooleanFilter(field_name='clonedFrom', lookup_expr='isnull')
     srch = django_filters.CharFilter(method='filter_search')
     difficulty = django_filters.NumberFilter(field_name='difficulty')
+    recipeType = django_filters.NumberFilter(field_name='recipeType')
     ingredient_count__lt = django_filters.NumberFilter(
         method='filter_ingredient_count',
         label='Ingredient Count less than',
     )
     relevancy = django_filters.CharFilter(method='filter_relevancy')
+    favorited = django_filters.BooleanFilter(field_name='favorited_by', method='filter_favorited')
 
     calories_gt = django_filters.NumberFilter(field_name='nutrients__energyKcal', lookup_expr='gt')
     calories_lt = django_filters.NumberFilter(field_name='nutrients__energyKcal', lookup_expr='lt')
+
+    def filter_favorited(self, queryset, name, value):
+        user = self.request.user
+        if user.is_authenticated:
+            if value:
+                return queryset.filter(favoriteBy=user)
+            else:
+                return queryset.exclude(favoriteBy=user)
+        return queryset.none()
 
     def filter_search(self, queryset, name, value):
         return queryset.annotate(
@@ -35,7 +47,7 @@ class RecipeFilterSet(filters.FilterSet):
                                                                         output_field=FloatField()))
         ).filter(similarity__gt=0.5).annotate(
             relevancy=ExpressionWrapper(
-                F('averageRating') * ((F('ratingCount') * F('similarity')) ** 0.1),
+                F('similarity') * ((F('ratingCount') * F('averageRating')) ** 0.05),
                 output_field=FloatField()
             )
         ).order_by('-relevancy')
@@ -53,7 +65,7 @@ class RecipeFilterSet(filters.FilterSet):
     class Meta:
         model = Recipe
         fields = ['srch', 'tag', 'cloned_from_null', 'difficulty', 'ingredient_count__lt', 'relevancy', 'calories_gt',
-                  'calories_lt']
+                  'calories_lt', 'isPlus']
 
 
 ### Views ###
@@ -107,6 +119,17 @@ class RecipeBaseList(generics.ListAPIView):
             return queryset
         return queryset
 
+    def filter_ingredients(self, queryset):
+        ingredients = self.request.GET.get('ingredients')
+        if ingredients:
+            for ingredientString in ingredients.split(','):
+                if ingredientString == "":
+                    continue
+                ingredient = Ingredient.objects.get(helloFreshId=ingredientString)
+                queryset = queryset.filter(helloFreshId__in=[i.helloFreshId for i in ingredient.get_related_recipes()])
+            return queryset
+        return queryset
+
     def filter_relevancy(self, queryset):
         queryset = queryset.annotate(relevancy=F('averageRating') * F('ratingCount'))
         ordering = self.request.query_params.get('ordering', None)
@@ -115,20 +138,12 @@ class RecipeBaseList(generics.ListAPIView):
         return queryset
 
     def get_serializer_class(self):
-        if self.request.method == 'GET':
-            fields = self.request.query_params.get('fields')
-            if fields:
-                fields = fields.split(',')
-                meta = RecipeBaseSerializer.Meta
-                meta.fields = fields
-                return type('DynamicRecipeBaseSerializer', (RecipeBaseSerializer,), {'Meta': meta})
-            else:
-                return RecipeBaseSerializer
         return RecipeBaseSerializer
 
     def get_queryset(self):
         queryset = self.queryset
         queryset = self.filter_tags(queryset)
+        queryset = self.filter_ingredients(queryset)
         queryset = self.filter_source(queryset)
         queryset = queryset.filter(clonedFrom__isnull=True)
         queryset = queryset.exclude(Q(headline__contains="Inhalt"))
@@ -154,3 +169,26 @@ class RecipeBaseDetail(generics.RetrieveAPIView):
 
     def get_queryset(self):
         return Recipe.objects.all()
+
+
+@api_view(['POST'])
+def set_favorite(request, helloFreshId, favorite):
+    # Find the recipe with the specified helloFreshId
+    try:
+        recipe = Recipe.objects.get(helloFreshId=helloFreshId)
+    except Recipe.DoesNotExist:
+        return Response({'error': 'Recipe not found'}, status=404)
+
+    # Update the favorite status of the recipe
+    if favorite.lower() == 'true':
+        recipe.favoriteBy.add(request.user)
+    else:
+        recipe.favoriteBy.remove(request.user)
+    recipe.save()
+
+    response = {
+        'message': 'Favorite status updated successfully',
+        'helloFreshId': helloFreshId,
+    }
+
+    return Response(response)

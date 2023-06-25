@@ -1,0 +1,7 @@
+{% extends "ClientManager/components/pageComponents/Recipes/RecipeOverview.html" %}
+{% block store %}
+    <div x-init="
+        store.params.filter.favorited = true;
+        store.init();
+    "></div>
+{% endblock %}

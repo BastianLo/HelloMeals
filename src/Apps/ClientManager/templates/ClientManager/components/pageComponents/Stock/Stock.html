@@ -1,0 +1,334 @@
+{% load i18n %}
+<div style="position: absolute; left:20px;right:20px;" x-data="{
+    store: {
+        ingredients: [],
+        membershipId: null,
+        newMembershipId: null,
+        availableMemberships: [],
+        createStockName: null,
+        targetSearchString: null,
+        targetIngredients: [],
+        targetIngredient: null,
+        tnav: {},
+        popups: {
+            create: false,
+            join: false
+        },
+        getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        },
+        async getIngredients(){
+            let temp = await (await fetch('/api/Ingredient/Stock?query={name,helloFreshId,usage_count}&ordering=name&page_size=1000' ) ).json();
+            this.ingredients = temp.results
+        },
+        async getMembership(){
+            let temp = await (await fetch('/api/Stock/Membership' ) ).json();
+            this.membershipId = temp.stockId
+            if (this.membershipId === null){
+                temp = await (await fetch('/api/Stock' ) ).json();
+                this.availableMemberships = temp.results
+            }
+            else{
+                await this.getIngredients()
+            }
+        },
+        async createStock(){
+            let temp = await (await fetch(`/api/Stock`, {method: 'POST', body: JSON.stringify({'name': this.createStockName}), headers: {'X-CSRFToken': this.getCookie('csrftoken'), 'Content-Type': 'application/json'}} ) ).json();
+            let id = temp.id
+            temp = await (await fetch(`/api/Stock/${id}/Membership`, {method: 'POST', headers: {'X-CSRFToken': this.getCookie('csrftoken')}} ) ).json();
+            this.membershipId = id
+        },
+        async joinStock(){
+            temp = await (await fetch(`/api/Stock/${this.newMembershipId}/Membership`, {method: 'POST', headers: {'X-CSRFToken': this.getCookie('csrftoken')}} ) ).json();
+            this.membershipId = this.newMembershipId
+            await this.getIngredients()
+        },
+        async init() {
+            await this.getMembership()
+        },
+        async sendGet(url){
+            return (await (await fetch(url)).json());
+        },
+        async getIngredientsRequest(url=null){
+            params = ''
+            if (this.targetSearchString !== null){params += '&srch=' + this.targetSearchString}
+            furl = url ? url : '/api/Ingredient?ordering=name&page_size=48&query={helloFreshId,name,usage_count,children}&usage_count=2' + params
+            temp = (await this.sendGet(furl))
+            return temp
+        },
+        async getTargetIngredients(){
+            params = ''
+            if (this.targetSearchString !== null){params += '&srch=' + this.targetSearchString}
+            furl = '/api/Ingredient?ordering=name&page_size=48&query={helloFreshId,name,usage_count,children}&usage_count=2' + params
+            temp = (await this.sendGet(furl))
+            this.targetIngredients = temp.results
+            this.tnav = temp
+        },
+        async targetNext() {
+            if (this.tnav.next){
+                temp = await this.getIngredientsRequest(this.tnav.next);
+                this.targetIngredients = temp.results
+                this.tnav = temp
+            }
+        },
+        async targetPrevious() {
+            if (this.tnav.previous){
+                temp = await this.getIngredientsRequest(this.tnav.previous);
+                this.targetIngredients = temp.results
+                this.tnav = temp
+            }
+        },
+        async addIngredient(){
+            temp = await (await fetch(`/api/Ingredient/Stock/${this.targetIngredient}`, {method: 'POST', headers: {'X-CSRFToken': this.getCookie('csrftoken')}} ) ).json();
+            await this.getIngredients()
+        },
+        async deleteIngredient(id){
+            temp = await (await fetch(`/api/Ingredient/Stock/${id}`, {method: 'DELETE', headers: {'X-CSRFToken': this.getCookie('csrftoken')}} ) ).json();
+            await this.getIngredients()
+        },
+    }
+}" x-init="await store.init()" class="mt-5 mb-5 flex flex-col items-center">
+    <!-- Modal to create stock -->
+    <div class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true"
+         x-show="store.popups.create">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0 mb-40">
+                <div @click.outside="store.popups.create=false" style="width: 400px"
+                     class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                    <div class="w-lg shadow p-5 rounded-lg dark:bg-gray-800 flex flex-col items-center">
+                        <!-- Popup head -->
+                        <div class="flex items-center justify-between mt-4">
+                            <p class="text-xl font-bold dark:text-white">
+                                {% trans 'Name' %}
+                            </p>
+                        </div>
+                        <!-- Popup body -->
+                        <div class="mt-5 flex flex-col items-center">
+                            <label>
+                                <input placeholder="Name" x-model="store.createStockName"
+                                       class="text-white bg-gray-700 border border-gray-400 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-300"/>
+                            </label>
+                            <button @click="store.createStock(); store.popups.create=false"
+                                    class="mt-4 text-white px-4 py-2 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                {% trans 'common.dialog.create' %}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal to join stock -->
+    <div class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true"
+         x-show="store.popups.join">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0 mb-40">
+                <div @click.outside="store.popups.join=false" style="width: 400px"
+                     class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                    <div class="w-lg shadow p-5 rounded-lg dark:bg-gray-800 flex flex-col items-center">
+                        <!-- Popup head -->
+                        <div class="flex items-center justify-between mt-4">
+                            <p class="text-xl font-bold dark:text-white">
+                                {% trans 'stock.join.dropdown.choose' %}
+                            </p>
+                        </div>
+                        <!-- Popup body -->
+                        <div class="mt-5 flex flex-col items-center">
+                            <select x-model="store.newMembershipId"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <option value="" selected>{% trans 'common.dropdown.choose' %}</option>
+                                <template x-for="stock in store.availableMemberships">
+                                    <option :value="stock.id" x-text="stock.name"></option>
+                                </template>
+                            </select>
+
+                            <button @click="store.joinStock(); store.popups.join=false"
+                                    class="mt-4 text-white px-4 py-2 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                {% trans 'common.dialog.join' %}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <template x-if="store.membershipId === null">
+        <div class="w-96 flex flex-col items-center">
+            <p class="mr-4 mb-2 text-center text-3xl font-bold text-gray-900 dark:text-white">{% trans 'stock.noStock.title' %}</p>
+            <p class="mr-4 text-l text-gray-900 dark:text-white">{% trans 'stock.noStock.description' %}</p>
+            <button type="button" @click="store.popups.create = true; console.log(store.popups.create)"
+                    class="mt-4 w-1/2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                {% trans 'stock.membership.create' %}
+            </button>
+            <button type="button" @click="store.popups.join=true"
+                    class="mt-4 w-1/2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                {% trans 'stock.membership.join' %}
+            </button>
+        </div>
+    </template>
+
+    <!-- Ingredient list -->
+    <template x-if="store.membershipId !== null">
+        <div class="mb-32">
+            <div x-data="{show: false}" data-dial-init class="fixed right-6 bottom-6 group mb-24">
+                <button @click="show = !show"
+                        class="flex items-center justify-center text-white bg-blue-700 rounded-lg w-14 h-14 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:focus:ring-blue-800">
+                    <svg aria-hidden="true" class="w-8 h-8" fill="none"
+                         stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    <span class="sr-only">Open actions menu</span>
+                </button>
+                <div :class="{ 'hidden': !show }"
+                     id="medium-modal"
+                     x-init="$watch('show', async value => {if (show){ await store.getTargetIngredients()}})"
+                     tabindex="-1"
+                     class=" bg-gray-500 bg-opacity-75 flex justify-center fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                    <div class="relative w-full max-w-lg max-h-full">
+                        <!-- Modal content -->
+                        <div class="mb-24 relative bg-white rounded-lg shadow dark:bg-gray-700"
+                        >
+                            <!-- Modal header -->
+                            <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-gray-600">
+                                <h3 class="text-xl font-medium text-gray-900 dark:text-white">
+                                    {% trans 'settings.grouping.groupInto' %}
+                                </h3>
+                                <button @click="show = false"
+                                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                                        data-modal-hide="medium-modal">
+                                    <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd"
+                                              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                              clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span class="sr-only">Close modal</span>
+                                </button>
+                            </div>
+                            <!-- Modal body -->
+                            <label for="default-search"
+                                   class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none"
+                                         stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                    </svg>
+                                </div>
+                                <input type="search" x-model="store.targetSearchString"
+                                       @keypress="await store.getTargetIngredients()"
+                                       class=" block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg
+                           bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600
+                           dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                       placeholder="Tag Group Name" required>
+                            </div>
+                            <!-- navbar -->
+                            <div class="flex pt-6 flex-col items-center">
+                    <span class="text-sm text-gray-700 dark:text-gray-400">
+                      {% trans 'common.navigation.showing' %} <span class="font-semibold text-gray-900 dark:text-white"
+                                                                    x-text="store.tnav.start"></span>
+                        {% trans 'common.navigation.to' %}
+                        <span
+                                class="font-semibold text-gray-900 dark:text-white"
+                                x-text="store.tnav.end"></span> {% trans 'common.navigation.of' %}
+                        <span
+                                class="font-semibold text-gray-900 dark:text-white"
+                                x-text="store.tnav.count"></span>
+                        {% trans 'common.navigation.entries' %}
+                    </span>
+                                <div class="inline-flex mt-2 xs:mt-0">
+                                    <button @click="await store.targetPrevious()"
+                                            class="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-l hover:bg-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                        {% trans 'common.navigation.previous' %}
+                                    </button>
+                                    <button @click="await store.targetNext()"
+                                            class="px-4 py-2 text-sm font-medium text-white bg-gray-800 border-0 border-l border-gray-700 rounded-r hover:bg-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                                        {% trans 'common.navigation.next' %}
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="p-6">
+                                <template x-for="ingr in store.targetIngredients" :key="ingr.helloFreshId">
+                                    <template
+                                            x-if="!store.ingredients.some(item => item.helloFreshId === ingr.helloFreshId)">
+                                        <div>
+                                            <input x-model="store.targetIngredient" type="radio"
+                                                   :value="ingr.helloFreshId"
+                                                   :id="ingr.helloFreshId">
+                                            <label class="text-gray-900 dark:text-white"
+                                                   :class="{'dark:text-lime-300 text-lime-600':ingr.children.length > 0}"
+                                                   :for="ingr.helloFreshId"
+                                                   x-text="ingr.name"></label>
+                                            <span class="text-gray-900 dark:text-white"
+                                                  x-text=" '(' + ingr.usage_count + ')'"></span>
+                                        </div>
+                                    </template>
+                                </template>
+                            </div>
+
+                            <!-- Modal footer -->
+                            <div class="max-sm:pb-24 flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
+                                <button @click="store.addIngredient(); show = false"
+                                        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                    {% trans 'common.dialog.confirm' %}
+                                </button>
+                                <button @click="show = false"
+                                        class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
+                                    {% trans 'common.dialog.cancel' %}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <p class="dark:text-white text-3xl font-bold mb-8">{% trans 'AvailableIngredients' %}</p>
+
+            <template x-for="ingredient in store.ingredients">
+                <div class="flex items-center justify-between mb-4">
+                    <p class="dark:text-white text-xl" x-text="ingredient.name"></p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button @click="store.deleteIngredient(ingredient.helloFreshId)"
+                                class="flex items-center justify-center p-1 rounded-lg bg-red-500 hover:bg-red-600 focus:outline-none">
+                            <svg class="w-6 h-6 text-white" aria-hidden="true" fill="none" stroke="currentColor"
+                                 stroke-width="1.5"
+                                 viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                                      stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                        </button>
+                        <button x-init="$nextTick(() => htmx.process($el))"
+                                :hx-get="`{% url 'recipe.all' %}?ingredients=`+ ingredient.helloFreshId"
+                                hx-replace-url="true" hx-swap="innerHTML"
+                                hx-target="#body"
+                                hx-trigger="click" hx-push-url="true" hx-ext="true"
+                                class="flex items-center justify-center p-1 rounded-lg bg-blue-500 hover:bg-blue-600 focus:outline-none">
+                            <svg class="w-6 h-6 text-white" aria-hidden="true" fill="none" stroke="currentColor"
+                                 stroke-width="1.5"
+                                 viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.87c1.355 0 2.697.055 4.024.165C17.155 8.51 18 9.473 18 10.608v2.513m-3-4.87v-1.5m-6 1.5v-1.5m12 9.75l-1.5.75a3.354 3.354 0 01-3 0 3.354 3.354 0 00-3 0 3.354 3.354 0 01-3 0 3.354 3.354 0 00-3 0 3.354 3.354 0 01-3 0L3 16.5m15-3.38a48.474 48.474 0 00-6-.37c-2.032 0-4.034.125-6 .37m12 0c.39.049.777.102 1.163.16 1.07.16 1.837 1.094 1.837 2.175v5.17c0 .62-.504 1.124-1.125 1.124H4.125A1.125 1.125 0 013 20.625v-5.17c0-1.08.768-2.014 1.837-2.174A47.78 47.78 0 016 13.12M12.265 3.11a.375.375 0 11-.53 0L12 2.845l.265.265zm-3 0a.375.375 0 11-.53 0L9 2.845l.265.265zm6 0a.375.375 0 11-.53 0L15 2.845l.265.265z"
+                                      stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                        </button>
+
+                    </div>
+                </div>
+            </template>
+        </div>
+    </template>
+</div>

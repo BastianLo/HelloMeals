@@ -36,20 +36,27 @@ class Scraper:
         }
 
     def work(self):
-        r = requests.request("GET",
-                             f"https://api.chefkoch.de/v2/search-gateway/recipes?tags=21&minimumRating={global_preferences['scraper__Chefkoch_Minimum_Rating']}&limit=0&offset=0")
-        tags = self.create_all_tags(r.json()["tagGroups"])
-        for tag in tags:
-            self.config.set_ck_index(0)
-            try:
-                while (self.active and self.config.ck_index < self.config.ck_skip) or self.config.ck_index == 0:
-                    self.scrape(self.config.ck_index, tag)
-                    self.config.set_ck_index(self.config.ck_index + self.limit)
-            except Exception as e:
-                self.exception = str(e)
-                self.active = False
-                self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
-                raise e
+        main_tags = [(11, 4), (23, 3), (90, 2), (53, 1), (21, 0)]
+        for main_tag in main_tags[self.config.ck_main_tag_index:]:
+            r = requests.request("GET",
+                                 f"https://api.chefkoch.de/v2/search-gateway/recipes?tags={main_tag[0]}&minimumRating={global_preferences['scraper__Chefkoch_Minimum_Rating']}&limit=0&offset=0")
+            tags = self.create_all_tags(r.json()["tagGroups"])
+            for tag in tags[self.config.ck_tag_index:]:
+                try:
+                    while self.active and (self.config.ck_index < self.config.ck_skip or self.config.ck_index == 0):
+                        self.scrape(self.config.ck_index, tag, main_tag)
+                        self.config.set_ck_index(self.config.ck_index + self.limit)
+                except Exception as e:
+                    self.exception = str(e)
+                    self.active = False
+                    self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
+                    raise e
+                if not self.active:
+                    return
+                self.config.set_ck_index(0)
+                self.config.set_ck_tag_index(self.config.ck_tag_index + 1)
+            self.config.set_ck_tag_index(0)
+            self.config.set_ck_main_tag_index(self.config.ck_main_tag_index + 1)
 
     def start(self):
         self.bearer_token = None
@@ -72,12 +79,14 @@ class Scraper:
     def restart(self):
         self.stop()
         self.config.set_ck_index(0)
+        self.config.set_ck_main_tag_index(0)
+        self.config.set_ck_tag_index(0)
         self.start()
 
     def is_running(self):
         return self.work_thread.is_alive()
 
-    def create_recipe(self, recipe_json):
+    def create_recipe(self, recipe_json, recipe_type):
         if recipe_json["previewImageUrlTemplate"] is None or recipe_json["rating"] is None:
             return None
         image_url = recipe_json["previewImageUrlTemplate"].replace("<format>", "crop-720x480")
@@ -88,6 +97,7 @@ class Scraper:
             defaults={
                 "name": recipe_json["title"],
                 "source": 3,
+                "recipeType": recipe_type,
                 # Todo: Get video link
                 # "videoLink": recipe_json["videoLink"],
                 "isExcludedFromIndex": not recipe_json["isIndexable"],
@@ -201,8 +211,8 @@ class Scraper:
                 tags.append(tag["id"])
         return tags
 
-    def scrape(self, index, tag):
-        chefkoch_url = f"https://api.chefkoch.de/v2/search-gateway/recipes?tags=21,{tag}&minimumRating=4.2&limit={self.limit}&offset={index}"
+    def scrape(self, index, tag, main_tag):
+        chefkoch_url = f"https://api.chefkoch.de/v2/search-gateway/recipes?tags={main_tag[0]},{tag}&minimumRating=4.2&limit={self.limit}&offset={index}"
         response = requests.request("GET", chefkoch_url)
         self.create_all_tags(response.json()["tagGroups"])
         items = response.json()["results"]
@@ -213,7 +223,7 @@ class Scraper:
                 recipe_id = recipeJson["id"]
                 url = f"https://api.chefkoch.de/v2/recipes/{recipe_id}"
                 new_recipe_json = requests.get(url).json()
-                temp = self.create_recipe(new_recipe_json)
+                temp = self.create_recipe(new_recipe_json, main_tag[1])
                 if temp is None:
                     logging.warning(f"Skipping recipe with id {recipe_id} (index: {index})")
                     continue

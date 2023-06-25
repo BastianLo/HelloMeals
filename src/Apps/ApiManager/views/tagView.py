@@ -1,19 +1,15 @@
-from django_filters import rest_framework as filters
+from Apps.MealManager.filters import TagFilters
+from Apps.MealManager.models import TagMerge, Tag, TagGroup
+from Apps.MealManager.serializers import TagMergeSerializer, TagSerializer, TagGroupSerializer, TagGroupFullSerializer
 from rest_framework import generics
 from rest_framework.decorators import permission_classes
-from rest_framework.permissions import IsAuthenticated
-
-from Apps.MealManager.serializers import TagMergeSerializer, TagSerializer, TagGroupSerializer, TagGroupFullSerializer
-from Apps.MealManager.models import TagMerge, Tag, TagGroup
-
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from util.pagination import RqlPagination
-
-from Apps.MealManager.filters import TagFilters
 
 
 ### Views ###
 
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsAdminUser])
 class TagMergeListCreate(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     pagination_class = RqlPagination
@@ -43,6 +39,7 @@ class TagListCreate(generics.ListCreateAPIView):
         tags = Tag.objects.all()
         return tags
 
+
 @permission_classes([IsAuthenticated])
 class TagDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = TagSerializer
@@ -50,6 +47,7 @@ class TagDetail(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return Tag.objects.all()
+
 
 @permission_classes([IsAuthenticated])
 class TagGroupList(generics.ListAPIView):

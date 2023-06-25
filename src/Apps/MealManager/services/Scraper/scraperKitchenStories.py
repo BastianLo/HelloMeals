@@ -71,10 +71,27 @@ class KSScraper:
     def create_recipe(self, recipe_json):
         if "tags" not in recipe_json or "amount" not in recipe_json["servings"] or "duration" not in recipe_json:
             return None
-        # Skip recipes that are not main recipes:
-        if len([tag for tag in recipe_json["tags"] if tag["id"] == "f622a099-d5c2-4db2-a689-e7f856db38a8"]) == 0:
+
+        # Only save recipes that have certain categories:
+        # Main meal
+        if len([tag for tag in recipe_json["tags"] if tag["id"] == "f622a099-d5c2-4db2-a689-e7f856db38a8"]) > 0:
+            recipe_type = 0
+        # Breakfast
+        elif len([tag for tag in recipe_json["tags"] if tag["id"] == "9d531987-ae3e-43c4-bc06-7848ddbc825f"]) > 0:
+            recipe_type = 1
+        # Dessert
+        elif len([tag for tag in recipe_json["tags"] if tag["id"] == "add432c4-97ce-4562-b7e8-5b7495a4b0b9"]) > 0:
+            recipe_type = 2
+        # Baking
+        elif len([tag for tag in recipe_json["tags"] if tag["id"] == "5c724830-b552-4afe-9b87-3508f14b68be"]) > 0:
+            recipe_type = 3
+        # Drinks
+        elif len([tag for tag in recipe_json["tags"] if tag["id"] == "7e7b2692-1a86-4883-9cd6-45625e434875"]) > 0:
+            recipe_type = 4
+        else:
             logging.info(f"Skipping recipe {recipe_json['id']} because recipe is not main")
             return None
+
         if "image" not in recipe_json or recipe_json["image"]["url"] is None:
             return None
         image_url = recipe_json["image"]["url"]
@@ -83,6 +100,7 @@ class KSScraper:
             defaults={
                 "name": recipe_json["title"],
                 "source": 2,
+                "recipeType": recipe_type,
                 "clonedFrom": None,
                 "videoLink": None,
                 "highlighted": None,
@@ -155,6 +173,8 @@ class KSScraper:
         if "utensils" not in recipe_json:
             return None
         for utensil_json in recipe_json["utensils"]:
+            if "name" not in utensil_json:
+                continue
             utensil_id = utensil_json["id"] if "id" in utensil_json else str(
                 hash(utensil_json["name"]["rendered"]))
             utensil = Utensil.objects.update_or_create(
@@ -225,6 +245,8 @@ class KSScraper:
                 image_url = step_json["image"]["url"]
             else:
                 image_url = None
+            if "text" not in step_json:
+                continue
             step = WorkSteps.objects.update_or_create(
                 id=recipe.helloFreshId + str(i),
                 defaults={

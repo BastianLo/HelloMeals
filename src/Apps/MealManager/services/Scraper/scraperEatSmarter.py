@@ -30,15 +30,19 @@ class KSScraper:
         }
 
     def work(self):
-        try:
-            while self.active and self.config.es_index < self.config.es_max:
-                self.scrape(self.config.es_index)
-                self.config.set_es_index(self.config.es_index + 1)
-        except Exception as e:
-            self.exception = str(e)
-            self.active = False
-            self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
-            raise e
+        categories = [(4161, 4), (4029, 3), (3857, 2), (3817, 1), (3855, 0)]
+        for category in categories:
+            self.config.set_es_index(0)
+            self.config.set_es_max(100)
+            try:
+                while self.active and self.config.es_index < self.config.es_max:
+                    self.scrape(self.config.es_index, category)
+                    self.config.set_es_index(self.config.es_index + 1)
+            except Exception as e:
+                self.exception = str(e)
+                self.active = False
+                self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
+                raise e
 
     def start(self):
         self.exception = None
@@ -65,7 +69,7 @@ class KSScraper:
     def is_running(self):
         return self.work_thread.is_alive()
 
-    def create_recipe(self, recipe_json):
+    def create_recipe(self, recipe_json, recipe_type):
         if recipe_json["title"] is None:
             return None
         image_url = recipe_json["image"]["url"]
@@ -80,6 +84,7 @@ class KSScraper:
             defaults={
                 "name": recipe_json["title"],
                 "source": 5,
+                "recipeType": recipe_type,
                 "healthScore": recipe_json["healthScore"],
                 "isPremium": recipe_json["isPremium"],
                 "headline": recipe_json["subtitle"],
@@ -190,10 +195,10 @@ class KSScraper:
                 }
             )[0]
 
-    def scrape(self, index):
+    def scrape(self, index, category):
         headers = {"api-key": "c7f8ab363cdb3cd405cb41f79464d7b3d8089eab"}
         response = requests.request("GET",
-                                    f"https://api.eatsmarter.de/v2/json/search/recipe?hs=8&sort=voting&page={index}&f[0]=field_secondary_recipe_category%3A3855",
+                                    f"https://api.eatsmarter.de/v2/json/search/recipe?hs=8&sort=voting&page={index}&f[0]=field_secondary_recipe_category%3A{category[0]}",
                                     headers=headers)
         items = response.json()["results"]
         if len(items) == 0:
@@ -204,7 +209,7 @@ class KSScraper:
                 recipe_id = recipeJson["id"]
                 url = f"https://api.eatsmarter.de/v2/json/recipe/{recipe_id}"
                 new_recipe_json = requests.get(url, headers=headers).json()
-                temp = self.create_recipe(new_recipe_json)
+                temp = self.create_recipe(new_recipe_json, category[1])
                 if temp is None:
                     logging.warning(f"Skipping recipe with id {new_recipe_json['id']} (index: {index})")
                     continue

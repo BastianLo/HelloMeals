@@ -8,7 +8,7 @@ from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 from rest_framework.routers import SimpleRouter
 
-from .views import scraperView, recipeView, tagView, authentification_view
+from .views import scraperView, recipeView, tagView, authentification_view, ingredientView, stockView
 
 router = SimpleRouter()
 router.register(r'global', CustomGlobalPreferencesViewSet, basename='global')
@@ -23,8 +23,8 @@ schema_view = get_schema_view(
         license=openapi.License(name="Apache-2.0 license "),
     ),
     url=os.getenv("APP_URL", "http://127.0.0.1:8000"),
-    public=True,
-    permission_classes=[permissions.AllowAny, ],
+    public=False,
+    permission_classes=[permissions.IsAuthenticated, ],
 )
 
 urlpatterns = [
@@ -38,12 +38,27 @@ urlpatterns = [
     ### --- API Authentification --- ###
     path('auth/login/', authentification_view.api_login, name='api_login'),
     path('auth/token/', authentification_view.ObtainTokenPairView.as_view(), name='token_obtain_pair'),
+    path('auth/invites/', authentification_view.InviteListCreate.as_view()),
+    path('auth/invites/<str:id>', authentification_view.InviteDetail.as_view()),
 
     path('FullRecipe', recipeView.RecipeFullList.as_view()),
     path('FullRecipe/<str:helloFreshId>', recipeView.RecipeFullDetail.as_view()),
 
     path('Recipe', recipeView.RecipeBaseList.as_view()),
     path('Recipe/<str:helloFreshId>', recipeView.RecipeBaseDetail.as_view()),
+    path('Recipe/<str:helloFreshId>/favorite/<str:favorite>', recipeView.set_favorite),
+
+    path('Stock', stockView.StockListCreate.as_view()),
+    path('Stock/<int:id>/Membership', stockView.change_membership),
+    path('Stock/Membership', stockView.remove_membership),
+
+    path('Ingredient', ingredientView.IngredientList.as_view()),
+    path('Ingredient/Stock', ingredientView.stockList.as_view()),
+    path('Ingredient/Stock/<str:ingredient_id>', ingredientView.add_ingredient_to_stock),
+    path('Ingredient/ShoppingList', ingredientView.shoppingListView.as_view()),
+    path('Ingredient/ShoppingList/<str:ingredient_id>', ingredientView.add_ingredient_to_shopping_list),
+    path('Ingredient/<str:helloFreshId>/assign/<str:parentId>', ingredientView.assign_ingredient_parent),
+    path('Ingredient/<str:helloFreshId>/assign/', ingredientView.assign_ingredient_parent),
 
     path('Tag/Merge', tagView.TagMergeListCreate.as_view()),
     path('Tag/Group', tagView.TagGroupList.as_view()),

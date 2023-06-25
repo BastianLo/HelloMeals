@@ -1,14 +1,55 @@
+import uuid
+
+from cached_property import cached_property_with_ttl
+from django.contrib.auth.models import User
 from django.db import models
-from django.db.models.signals import pre_delete
+from django.db.models.signals import pre_delete, post_save
 from django.dispatch import receiver
+from django.utils.translation import gettext_lazy as _
+
+
+class IngredientManager(models.Manager):
+    def update_or_create(self, **kwargs):
+        name = kwargs["defaults"]["name"]
+        existing_object = self.get_queryset().filter(name=name).first()
+        if existing_object:
+            return existing_object, False
+        return super().update_or_create(**kwargs)
 
 
 class Ingredient(models.Model):
     helloFreshId = models.TextField(primary_key=True, max_length=255, unique=True)
 
+    objects = IngredientManager()
+
     name = models.CharField(max_length=255)
-    image = models.ImageField(upload_to="images/ingredients")
-    HelloFreshImageUrl = models.CharField(max_length=255, null=True)
+    image = models.ImageField(upload_to="images/ingredients", null=True, blank=True)
+    HelloFreshImageUrl = models.CharField(max_length=255, null=True, blank=True)
+    parent = models.ForeignKey("Ingredient", on_delete=models.SET_NULL, null=True, blank=True)
+
+    @cached_property_with_ttl(ttl=60)
+    def get_usage_count(self):
+        count = RecipeIngredient.objects.filter(ingredient=self).count()
+        return count
+
+    def get_related_recipes(self):
+        ingredients = [self]
+        if self.parent is not None:
+            ingredients += self.parent.get_descendants(include_self=True)
+        else:
+            ingredients += self.get_descendants(include_self=False)
+        recipe_ingredients = RecipeIngredient.objects.filter(ingredient__in=ingredients).values_list(
+            'ingredient_group_id', flat=True)
+        related_recipes = Recipe.objects.filter(ingredient_groups__id__in=recipe_ingredients).distinct()
+        return related_recipes
+
+    def get_descendants(self, include_self=True):
+        descendants = []
+        if include_self:
+            descendants.append(self)
+        for child in Ingredient.objects.filter(parent=self):
+            descendants.extend(child.get_descendants(include_self=True))
+        return descendants
 
     def __str__(self):
         return f"{self.name} ({self.helloFreshId})"
@@ -111,18 +152,10 @@ class Tag(models.Model):
         return f"{self.name} ({self.helloFreshId})"
 
 
-class Category(models.Model):
-    helloFreshId = models.TextField(primary_key=True, max_length=255, unique=True)
-    type = models.CharField(max_length=255)
-    name = models.CharField(max_length=255)
-
-    def __str__(self):
-        return f"{self.name} ({self.helloFreshId})"
-
-
 class IngredientGroup(models.Model):
     id = models.TextField(primary_key=True, max_length=255, unique=True)
     name = models.CharField(max_length=255, null=True, blank=True)
+    related_recipe = models.ForeignKey("Recipe", on_delete=models.CASCADE, null=True, related_name='ingredient_groups')
 
 
 class Recipe(models.Model):
@@ -132,9 +165,20 @@ class Recipe(models.Model):
     source = models.IntegerField(default=1)
 
     nutrients = models.ForeignKey(Nutrients, on_delete=models.SET_NULL, blank=True, null=True)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True)
 
-    ingredient_groups = models.ManyToManyField(IngredientGroup)
+    favoriteBy = models.ManyToManyField(User, related_name='favorite_recipes')
+
+    class RecipeTypes(models.IntegerChoices):
+        main = 0, _("Hauptgericht")
+        breakfast = 1, _("Frühstück")
+        dessert = 2, _("Dessert")
+        baking = 3, _("Backen")
+        drink = 4, _("Getränke")
+
+    recipeType = models.IntegerField(
+        choices=RecipeTypes.choices,
+        default=RecipeTypes.main,
+    )
 
     ### Shared ###
     # All
@@ -235,3 +279,88 @@ class RecipeUtensil(models.Model):
 @receiver(pre_delete, sender=Recipe)
 def delete_related_ingredient_groups(sender, instance, **kwargs):
     instance.ingredient_groups.all().delete()
+
+
+class Stock(models.Model):
+    ingredients = models.ManyToManyField(Ingredient, blank=True)
+    name = models.CharField(max_length=255)
+
+    def add(self, ingredient: Ingredient):
+        while ingredient.parent is not None:
+            ingredient = ingredient.parent
+        if self.ingredients.filter(helloFreshId=ingredient.helloFreshId).exists():
+            return False
+        self.ingredients.add(ingredient)
+        return True
+
+    def remove(self, ingredient: Ingredient):
+        while ingredient.parent is not None:
+            ingredient = ingredient.parent
+        if not self.ingredients.filter(helloFreshId=ingredient.helloFreshId).exists():
+            return False
+        self.ingredients.remove(ingredient)
+        return True
+
+    def apply_parent(self, ingredient):
+        if ingredient.parent is None:
+            return
+        # if len(self.ingredients.filter(helloFreshId=ingredient.helloFreshId)) > 0:
+        self.ingredients.remove(ingredient)
+        self.ingredients.add(ingredient.parent)
+
+    def __str__(self):
+        return f"Stock {self.name}"
+
+
+class ShoppingList(models.Model):
+    ingredients = models.ManyToManyField(Ingredient, blank=True)
+    stock = models.OneToOneField(Stock, on_delete=models.CASCADE)
+
+    def add(self, ingredient: Ingredient):
+        while ingredient.parent is not None:
+            ingredient = ingredient.parent
+        if self.ingredients.filter(helloFreshId=ingredient.helloFreshId).exists():
+            return False
+        self.ingredients.add(ingredient)
+        return True
+
+    def remove(self, ingredient: Ingredient):
+        while ingredient.parent is not None:
+            ingredient = ingredient.parent
+        if not self.ingredients.filter(helloFreshId=ingredient.helloFreshId).exists():
+            return False
+        self.ingredients.remove(ingredient)
+        return True
+
+    def __str__(self):
+        return f"Shopping List {self.stock.name}"
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    stock = models.ForeignKey(Stock, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return f"Profile {self.user}"
+
+
+class InviteToken(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    issuer = models.ForeignKey(User, on_delete=models.CASCADE)
+
+
+@receiver(post_save, sender=Stock)
+def create_shopping_list(sender, instance, created, **kwargs):
+    if created:
+        ShoppingList.objects.create(stock=instance)
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()
