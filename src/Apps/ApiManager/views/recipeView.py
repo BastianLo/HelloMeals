@@ -4,8 +4,8 @@ import django_filters
 from Apps.MealManager.models import Recipe, Ingredient
 from Apps.MealManager.serializers import RecipeFullSerializer, RecipeBaseSerializer
 from django.contrib.postgres.search import TrigramSimilarity
-from django.db.models import Count, F, FloatField, ExpressionWrapper, Q
-from django.db.models.functions import Coalesce
+from django.db.models import Count, F, FloatField, ExpressionWrapper, Q, Case, When, Value
+from django.db.models.functions import Coalesce, Cast
 from django_filters import rest_framework as filters
 from rest_framework import generics
 from rest_framework.decorators import permission_classes, api_view
@@ -156,9 +156,22 @@ class RecipeBaseList(generics.ListAPIView):
             hellofresh_ids = queryset.values_list('recipetag__tag__helloFreshId', flat=True).distinct()
             random_hellofresh_ids = random.sample(list(hellofresh_ids), min(sample_size, len(hellofresh_ids)))
             queryset = queryset.filter(recipetag__tag__helloFreshId__in=random_hellofresh_ids)
-        elif ordering and ordering != 'relevancy':
+        elif ordering and ordering not in ['relevancy', 'availIngredients']:
             fields = ordering.split(',')
             queryset = queryset.order_by(*fields)
+        elif ordering and ordering == 'availIngredients':
+            queryset = queryset.annotate(
+                ratio=Case(
+                    When(
+                        recipestockingredientcount__stock=self.request.user.profile.stock,
+                        recipestockingredientcount__ingredientMax__gt=0,
+                        then=Cast(F('recipestockingredientcount__ingredientCount'), FloatField()) / Cast(
+                            F('recipestockingredientcount__ingredientMax'), FloatField())
+                    ),
+                    default=Value(0),
+                    output_field=FloatField()
+                )
+            ).order_by('-ratio').distinct()
         return queryset
 
 

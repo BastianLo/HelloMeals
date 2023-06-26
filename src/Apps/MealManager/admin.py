@@ -6,6 +6,7 @@ from .models import *
 
 admin.site.register(Profile)
 admin.site.register(InviteToken)
+admin.site.register(RecipeStockIngredientCount)
 admin.site.register(Stock)
 admin.site.register(ShoppingList)
 admin.site.register(Recipe)

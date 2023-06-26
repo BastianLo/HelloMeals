@@ -1,6 +1,7 @@
+from threading import Thread
+
 import django_filters
-from Apps.MealManager.models import Ingredient, RecipeIngredient
-from Apps.MealManager.models import Stock
+from Apps.MealManager.models import Ingredient, RecipeIngredient, Stock, Recipe, RecipeStockIngredientCount
 from Apps.MealManager.serializers import IngredientSerializer
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import Count
@@ -69,12 +70,21 @@ class stockList(generics.ListAPIView):
 @api_view(['POST', 'DELETE'])
 def add_ingredient_to_stock(request, ingredient_id):
     successful = None
+    ingredient = Ingredient.objects.get(helloFreshId=ingredient_id)
     if request.method == 'POST':
-        ingredient = Ingredient.objects.get(helloFreshId=ingredient_id)
+        ingredient = ingredient
         successful = request.user.profile.stock.add(ingredient)
     elif request.method == 'DELETE':
-        ingredient = Ingredient.objects.get(helloFreshId=ingredient_id)
+        ingredient = ingredient
         successful = request.user.profile.stock.remove(ingredient)
+
+    def update_recipes(ingredient):
+        recipes = Recipe.objects.filter(
+            helloFreshId__in=[i.helloFreshId for i in ingredient.get_related_recipes()])
+        [RecipeStockIngredientCount.updateRecipe(recipe) for recipe in recipes]
+
+    thread = Thread(target=update_recipes, args=(ingredient,))
+    thread.start()
 
     response = {
         "successful": successful
