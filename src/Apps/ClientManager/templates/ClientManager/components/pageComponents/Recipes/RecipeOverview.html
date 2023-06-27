@@ -26,11 +26,44 @@
     initialized: false,
     loading: false,
     sliders: {
-        calorySlider: {
-            element: null,
-            min: null,
-            max: null,
-        },
+        nutrients:[
+            {
+                keyword: 'calories',
+                title: 'Kalorien',
+                element: null,
+                min: null,
+                max: null,
+                borderMin: 0,
+                borderMax: 2000
+            },
+            {
+                keyword: 'protein',
+                title: 'Protein',
+                element: null,
+                min: null,
+                max: null,
+                borderMin: 0,
+                borderMax: 200
+            },
+            {
+                keyword: 'carbs',
+                title: 'Kohlenhydrate',
+                element: null,
+                min: null,
+                max: null,
+                borderMin: 0,
+                borderMax: 200
+            },
+            {
+                keyword: 'fat',
+                title: 'Fett',
+                element: null,
+                min: null,
+                max: null,
+                borderMin: 0,
+                borderMax: 200
+            },
+        ]
     },
     parseUrlParams(){
         const urlParams = new URLSearchParams(window.location.search);
@@ -40,8 +73,7 @@
         this.params.filter.sources = (urlParams.get('source') || '').split(',')
         this.params.filter.ingredients = (urlParams.get('ingredients') || '').split(',')
         this.params.filter.tags = (urlParams.get('tags') || '').split(',')
-        this.sliders.calorySlider.min = (urlParams.get('calories_gt') || 0)
-        this.sliders.calorySlider.max = (urlParams.get('calories_lt') || 2000)
+        this.sliders.nutrients.forEach(s => {s.min = (urlParams.get(`${s.keyword}_gt`) || s.borderMin);s.max = (urlParams.get(`${s.keyword}_lt`) || s.borderMax);})
         this.params.filter.recipeType = urlParams.get('recipeType')
         this.params.filter.isPlus = urlParams.get('isPlus') === 'true'
         this.params.ordering = this.params.ordering === null ? (urlParams.get('ordering') || 'relevancy') : this.params.ordering
@@ -66,12 +98,14 @@
         if (this.params.filter.tags.filter(s => s !== '').length > 0)
             filter += '&tags=' + this.params.filter.tags.filter(t => t !== '').join('_')
         filter += '&query={' + this.params.fields.join(',') + '}'
-        if (this.sliders.calorySlider.min !== null && this.sliders.calorySlider.min !== this.sliders.calorySlider.element.min()){
-            filter += '&calories_gt=' + this.sliders.calorySlider.min;
-        }
-        if (this.sliders.calorySlider.max !== null && this.sliders.calorySlider.max !== this.sliders.calorySlider.element.max()){
-            filter += '&calories_lt=' + this.sliders.calorySlider.max;
-        }
+        this.sliders.nutrients.forEach(s => {
+            if (s.min !== null && s.min !== s.element.min()){
+                filter += `&${s.keyword}_gt=` + s.min;
+            }
+            if (s.max !== null && s.max !== s.element.max()){
+                filter += `&${s.keyword}_lt=` + s.max;
+            }
+        })
         this.addParameterToURL(filter)
         return filter
     },
@@ -111,14 +145,16 @@
         this.loading = false;
     },
     initSliders(){
-        this.sliders.calorySlider.element = rangeSlider(document.querySelector('#calorySlider'), {
-            value: [this.sliders.calorySlider.min, this.sliders.calorySlider.max],
-            min: 0,
-            max: 2000,
-            onInput: (value) => {
-                this.sliders.calorySlider.min = value[0];
-                this.sliders.calorySlider.max = value[1];
-            }
+        this.sliders.nutrients.forEach(s =>{
+            s.element = rangeSlider(document.querySelector(`#${s.keyword}Slider`), {
+                value: [s.min, s.max],
+                min: s.borderMin,
+                max: s.borderMax,
+                onInput: (value) => {
+                    s.min = value[0];
+                    s.max = value[1];
+                }
+            })
         })
     },
     getCookie(name) {
@@ -222,22 +258,51 @@
                         </div>
                         <!-- Popup body -->
                         <div class="mt-5">
-                            <div class="mb-4">
-                                <div class="flex items-center mb-4 justify-between">
-                                    <p class="mr-4 text-lg font-extrabold leading-none tracking-tight text-gray-900 dark:text-white">
-                                        {% trans 'nutrients.calories' %}
-                                    </p>
-                                    <div class="flex items-center">
-                                          <span class="mr-2 text-lg font-extrabold leading-none tracking-tight text-gray-900 dark:text-white"
-                                                x-text="store.sliders.calorySlider.min"></span>
-                                        <span class="mr-2 text-lg font-extrabold leading-none tracking-tight text-gray-900 dark:text-white">-</span>
-                                        <span class="text-lg font-extrabold leading-none tracking-tight text-gray-900 dark:text-white"
-                                              x-text="store.sliders.calorySlider.max"></span>
+                            <div>
+                                <div class="mb-5" x-data="{open: false}">
+                                    <h2 id="accordion-collapse-heading-2">
+                                        <button type="button"
+                                                @click="open = !open"
+                                                :class="{'border-b-0':open}"
+                                                class="flex items-center justify-between w-full p-5 font-medium text-left text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                                        >
+                                            <span :class="{'dark:text-white': open}"> {% trans 'filter.nutrients.label' %} </span>
+                                            <svg :class="{'rotate-180': open}" data-accordion-icon
+                                                 class="w-6 h-6 shrink-0" fill="currentColor"
+                                                 viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill-rule="evenodd"
+                                                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                      clip-rule="evenodd"></path>
+                                            </svg>
+                                        </button>
+                                    </h2>
+                                    <div :class="{ 'hidden': !open}" class="border dark:border-gray-700 border-t-0"
+                                         aria-labelledby="accordion-collapse-heading-2">
+                                        <div class="p-2 rounded">
+                                            <!-- Slider Calories -->
+                                            <template x-for="slider in store.sliders.nutrients">
+                                                <div class="mb-4">
+                                                    <div class="flex items-center mb-4 justify-between">
+                                                        <p x-text="slider.title"
+                                                           class="mr-4 text-lg font-extrabold leading-none tracking-tight text-gray-900 dark:text-white">
+                                                        </p>
+                                                        <div class="flex items-center">
+                                                      <span class="mr-2 text-lg font-extrabold leading-none tracking-tight text-gray-900 dark:text-white"
+                                                            x-text="slider.min"></span>
+                                                            <span class="mr-2 text-lg font-extrabold leading-none tracking-tight text-gray-900 dark:text-white">-</span>
+                                                            <span class="text-lg font-extrabold leading-none tracking-tight text-gray-900 dark:text-white"
+                                                                  x-text="slider.max"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div :id="`${slider.keyword}Slider`"></div>
+                                                </div>
+
+                                            </template>
+
+                                        </div>
                                     </div>
                                 </div>
-                                <div id="calorySlider"></div>
                             </div>
-
 
                             <!-- Sources -->
                             <div>
