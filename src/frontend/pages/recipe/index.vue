@@ -1,3 +1,4 @@
 <template>
-  <h1>Recipes</h1>
+  <h1 class="">{{ $t('welcome') }}</h1>
+  <language-switcher/>
 </template>

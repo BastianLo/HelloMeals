@@ -10,7 +10,13 @@
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",
+    "@nuxtjs/i18n": "^8.0.0-beta.13",
+    "@nuxtjs/tailwindcss": "^6.8.0",
+    "@pinia/nuxt": "^0.4.11",
     "@types/node": "^18.17.0",
     "nuxt": "^3.6.5"
+  },
+  "dependencies": {
+    "pinia": "^2.1.4"
   }
 }

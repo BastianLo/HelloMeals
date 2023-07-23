@@ -23,6 +23,7 @@ RUN pip install -r requirements.txt
 RUN mkdir /static
 
 RUN npm --prefix /HelloMeals/src/frontend install
+RUN npm --prefix /HelloMeals/src/frontend run build
 
 # Copy the Nginx configuration file to the container's /etc/nginx/sites-available directory
 COPY nginx.conf /etc/nginx/sites-available/default
