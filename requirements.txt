@@ -8,6 +8,7 @@ coreapi==2.3.3
 coreschema==0.0.4
 Django==4.2.1
 django-cleanup==7.0.0
+django-compat==1.0.15
 django-cors-headers==4.0.0
 django-dynamic-preferences==1.15.0
 django-filter==23.2

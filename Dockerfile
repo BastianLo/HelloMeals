@@ -1,4 +1,4 @@
-FROM python:3.9.7-buster
+FROM nikolaik/python-nodejs:python3.11-nodejs20
 LABEL authors="bastianlobe"
 
 # Install Nginx web server
@@ -21,6 +21,8 @@ RUN pip install -r requirements.txt
 
 # Create a directory for static files
 RUN mkdir /static
+
+RUN npm --prefix /HelloMeals/src/frontend install
 
 # Copy the Nginx configuration file to the container's /etc/nginx/sites-available directory
 COPY nginx.conf /etc/nginx/sites-available/default

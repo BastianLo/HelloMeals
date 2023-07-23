@@ -18,6 +18,8 @@ service nginx start
 
 # Collect static files and run migrations
 cd src
+NUXT_APP_BASE_URL=/frontend/ node frontend/.output/server/index.mjs &
+
 python manage.py collectstatic --noinput && python manage.py migrate
 
 create-superuser ${USERNAME} ${EMAIL} ${PASSWORD}
