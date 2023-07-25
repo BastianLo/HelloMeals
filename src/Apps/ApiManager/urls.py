@@ -36,8 +36,8 @@ urlpatterns = [
     path('settings/', include(router.urls)),
 
     ### --- API Authentification --- ###
-    path('auth/login/', authentification_view.api_login, name='api_login'),
     path('auth/token/', authentification_view.ObtainTokenPairView.as_view(), name='token_obtain_pair'),
+    path('auth/refresh/', authentification_view.RefreshTokenView.as_view(), name='token_obtain_pair'),
     path('auth/invites/', authentification_view.InviteListCreate.as_view()),
     path('auth/invites/<str:id>', authentification_view.InviteDetail.as_view()),
 

@@ -36,12 +36,7 @@ CSRF_TRUSTED_ORIGINS = [
     # 'http://127.0.0.1:6733',
     os.getenv('APP_URL') if os.getenv('APP_URL') else 'http://127.0.0.1:6733',
 ]
-CORS_ORIGIN_WHITELIST = [
-    # 'http://localhost:6733',
-    # 'http://127.0.0.1:6733',
-    os.getenv('APP_URL') if os.getenv('APP_URL') else 'http://127.0.0.1:6733',
-]
-
+CORS_ALLOW_ALL_ORIGINS = True
 # Application definition
 
 INSTALLED_APPS = [
@@ -54,6 +49,7 @@ INSTALLED_APPS = [
 
     'drf_yasg',
     'rql_filter',
+    "corsheaders",
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
     'django_filters',
@@ -69,6 +65,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
