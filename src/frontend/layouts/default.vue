@@ -1,36 +1,36 @@
 <template>
   <div class="dark:bg-slate-900 h-screen">
     <!-- Top Bar -->
-    <nav class="border-b dark:border-gray-600">
+    <nav class="border-b border-gray-600">
       <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <NuxtLink class="flex items-center" to="/">
           <img src="/512px.png" class="h-8 mr-3" alt="Flowbite Logo"/>
-          <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">HelloMeals</span>
+          <span class="self-center text-2xl font-semibold whitespace-nowrap text-white">HelloMeals</span>
         </NuxtLink>
       </div>
     </nav>
     <!-- Foot Menu -->
     <div class="fixed bottom-0 left-0 z-50 w-full">
-      <div class="bg-white border-t border-gray-200 dark:bg-gray-700 dark:border-gray-600">
+      <div class="border-t border-gray-200 bg-gray-700 border-gray-600">
         <div class="grid h-16 max-w-lg mx-auto font-medium" :class="'grid-cols-4'">
           <NuxtLink v-for="item in menuItems" :to="item.href"
-                    class="inline-flex flex-col items-center justify-center px-5 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 group border-x dark:border-gray-600">
+                    class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-800 group border-x border-gray-600">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" :fill="item.fill ? 'currentcolor' : 'none'"
                  :stroke="item.fill ? 'none' : 'currentColor'"
                  stroke-width="2"
-                 class="w-6 h-6 mb-1 text-gray-500 dark:text-gray-400">
+                 class="w-6 h-6 mb-1 text-gray-400">
               <path
                   :d="item.svg"></path>
             </svg>
             <span v-text="$t(item.name)"
-                  class="text-sm text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500"></span>
+                  class="text-sm text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500"></span>
           </NuxtLink>
         </div>
 
       </div>
     </div>
-    <p>abc</p>
     <slot/>
+    <div class="mb-20"/>
   </div>
 </template>
 <script setup lang="ts">

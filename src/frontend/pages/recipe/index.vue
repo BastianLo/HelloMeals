@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Recipes</h1>
+    <h1 class="text-white">Recipes</h1>
     <p class="text-white" v-if="recipes.length">{{ recipes }}</p>
     <p v-else>Loading...</p>
   </div>
