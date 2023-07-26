@@ -27,7 +27,8 @@ const error = ref('');
 
 onMounted(async () => {
   try {
-    const {data} = await $http.$get('/api/Recipe');
+
+    const {data} = await $fetch('http://127.0.0.1:8000/api/Recipe');
     recipes.value = data;
     loading.value = false;
   } catch (err) {
