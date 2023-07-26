@@ -1,39 +1,16 @@
-<!-- pages/recipes.vue -->
 <template>
   <div>
     <h1>Recipes</h1>
-    <div v-if="loading">Loading...</div>
-    <div v-else-if="error">{{ error }}</div>
-    <div v-else>
-      <ul>
-        <li v-for="recipe in recipes" :key="recipe.id">
-          {{ recipe.title }}
-        </li>
-      </ul>
-    </div>
+    <p class="text-white" v-if="recipes.length">{{ recipes }}</p>
+    <p v-else>Loading...</p>
   </div>
 </template>
 
+
 <script setup>
-definePageMeta({
-  title: 'Home',
-  public: false
-})
-import {onMounted, ref} from 'vue';
+import {useRecipeStore} from "~/store/recipeStore";
+import {storeToRefs} from "pinia";
 
-const recipes = ref([]);
-const loading = ref(true);
-const error = ref('');
-
-onMounted(async () => {
-  try {
-
-    const {data} = await $fetch('http://127.0.0.1:8000/api/Recipe');
-    recipes.value = data;
-    loading.value = false;
-  } catch (err) {
-    error.value = 'Error fetching recipes';
-    loading.value = false;
-  }
-});
+useRecipeStore().fetchRecipes();
+let recipes = storeToRefs(useRecipeStore()).recipes;
 </script>
