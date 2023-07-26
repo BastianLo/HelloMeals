@@ -19,6 +19,12 @@ export default defineI18nConfig(() => ({
         },
         de: {
             welcome: 'Willkommen',
+            common: {},
+            auth: {
+                login: "Login",
+                username: "Benutzername",
+                password: "Passwort",
+            },
             recipe: {
                 navLabel: 'Rezepte'
             },
