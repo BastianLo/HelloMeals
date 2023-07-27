@@ -16,7 +16,10 @@ export const useRecipeStore = defineStore({
         },
     }),
     actions: {
-        async fetchRecipes() {
+        async fetchRecipes(force = false) {
+            if (!force && this.recipes.length) {
+                return
+            }
             const response = await $fetch('http://127.0.0.1:8000/api/Recipe', {
                 headers: {
                     "authorization": useAuth().token.value

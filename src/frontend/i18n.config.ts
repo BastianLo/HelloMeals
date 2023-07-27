@@ -26,7 +26,9 @@ export default defineI18nConfig(() => ({
                 password: "Passwort",
             },
             recipe: {
-                navLabel: 'Rezepte'
+                navLabel: 'Rezepte',
+                allRecipes: 'Alle Rezepte',
+                favoriteRecipes: 'Lieblings-Rezepte',
             },
             storage: {
                 navLabel: 'Vorrat'
