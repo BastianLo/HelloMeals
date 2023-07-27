@@ -7,7 +7,7 @@ export default ({
     },
     auth: {
         globalAppMiddleware: true,
-        baseURL: "http://127.0.0.1:8000/api",
+        baseURL: process.env.NODE_ENV === 'development' ? "http://127.0.0.1:8000/api" : "/api",
         provider: {
             type: 'local',
             endpoints: {
