@@ -7,10 +7,14 @@ from django.contrib.postgres.search import TrigramSimilarity
 from django.db.models import F, FloatField, ExpressionWrapper, Q, Case, When, Value
 from django.db.models.functions import Coalesce, Cast
 from django_filters import rest_framework as filters
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
+from rest_framework import serializers
+from rest_framework import status
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from util.pagination import RqlPagination
 
 
@@ -224,3 +228,19 @@ def set_favorite(request, helloFreshId, favorite):
     }
 
     return Response(response)
+
+
+class RecipeSerializer(serializers.Serializer):
+    totalRecipeCount = serializers.IntegerField()
+    favoriteRecipeCount = serializers.IntegerField()
+
+
+class RecipeBaseInformationView(APIView):
+    @swagger_auto_schema(
+        responses={200: RecipeSerializer()}
+    )
+    def get(self, request):
+        return Response(status=status.HTTP_200_OK, data=RecipeSerializer({
+            "totalRecipeCount": len(RecipeBaseList().queryset.all()),
+            "favoriteRecipeCount": len(RecipeBaseList().queryset.filter(favoriteBy=request.user)),
+        }).data)

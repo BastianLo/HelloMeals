@@ -47,6 +47,7 @@ urlpatterns = [
     path('FullRecipe/<str:helloFreshId>', recipeView.RecipeFullDetail.as_view()),
 
     path('Recipe', recipeView.RecipeBaseList.as_view()),
+    path('Recipe/BaseInformation', recipeView.RecipeBaseInformationView.as_view()),
     path('Recipe/<str:helloFreshId>', recipeView.RecipeBaseDetail.as_view()),
     path('Recipe/<str:helloFreshId>/favorite/<str:favorite>', recipeView.set_favorite),
 

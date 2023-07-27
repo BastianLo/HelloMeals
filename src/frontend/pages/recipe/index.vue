@@ -10,7 +10,7 @@
         <span class="mr-2">{{ $t('recipe.allRecipes') }}</span>
         <span
             class="bg-blue-700 rounded-full p-2 text-xs font-semibold leading-none text-white">Total Recipes: {{
-            navigation.count
+            baseInformation.totalRecipeCount
           }}</span>
       </nuxt-link>
 
@@ -21,7 +21,7 @@
       >
         <span class="mr-2">{{ $t('recipe.favoriteRecipes') }}</span>
         <span
-            class="bg-yellow-600 rounded-full p-2 text-xs font-semibold leading-none text-white">Favorite Recipes</span>
+            class="bg-yellow-600 rounded-full p-2 text-xs font-semibold leading-none text-white">Favorite Recipes: {{ baseInformation.favoriteRecipeCount }}</span>
       </nuxt-link>
     </div>
     <p class="text-gray-400 text-sm mt-6 text-center max-w-md">
@@ -34,9 +34,10 @@
 import {storeToRefs} from "pinia";
 import {useRecipeStore} from "~/store/recipeStore";
 
-let {navigation} = storeToRefs(useRecipeStore());
+let {navigation, baseInformation} = storeToRefs(useRecipeStore());
 
 useRecipeStore().fetchRecipes();
+useRecipeStore().fetchBaseInformation();
 </script>
 
 <style>

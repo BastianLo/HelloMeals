@@ -14,13 +14,17 @@ export const useRecipeStore = defineStore({
             next: null,
             previous: null
         },
+        baseInformation: {
+            totalRecipeCount: null,
+            favoriteRecipeCount: null,
+        },
     }),
     actions: {
         async fetchRecipes(force = false) {
             if (!force && this.recipes.length) {
                 return
             }
-            const response = await $fetch('http://127.0.0.1:8000/api/Recipe', {
+            const response = await $fetch(baseUrl + '/Recipe', {
                 headers: {
                     "authorization": useAuth().token.value
                 }
@@ -31,6 +35,16 @@ export const useRecipeStore = defineStore({
             this.navigation.next = response.next
             this.navigation.previous = response.previous
             this.recipes = response.results
+        },
+        async fetchBaseInformation(force = false) {
+            if (!force && this.baseInformation.totalRecipeCount) {
+                return
+            }
+            this.baseInformation = await $fetch(baseUrl + '/Recipe/BaseInformation', {
+                headers: {
+                    "authorization": useAuth().token.value
+                }
+            })
         }
     }
 })
