@@ -1,7 +1,7 @@
 import {defineStore} from 'pinia'
 import {useAuth} from "#imports";
 
-const baseUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:8000/api' : window.location.host + "/api"
+const baseUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:8000/api' : window.location.origin + "/api"
 
 export const useRecipeStore = defineStore({
     id: 'auth',
@@ -21,6 +21,7 @@ export const useRecipeStore = defineStore({
     }),
     actions: {
         async fetchRecipes(force = false) {
+            console.log(window.location)
             if (!force && this.recipes.length) {
                 return
             }
