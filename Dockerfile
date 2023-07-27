@@ -24,7 +24,8 @@ RUN mkdir /static
 
 RUN npm --prefix /HelloMeals/src/frontend install
 RUN npm --prefix /HelloMeals/src/frontend run build
-
+#Move files to nginx directory, so nginx can access them
+RUN mv /HelloMeals/src/frontend/dist/* /usr/share/nginx/html/
 # Copy the Nginx configuration file to the container's /etc/nginx/sites-available directory
 COPY nginx.conf /etc/nginx/sites-available/default
 
