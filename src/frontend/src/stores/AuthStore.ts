@@ -1,6 +1,6 @@
 import {defineStore} from 'pinia'
 
-const baseUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:8000/api' : window.location.origin + "/api"
+const baseUrl = import.meta.env.DEV ? 'http://localhost:8000/api' : window.location.origin + "/api"
 
 export const useAuthStore = defineStore({
     id: 'auth',
