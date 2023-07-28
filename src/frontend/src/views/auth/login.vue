@@ -40,18 +40,21 @@
       </div>
     </div>
   </section>
+  <p class="text-white">{{ user }}</p>
 </template>
 
 <script setup>
 
 import {ref} from "vue";
 import {useAuthStore} from "@/stores/AuthStore";
+import {storeToRefs} from "pinia";
 
 let errorMessage = ref(""); // Initialize an error message variable
 let username = ref("")
 let password = ref("")
 
 let authStore = useAuthStore()
+let {user} = storeToRefs(authStore)
 
 let login = async () => {
   const response = await authStore.login(username.value, password.value)
