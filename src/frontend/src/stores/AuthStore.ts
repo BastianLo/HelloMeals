@@ -8,10 +8,11 @@ export const useAuthStore = defineStore({
         access_token: localStorage.getItem("access_token"),
         refresh_token: localStorage.getItem("refresh_token"),
         user: JSON.parse(localStorage.getItem("user") || "{}"),
-        returnUrl: "",
+        returnUrl: "/",
     }),
     getters: {
         get_access_token: (state) => state.access_token,
+        is_logged_in: (state) => !!state.access_token
     },
     actions: {
         async login(username: string, password: string) {
@@ -31,7 +32,7 @@ export const useAuthStore = defineStore({
                 this.set_refresh_token(jsonResponse["refresh"])
                 await this.get_user_information()
             }
-            return {"status": response.status, "message": jsonResponse.detail}
+            return {"response": response, "message": jsonResponse.detail}
         },
         async get_user_information() {
             const response = await fetch(baseUrl + '/auth/me/', {

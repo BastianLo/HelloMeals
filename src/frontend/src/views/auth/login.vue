@@ -48,6 +48,7 @@
 import {ref} from "vue";
 import {useAuthStore} from "@/stores/AuthStore";
 import {storeToRefs} from "pinia";
+import router from "@/router";
 
 let errorMessage = ref(""); // Initialize an error message variable
 let username = ref("")
@@ -59,5 +60,9 @@ let {user} = storeToRefs(authStore)
 let login = async () => {
   const response = await authStore.login(username.value, password.value)
   errorMessage.value = response.message;
+  if (response.response.ok) {
+    console.log(authStore.returnUrl)
+    await router.push(authStore.returnUrl)
+  }
 }
 </script>
