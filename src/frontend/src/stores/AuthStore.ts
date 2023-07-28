@@ -29,6 +29,7 @@ export const useAuthStore = defineStore({
             if (response.ok) {
                 this.set_access_token(jsonResponse.access)
                 this.set_refresh_token(jsonResponse["refresh"])
+                await this.get_user_information()
             }
             return {"status": response.status, "message": jsonResponse.detail}
         },
