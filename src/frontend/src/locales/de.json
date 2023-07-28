@@ -1,0 +1,17 @@
+{
+  "main": {
+    "hello": "Hallo Welt"
+  },
+  "recipe": {
+    "navLabel": "Rezepte"
+  },
+  "storage": {
+    "navLabel": "Vorrat"
+  },
+  "planner": {
+    "navLabel": "Planer"
+  },
+  "settings": {
+    "navLabel": "Einstellungen"
+  }
+}
