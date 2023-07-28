@@ -1,4 +1,5 @@
 import {defineStore} from 'pinia'
+import authorizedFetch from "../../composables/authorizedFetch";
 
 const baseUrl = import.meta.env.DEV ? 'http://localhost:8000/api' : window.location.origin + "/api"
 
@@ -66,12 +67,8 @@ export const useAuthStore = defineStore({
             return {"response": response, "message": jsonResponse.detail}
         },
         async get_user_information() {
-            const response = await fetch(baseUrl + '/auth/me/', {
+            const response = await authorizedFetch(baseUrl + '/auth/me/', {
                 method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + this.get_access_token
-                }
             })
             const jsonResponse = await response.json()
             this.set_user(jsonResponse)
