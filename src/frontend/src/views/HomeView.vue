@@ -5,6 +5,6 @@ import TheWelcome from '../components/TheWelcome.vue'
 <template>
   <main>
     <TheWelcome/>
-    <p>{{ $t("main.hello") }}</p>
+    <p>Hallo</p>
   </main>
 </template>

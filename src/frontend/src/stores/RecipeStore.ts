@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia'
-import authorizedFetch from "../../composables/authorizedFetch";
+import authorizedFetch from "@/composables/authorizedFetch";
 
 const baseUrl = import.meta.env.DEV ? 'http://localhost:8000/api' : window.location.origin + "/api"
 
@@ -8,7 +8,10 @@ export const useRecipeStore = defineStore({
     state: () => ({
         recipes: [],
         navigation: {},
-        base_information: {},
+        base_information: {
+            totalRecipeCount: null,
+            favoriteRecipeCount: null
+        },
     }),
     getters: {},
     actions: {

@@ -4,6 +4,9 @@
     "env.d.ts",
     "src/**/*",
     "src/**/*.vue",
+    "src/**/*.json",
+    "src/locales/en.json",
+    "src/locales/de.json",
     "src/**/*.d.ts",
     "vue-shims.d.ts"
   ],
@@ -11,7 +14,6 @@
     "src/**/__tests__/*"
   ],
   "compilerOptions": {
-    "composite": true,
     "baseUrl": ".",
     "resolveJsonModule": true,
     "paths": {

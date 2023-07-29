@@ -3,7 +3,9 @@
     "hello": "Hallo Welt"
   },
   "recipe": {
-    "navLabel": "Rezepte"
+    "navLabel": "Rezepte",
+    "allRecipes": "Alle Rezepte",
+    "favoriteRecipes": "Favoriten"
   },
   "storage": {
     "navLabel": "Vorrat"

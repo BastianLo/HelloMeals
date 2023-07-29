@@ -43,12 +43,12 @@ const router = createRouter({
         {
             path: '/Pantry',
             name: 'PantryIndex',
-            component: () => import('../views/AboutView2.vue')
+            component: () => import('../views/HomeView.vue')
         },
         {
             path: '/Planner',
             name: 'PlannerIndex',
-            component: () => import('../views/AboutView.vue')
+            component: () => import('../views/HomeView.vue')
         },
         {
             path: '/Settings',

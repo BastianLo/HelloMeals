@@ -7,7 +7,7 @@
           class="px-6 py-3 text-white font-medium rounded-lg text-sm inline-flex items-center bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 focus:ring-4 focus:ring-blue-800 focus:outline-none shadow-md block w-full"
           :to="{name: 'RecipeAll'}"
       >
-        <span class="mr-2">{{ $t('recipe.allRecipes') }}</span>
+        <span class="mr-2" v-text="'Alle Rezepte'"></span>
         <span
             class="bg-blue-700 rounded-full p-2 text-xs font-semibold leading-none text-white">Total Recipes: {{
             base_information.totalRecipeCount
@@ -19,7 +19,7 @@
           class="px-6 py-3 text-white font-medium rounded-lg text-sm inline-flex items-center bg-gradient-to-r from-yellow-500 to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 focus:ring-4 focus:ring-yellow-800 focus:outline-none shadow-md block w-full"
           to="/Recipe/favorites"
       >
-        <span class="mr-2">{{ $t('recipe.favoriteRecipes') }}</span>
+        <span class="mr-2">Lieblingsrezepte</span>
         <span
             class="bg-yellow-600 rounded-full p-2 text-xs font-semibold leading-none text-white">Favorite Recipes: {{
             base_information.favoriteRecipeCount
