@@ -30,16 +30,30 @@ const router = createRouter({
             ]
         },
         {
-            path: '/recipe',
-            name: 'recipe',
-            component: () => import('../views/recipes/index.vue'),
-            children: [
-                {
-                    path: 'all',
-                    name: 'allrecipes',
-                    component: () => import('../views/recipes/index.vue')
-                }
-            ]
+            path: '/Recipe',
+            name: 'RecipeIndex',
+            component: () => import('../views/Recipe/RecipeIndex.vue'),
+            children: []
+        },
+        {
+            path: '/Recipe/All',
+            name: 'RecipeAll',
+            component: () => import('../views/Recipe/RecipeAll.vue')
+        },
+        {
+            path: '/Pantry',
+            name: 'PantryIndex',
+            component: () => import('../views/AboutView2.vue')
+        },
+        {
+            path: '/Planner',
+            name: 'PlannerIndex',
+            component: () => import('../views/AboutView.vue')
+        },
+        {
+            path: '/Settings',
+            name: 'SettingsIndex',
+            component: () => import('../views/HomeView.vue')
         },
     ]
 })

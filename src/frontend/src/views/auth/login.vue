@@ -43,7 +43,7 @@
   <p class="text-white">{{ user }}</p>
 </template>
 
-<script setup>
+<script setup lang="ts">
 
 import {ref} from "vue";
 import {useAuthStore} from "@/stores/AuthStore";

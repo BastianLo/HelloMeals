@@ -7,6 +7,8 @@ export const useRecipeStore = defineStore({
     id: 'recipeStore',
     state: () => ({
         recipes: [],
+        navigation: {},
+        base_information: {},
     }),
     getters: {},
     actions: {
@@ -17,6 +19,15 @@ export const useRecipeStore = defineStore({
             const jsonResponse = await response.json()
             if (response.ok) {
                 this.recipes = jsonResponse.results
+            }
+        },
+        async fetch_base_information() {
+            const response = await authorizedFetch(baseUrl + '/Recipe/BaseInformation', {
+                method: "GET",
+            })
+            const jsonResponse = await response.json()
+            if (response.ok) {
+                this.base_information = jsonResponse
             }
         },
     }
