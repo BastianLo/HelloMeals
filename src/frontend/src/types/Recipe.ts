@@ -1,4 +1,5 @@
 import type {Nutrients} from "@/types/Nutrients";
+import {useRecipeStore} from "@/stores/RecipeStore";
 
 export class Recipe {
     helloFreshId: string;
@@ -88,5 +89,11 @@ export class Recipe {
             protein: null,
             salt: null,
         };
+    }
+
+    public async favorite() {
+        const recipeStore = useRecipeStore();
+        await recipeStore.favorite_recipe(this);
+        this.favorited = (await recipeStore.get_recipe_by_id(this.helloFreshId, ["favorited"])).favorited;
     }
 }

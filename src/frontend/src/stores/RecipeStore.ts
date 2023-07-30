@@ -32,6 +32,20 @@ export const useRecipeStore = defineStore({
                 });
             }
         },
+        async favorite_recipe(recipe: Recipe) {
+            await authorizedFetch(baseUrl + `/Recipe/${recipe.helloFreshId}/favorite/${!recipe.favorited}`, {
+                method: "POST",
+            });
+        },
+        async get_recipe_by_id(recipe_id: string, fields: string[] = []) {
+            const response = await authorizedFetch(baseUrl + `/Recipe/${recipe_id}?query={${fields.join(',')}}`, {
+                method: "GET",
+            });
+            const jsonResponse = await response.json();
+            if (response.ok) {
+                return jsonResponse;
+            }
+        },
         async fetch_base_information() {
             const response = await authorizedFetch(baseUrl + '/Recipe/BaseInformation', {
                 method: "GET",

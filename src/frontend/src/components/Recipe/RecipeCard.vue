@@ -67,7 +67,7 @@ let cutoff = (text: string | null, limit: number) => {
       </p>
 
       <div class="ml-auto mr-4">
-        <button @click="console.log('set favorite')">
+        <button @click="recipe.favorite()">
           <svg class="w-8 h-8 mb-1 text-red-400" aria-hidden="true" v-if="recipe.favorited"
                fill="currentColor" viewBox="0 0 24 24"
                xmlns="http://www.w3.org/2000/svg">
