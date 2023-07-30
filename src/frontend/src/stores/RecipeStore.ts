@@ -18,7 +18,10 @@ export const useRecipeStore = defineStore({
     getters: {},
     actions: {
         async fetch_recipes() {
-            const response = await authorizedFetch(baseUrl + '/Recipe', {
+            await this.fetch_recipes_by_url(baseUrl + '/Recipe')
+        },
+        async fetch_recipes_by_url(url: string) {
+            const response = await authorizedFetch(url, {
                 method: "GET",
             });
             const jsonResponse = await response.json();
