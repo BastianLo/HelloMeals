@@ -1,6 +1,7 @@
 import {defineStore} from 'pinia'
 import authorizedFetch from "@/composables/authorizedFetch";
 import {Recipe} from "@/types/Recipe";
+import {Navigation} from "@/types/common/Navigation";
 
 const baseUrl = import.meta.env.DEV ? 'http://localhost:8000/api' : window.location.origin + "/api"
 
@@ -8,7 +9,7 @@ export const useRecipeStore = defineStore({
     id: 'recipeStore',
     state: () => ({
         recipes: [] as Recipe[],
-        navigation: [],
+        navigation: new Navigation(),
         base_information: {
             totalRecipeCount: null,
             favoriteRecipeCount: null
@@ -22,14 +23,21 @@ export const useRecipeStore = defineStore({
             });
             const jsonResponse = await response.json();
             if (response.ok) {
-                // Clear existing recipes to avoid duplicates
                 this.recipes = [];
                 jsonResponse.results.forEach((recipeData: any) => {
-                    // Create a new Recipe object and push it to the recipes array
                     const recipe = new Recipe();
                     Object.assign(recipe, recipeData);
                     this.recipes.push(recipe);
                 });
+
+                const nav = {
+                    start: jsonResponse.start,
+                    end: jsonResponse.end,
+                    count: jsonResponse.count,
+                    next: jsonResponse.next,
+                    previous: jsonResponse.previous
+                } as Navigation;
+                this.navigation = new Navigation(nav)
             }
         },
         async favorite_recipe(recipe: Recipe) {
