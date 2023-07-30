@@ -4,7 +4,7 @@ defineProps({
   recipe: {},
 })
 
-let cutoff = (text: string, limit: number) => {
+let cutoff = (text: string | null, limit: number) => {
   if (text === null) {
     return text
   }
