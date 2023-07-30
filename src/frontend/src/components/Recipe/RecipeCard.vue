@@ -1,9 +1,13 @@
 <script setup lang="ts">
 
-defineProps({
-  recipe: {},
-})
+import {Recipe} from '@/types/Recipe';
 
+defineProps({
+  recipe: {
+    type: Recipe,
+    required: true
+  },
+})
 let cutoff = (text: string | null, limit: number) => {
   if (text === null) {
     return text
@@ -84,27 +88,27 @@ let cutoff = (text: string | null, limit: number) => {
     </div>
 
     <div class="flex flex-wrap items-center mt-2 ml-2">
-      <div v-if="recipe.source=='1'">
+      <div v-if="recipe.source==1">
         <span class="bg-lime-500 text-black text-xs font-medium mr-2 px-2.5 py-0.5 rounded ">HelloFresh</span>
       </div>
-      <div v-else-if="recipe.source=='2'">
+      <div v-else-if="recipe.source==2">
         <span class="bg-yellow-500 text-black text-xs font-medium mr-2 px-2.5 py-0.5 rounded ">KitchenStories</span>
       </div>
-      <div v-else-if="recipe.source=='3'">
+      <div v-else-if="recipe.source==3">
         <span class="bg-green-700 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded ">Chefkoch</span>
       </div>
-      <div v-else-if="recipe.source=='4'">
+      <div v-else-if="recipe.source==4">
         <span class="bg-pink-700 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded ">Lecker</span>
       </div>
-      <div v-else-if="recipe.source=='5'">
+      <div v-else-if="recipe.source==5">
         <span class="bg-orange-600 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded ">EatSmarter</span>
       </div>
-      <div v-else-if="recipe.source=='6'">
+      <div v-else-if="recipe.source==6">
         <span class="bg-pink-600 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded ">Yazio</span>
       </div>
       <div v-if="recipe.nutrients.energyKcal!==null">
         <span class=" text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded"
-              :class="{'bg-red-500': recipe.nutrients.energyKcal > 900, 'bg-green-500': recipe.nutrients.energyKcal < 700, 'bg-orange-600': recipe.nutrients.energyKcal >= 700 && recipe.nutrients.energyKcal <= 900}"
+              :class="{'bg-red-500': recipe.nutrients.energyKj! > 900, 'bg-green-500': recipe.nutrients.energyKcal < 700, 'bg-orange-600': recipe.nutrients.energyKcal >= 700 && recipe.nutrients.energyKcal <= 900}"
               v-text="recipe.nutrients.energyKcal + ' Kcal'">
         </span>
       </div>
