@@ -22,7 +22,7 @@ let cutoff = (text: string | null, limit: number) => {
 
 <template>
   <div
-      class="min-h-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 flex flex-col justify-stretch">
+      class="increaseOnHover min-h-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 flex flex-col justify-stretch">
     <router-link :to="recipe.helloFreshId">
       <div>
         <div class="flex flex-col relative">
@@ -132,5 +132,13 @@ let cutoff = (text: string | null, limit: number) => {
 </template>
 
 <style scoped>
+.increaseOnHover {
+  transition: 0.1s all ease-out;
+  transform: scale(0.98);
+}
 
+.increaseOnHover:hover {
+  transition: 0.1s all ease-out;
+  transform: scale(1.02);
+}
 </style>
