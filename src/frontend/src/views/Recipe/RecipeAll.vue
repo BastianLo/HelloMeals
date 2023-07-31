@@ -1,8 +1,6 @@
 <template>
   <div style="position: absolute; left:20px;right:20px;">
-    <p>abc</p>
-    <h1>ABC</h1>
-    <navigation/>
+    <navigation class="mt-10"/>
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mx-auto mb-6 mt-10">
       <div v-for="recipe in recipeStore.recipes" :key="recipe.helloFreshId">
         <RecipeCard :recipe="recipe"/>

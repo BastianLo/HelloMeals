@@ -1,7 +1,6 @@
 <template>
   <div>
     <!-- Top Bar -->
-    <h2 class="text-white" v-text="commonStore.request_fetching"></h2>
     <div v-if="commonStore.request_fetching.value" class="fixed top-0 left-0 z-50 flex justify-between w-full p-4 ">
       <div class="text-center flex justify-center w-full ">
         <button disabled type="button"
