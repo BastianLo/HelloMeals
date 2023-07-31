@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia'
-import authorizedFetch from "@/composables/authorizedFetch";
+import authorizedFetch from "@/stores/CommonStore";
 
 const baseUrl = import.meta.env.DEV ? 'http://localhost:8000/api' : window.location.origin + "/api"
 
