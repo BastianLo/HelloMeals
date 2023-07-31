@@ -1,6 +1,8 @@
 <script setup lang="ts">
 
 import {Recipe} from '@/types/Recipe';
+import Observer from "@/components/common/Observer.vue";
+import {ref} from "vue";
 
 defineProps({
   recipe: {
@@ -8,6 +10,9 @@ defineProps({
     required: true
   },
 })
+
+let visible = ref(false);
+
 let cutoff = (text: string | null, limit: number) => {
   if (text === null) {
     return text
@@ -21,6 +26,7 @@ let cutoff = (text: string | null, limit: number) => {
 </script>
 
 <template>
+  <Observer @intersect="visible=true"/>
   <div
       class="increaseOnHover min-h-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 flex flex-col justify-stretch">
     <router-link :to="recipe.helloFreshId">
@@ -48,7 +54,7 @@ let cutoff = (text: string | null, limit: number) => {
                 fill="white"></path>
           </svg>
           <img style="object-fit: cover;height: 224px; width: 336px" class="rounded-t-lg"
-               :src="recipe.image" alt=""/>
+               :src="visible ? recipe.image : ''" alt=""/>
         </div>
       </div>
     </router-link>
