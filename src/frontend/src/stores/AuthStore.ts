@@ -70,7 +70,7 @@ export const useAuthStore = defineStore({
             const response = await authorizedFetch(baseUrl + '/auth/me/', {
                 method: "GET",
             })
-            const jsonResponse = await response.json()
+            const jsonResponse = await response!.json()
             this.set_user(jsonResponse)
         },
 

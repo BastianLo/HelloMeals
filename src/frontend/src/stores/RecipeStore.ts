@@ -1,7 +1,7 @@
 import {defineStore} from 'pinia'
 import {Recipe} from "@/types/Recipe";
 import {Navigation} from "@/types/common/Navigation";
-import authorizedFetch from "@/stores/CommonStore";
+import authorizedFetch, {useCommonStore} from "@/stores/CommonStore";
 
 const baseUrl = import.meta.env.DEV ? 'http://localhost:8000/api' : window.location.origin + "/api"
 
@@ -22,9 +22,10 @@ export const useRecipeStore = defineStore({
     getters: {},
     actions: {
         async fetch_recipes(keep_url_params: boolean = true) {
+
             let apiUrl = baseUrl + '/Recipe'
             this.parse_query(window.location.href)
-            this.$router.push({query: this.get_query()})
+            await useCommonStore().router.push({query: this.get_query()})
             if (keep_url_params) {
                 apiUrl += '?' + this.get_query_string()
             }
@@ -50,12 +51,12 @@ export const useRecipeStore = defineStore({
         },
         async fetch_recipes_by_url(url: string) {
             this.parse_query(url)
-            this.$router.push({query: this.get_query()})
+            await useCommonStore().router.push({query: this.get_query()})
             const response = await authorizedFetch(url, {
                 method: "GET",
             });
-            const jsonResponse = await response.json();
-            if (response.ok) {
+            const jsonResponse = await response!.json();
+            if (response!.ok) {
                 this.recipes = [];
                 jsonResponse.results.forEach((recipeData: any) => {
                     const recipe = new Recipe();
@@ -82,8 +83,8 @@ export const useRecipeStore = defineStore({
             const response = await authorizedFetch(baseUrl + `/Recipe/${recipe_id}?query={${fields.join(',')}}`, {
                 method: "GET",
             });
-            const jsonResponse = await response.json();
-            if (response.ok) {
+            const jsonResponse = await response!.json();
+            if (response!.ok) {
                 return jsonResponse;
             }
         },
@@ -91,8 +92,8 @@ export const useRecipeStore = defineStore({
             const response = await authorizedFetch(baseUrl + '/Recipe/BaseInformation', {
                 method: "GET",
             })
-            const jsonResponse = await response.json()
-            if (response.ok) {
+            const jsonResponse = await response!.json()
+            if (response!.ok) {
                 this.base_information = jsonResponse
             }
         },
