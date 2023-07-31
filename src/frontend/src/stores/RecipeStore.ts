@@ -14,13 +14,43 @@ export const useRecipeStore = defineStore({
             totalRecipeCount: null,
             favoriteRecipeCount: null
         },
+        params: {
+            page: "1",
+            page_size: "24"
+        }
     }),
     getters: {},
     actions: {
-        async fetch_recipes() {
-            await this.fetch_recipes_by_url(baseUrl + '/Recipe')
+        async fetch_recipes(keep_url_params: boolean = true) {
+            let apiUrl = baseUrl + '/Recipe'
+            this.parse_query(window.location.href)
+            this.$router.push({query: this.get_query()})
+            if (keep_url_params) {
+                apiUrl += '?' + this.get_query_string()
+            }
+            await this.fetch_recipes_by_url(apiUrl)
+        },
+        get_query() {
+            return {
+                page: this.params.page,
+                page_size: this.params.page_size,
+            }
+        },
+        get_query_string() {
+            return new URLSearchParams(this.get_query()).toString();
+        },
+        parse_query(url: string) {
+            const parsedUrl = new URL(url)
+            this.params.page = parsedUrl.searchParams.get('page')!
+            this.params.page_size = parsedUrl.searchParams.get('page_size')!
+            this.params = {
+                page: this.get_query().page || "1",
+                page_size: this.get_query().page_size || "24"
+            }
         },
         async fetch_recipes_by_url(url: string) {
+            this.parse_query(url)
+            this.$router.push({query: this.get_query()})
             const response = await authorizedFetch(url, {
                 method: "GET",
             });
