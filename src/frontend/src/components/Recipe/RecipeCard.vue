@@ -22,7 +22,7 @@ let cutoff = (text: string | null, limit: number) => {
 
 <template>
   <div
-      class="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 flex flex-col justify-stretch">
+      class="min-h-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 flex flex-col justify-stretch">
     <router-link :to="recipe.helloFreshId">
       <div>
         <div class="flex flex-col relative">
