@@ -2,8 +2,7 @@ import {defineStore} from 'pinia'
 import {useAuthStore} from "@/stores/AuthStore";
 import {useRouter} from "vue-router";
 
-export default async function authorizedFetch(url: string, options: RequestInit = {}): Promise<Response | null> {
-    if (useCommonStore().request_fetching) return null;
+export default async function authorizedFetch(url: string, options: RequestInit = {}): Promise<Response> {
     useCommonStore().request_fetching = true;
     options.headers = {
         ...options.headers,
@@ -23,18 +22,5 @@ export const useCommonStore = defineStore({
         router: useRouter(),
     }),
     getters: {},
-    actions: {
-        async authorizedFetch(url: string, options: RequestInit = {}): Promise<Response> {
-            this.request_fetching = true;
-            options.headers = {
-                ...options.headers,
-                Authorization: `Bearer ${await useAuthStore().get_valid_token()}`,
-            };
-            const fetch_response = fetch(url, options);
-            fetch_response.then((response) => {
-                this.request_fetching = false;
-            })
-            return fetch_response;
-        }
-    }
+    actions: {}
 })
