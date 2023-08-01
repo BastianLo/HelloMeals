@@ -27,14 +27,12 @@ export const useRecipeStore = defineStore({
             if (keep_url_params) {
                 apiUrl += '?' + this.get_query_string()
             }
-            console.log(apiUrl)
             await this.fetch_recipes_by_url(apiUrl)
         },
         get_query() {
             let query = {}
             query.page = this.recipeFilterStore.page || "1"
             query.page_size = this.recipeFilterStore.page_size || "24"
-            console.log(this.recipeFilterStore.calories_lt)
             if (this.recipeFilterStore.calories_lt && this.recipeFilterStore.calories_lt !== "2000")
                 query.calories_lt = this.recipeFilterStore.calories_lt
             if (this.recipeFilterStore.calories_gt && this.recipeFilterStore.calories_gt !== "0")
@@ -51,7 +49,6 @@ export const useRecipeStore = defineStore({
                 query.fat_lt = this.recipeFilterStore.fat_lt
             if (this.recipeFilterStore.fat_gt && this.recipeFilterStore.fat_gt !== "0")
                 query.fat_gt = this.recipeFilterStore.fat_gt
-            console.log(query)
             return query
         },
         get_query_string() {
