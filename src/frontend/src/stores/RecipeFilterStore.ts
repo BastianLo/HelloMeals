@@ -17,6 +17,18 @@ export const useRecipeFilterStore = defineStore({
     }),
     getters: {},
     actions: {
+        reset() {
+            this.calories_lt = "2000"
+            this.calories_gt = "0"
+            this.protein_lt = "200"
+            this.protein_gt = "0"
+            this.carbs_lt = "200"
+            this.carbs_gt = "0"
+            this.fat_lt = "200"
+            this.fat_gt = "0"
+            this.page = "1"
+            this.page_size = "24"
+        },
         parse_query(url: string) {
             const parsedUrl = new URL(url)
             this.page = parsedUrl.searchParams.get('page')!

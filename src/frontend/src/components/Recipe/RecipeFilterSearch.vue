@@ -68,17 +68,20 @@ const search = async () => {
   applyFilter()
   show.value = false
   await recipeStore.fetch_recipes(true, false)
-  console.log("search")
 }
-const close = () => {
-  search()
+
+const clearFilter = async () => {
   show.value = false
-  console.log("close")
-
+  recipeFilterRefs.reset()
+  updateComponentValues()
+  await recipeStore.fetch_recipes(false, false)
 }
 
-const clearFilter = () => {
-  console.log("clearFilter")
+const updateComponentValues = () => {
+  sliders.value[0].value = [recipeFilterRefs.calories_gt, recipeFilterRefs.calories_lt]
+  sliders.value[1].value = [recipeFilterRefs.protein_gt, recipeFilterRefs.protein_lt]
+  sliders.value[2].value = [recipeFilterRefs.carbs_gt, recipeFilterRefs.carbs_lt]
+  sliders.value[3].value = [recipeFilterRefs.fat_gt, recipeFilterRefs.fat_lt]
 }
 
 </script>
@@ -91,7 +94,7 @@ const clearFilter = () => {
     <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
     <div class="fixed inset-0 z-10 overflow-y-auto">
       <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0 mb-40">
-        <OnClickOutside @trigger="close">
+        <OnClickOutside @trigger="search()">
           <div style="width: 400px"
                class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
             <div class="w-lg shadow p-5 rounded-lg dark:bg-gray-800">
@@ -104,7 +107,7 @@ const clearFilter = () => {
                         class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                   Anwenden
                 </button>
-                <button @click="clearFilter(); search()"
+                <button @click="clearFilter()"
                         class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm font-medium rounded-md">
                   Löschen
                 </button>
