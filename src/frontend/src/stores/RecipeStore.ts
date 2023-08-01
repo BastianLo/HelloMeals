@@ -22,55 +22,16 @@ export const useRecipeStore = defineStore({
         async fetch_recipes(keep_url_params: boolean = true, parseUrlParams: boolean = true) {
             let apiUrl = baseUrl + '/Recipe'
             if (parseUrlParams)
-                this.parse_query(window.location.href)
-            await useCommonStore().router.push({query: this.get_query()})
+                this.recipeFilterStore.parse_query(window.location.href)
+            await useCommonStore().router.push({query: this.recipeFilterStore.get_query()})
             if (keep_url_params) {
-                apiUrl += '?' + this.get_query_string()
+                apiUrl += '?' + this.recipeFilterStore.get_query_string()
             }
             await this.fetch_recipes_by_url(apiUrl)
         },
-        get_query() {
-            let query = {}
-            query.page = this.recipeFilterStore.page || "1"
-            query.page_size = this.recipeFilterStore.page_size || "24"
-            if (this.recipeFilterStore.calories_lt && this.recipeFilterStore.calories_lt !== "2000")
-                query.calories_lt = this.recipeFilterStore.calories_lt
-            if (this.recipeFilterStore.calories_gt && this.recipeFilterStore.calories_gt !== "0")
-                query.calories_gt = this.recipeFilterStore.calories_gt
-            if (this.recipeFilterStore.protein_lt && this.recipeFilterStore.protein_lt !== "200")
-                query.protein_lt = this.recipeFilterStore.protein_lt
-            if (this.recipeFilterStore.protein_gt && this.recipeFilterStore.protein_gt !== "0")
-                query.protein_gt = this.recipeFilterStore.protein_gt
-            if (this.recipeFilterStore.carbs_lt && this.recipeFilterStore.carbs_lt !== "200")
-                query.carbs_lt = this.recipeFilterStore.carbs_lt
-            if (this.recipeFilterStore.carbs_gt && this.recipeFilterStore.carbs_gt !== "0")
-                query.carbs_gt = this.recipeFilterStore.carbs_gt
-            if (this.recipeFilterStore.fat_lt && this.recipeFilterStore.fat_lt !== "200")
-                query.fat_lt = this.recipeFilterStore.fat_lt
-            if (this.recipeFilterStore.fat_gt && this.recipeFilterStore.fat_gt !== "0")
-                query.fat_gt = this.recipeFilterStore.fat_gt
-            return query
-        },
-        get_query_string() {
-            return new URLSearchParams(this.get_query()).toString();
-        },
-        parse_query(url: string) {
-            const parsedUrl = new URL(url)
-            this.recipeFilterStore.page = parsedUrl.searchParams.get('page')!
-            this.recipeFilterStore.page_size = parsedUrl.searchParams.get('page_size')!
-            this.recipeFilterStore.calories_lt = parsedUrl.searchParams.get('calories_lt') || "2000"
-            this.recipeFilterStore.calories_gt = parsedUrl.searchParams.get('calories_gt') || "0"
-            this.recipeFilterStore.protein_lt = parsedUrl.searchParams.get('protein_lt') || "200"
-            this.recipeFilterStore.protein_gt = parsedUrl.searchParams.get('protein_gt') || "0"
-            this.recipeFilterStore.carbs_lt = parsedUrl.searchParams.get('carbs_lt') || "200"
-            this.recipeFilterStore.carbs_gt = parsedUrl.searchParams.get('carbs_gt') || "0"
-            this.recipeFilterStore.fat_lt = parsedUrl.searchParams.get('fat_lt') || "200"
-            this.recipeFilterStore.fat_gt = parsedUrl.searchParams.get('fat_gt') || "0"
-            //this.params = this.get_query()
-        },
         async fetch_recipes_by_url(url: string) {
-            this.parse_query(url)
-            await useCommonStore().router.push({query: this.get_query()})
+            this.recipeFilterStore.parse_query(url)
+            await useCommonStore().router.push({query: this.recipeFilterStore.get_query()})
             const response = await authorizedFetch(url, {
                 method: "GET",
             });
