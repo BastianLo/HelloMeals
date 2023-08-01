@@ -43,7 +43,7 @@ export const useRecipeFilterStore = defineStore({
             this.fat_gt = parsedUrl.searchParams.get('fat_gt') || "0"
         },
         get_query() {
-            let query = {}
+            const query: Record<string, string> = {}
             query.page = this.page || "1"
             query.page_size = this.page_size || "24"
             if (this.calories_lt && this.calories_lt !== "2000")
