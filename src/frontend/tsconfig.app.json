@@ -15,6 +15,7 @@
   ],
   "compilerOptions": {
     "baseUrl": ".",
+    "allowJs": true,
     "resolveJsonModule": true,
     "paths": {
       "@/*": [
