@@ -14,6 +14,7 @@ export const useRecipeFilterStore = defineStore({
         fat_gt: "0",
         recipeType: null as number | null,
         sources: [] as number[],
+        srch: '',
 
         ordering: null as string | null,
 
@@ -34,6 +35,7 @@ export const useRecipeFilterStore = defineStore({
             this.fat_gt = "0"
             this.recipeType = null
             this.sources = []
+            this.srch = ''
 
             this.ordering = null
 
@@ -52,6 +54,7 @@ export const useRecipeFilterStore = defineStore({
             this.fat_gt = parsedUrl.searchParams.get('fat_gt') || "0"
             this.recipeType = parsedUrl.searchParams.get('recipeType') as number | null
             this.sources = (parsedUrl.searchParams.get('source') || '').split(",").filter(s => s !== '').map(s => parseInt(s))
+            this.srch = parsedUrl.searchParams.get('srch') || ''
 
             this.ordering = parsedUrl.searchParams.get('ordering')
 
@@ -84,6 +87,8 @@ export const useRecipeFilterStore = defineStore({
                 query.source = this.sources.join(",")
             if (this.ordering)
                 query.ordering = this.ordering
+            if (this.srch)
+                query.srch = this.srch
             return query
         },
         get_query_string() {

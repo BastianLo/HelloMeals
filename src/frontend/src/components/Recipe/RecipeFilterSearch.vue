@@ -79,7 +79,7 @@ const applyFilter = () => {
   recipeFilterRefs.recipeType = recipeType.value
   recipeFilterRefs.sources = sources.value
   recipeFilterRefs.ordering = ordering.value
-  console.log(recipeFilterRefs.ordering)
+  recipeFilterRefs.srch = searchString.value
 
   recipeFilterRefs.page = "1"
 }
@@ -105,6 +105,7 @@ const updateComponentValues = () => {
   recipeType.value = recipeFilterRefs.recipeType
   sources.value = recipeFilterRefs.sources
   ordering.value = recipeFilterRefs.ordering
+  searchString.value = recipeFilterRefs.srch
 }
 
 const sortBy = (key: string) => {
