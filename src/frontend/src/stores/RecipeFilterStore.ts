@@ -12,6 +12,9 @@ export const useRecipeFilterStore = defineStore({
         carbs_gt: "0",
         fat_lt: "200",
         fat_gt: "0",
+        recipeType: null as number | null,
+
+
         page: "1",
         page_size: "24",
     }),
@@ -26,13 +29,13 @@ export const useRecipeFilterStore = defineStore({
             this.carbs_gt = "0"
             this.fat_lt = "200"
             this.fat_gt = "0"
+            this.recipeType = null
+
             this.page = "1"
             this.page_size = "24"
         },
         parse_query(url: string) {
             const parsedUrl = new URL(url)
-            this.page = parsedUrl.searchParams.get('page')!
-            this.page_size = parsedUrl.searchParams.get('page_size')!
             this.calories_lt = parsedUrl.searchParams.get('calories_lt') || "2000"
             this.calories_gt = parsedUrl.searchParams.get('calories_gt') || "0"
             this.protein_lt = parsedUrl.searchParams.get('protein_lt') || "200"
@@ -41,6 +44,10 @@ export const useRecipeFilterStore = defineStore({
             this.carbs_gt = parsedUrl.searchParams.get('carbs_gt') || "0"
             this.fat_lt = parsedUrl.searchParams.get('fat_lt') || "200"
             this.fat_gt = parsedUrl.searchParams.get('fat_gt') || "0"
+            this.recipeType = parsedUrl.searchParams.get('recipeType') as number | null
+
+            this.page = parsedUrl.searchParams.get('page')!
+            this.page_size = parsedUrl.searchParams.get('page_size')!
         },
         get_query() {
             const query: Record<string, string> = {}
@@ -62,6 +69,8 @@ export const useRecipeFilterStore = defineStore({
                 query.fat_lt = this.fat_lt
             if (this.fat_gt && this.fat_gt !== "0")
                 query.fat_gt = this.fat_gt
+            if (this.recipeType)
+                query.recipeType = this.recipeType.toString()
             return query
         },
         get_query_string() {

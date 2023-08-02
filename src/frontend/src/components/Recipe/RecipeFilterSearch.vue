@@ -10,7 +10,8 @@ let recipeFilterRefs = useRecipeFilterStore()
 const show = ref(false)
 const searchString = ref('')
 const openFilter = ref({
-  nutrients: false
+  nutrients: false,
+  menuType: false,
 })
 let sliders = ref([
   {
@@ -50,9 +51,9 @@ let sliders = ref([
     }
   },
 ])
+let recipeType = ref(null as number | null)
 
 const applyFilter = () => {
-  console.log("applyFilter")
   recipeFilterRefs.calories_gt = sliders.value[0].value[0]
   recipeFilterRefs.calories_lt = sliders.value[0].value[1]
   recipeFilterRefs.protein_gt = sliders.value[1].value[0]
@@ -61,6 +62,8 @@ const applyFilter = () => {
   recipeFilterRefs.carbs_lt = sliders.value[2].value[1]
   recipeFilterRefs.fat_gt = sliders.value[3].value[0]
   recipeFilterRefs.fat_lt = sliders.value[3].value[1]
+  recipeFilterRefs.recipeType = recipeType.value
+
   recipeFilterRefs.page = "1"
 }
 
@@ -82,6 +85,7 @@ const updateComponentValues = () => {
   sliders.value[1].value = [recipeFilterRefs.protein_gt, recipeFilterRefs.protein_lt]
   sliders.value[2].value = [recipeFilterRefs.carbs_gt, recipeFilterRefs.carbs_lt]
   sliders.value[3].value = [recipeFilterRefs.fat_gt, recipeFilterRefs.fat_lt]
+  recipeType.value = recipeFilterRefs.recipeType
 }
 
 </script>
@@ -162,6 +166,47 @@ const updateComponentValues = () => {
                                   tooltipPosition="bottom"
                           />
                         </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mb-5">
+                    <h2 id="accordion-collapse-heading-2">
+                      <button type="button"
+                              @click="openFilter.menuType = !openFilter.menuType"
+                              :class="{'border-b-0':openFilter.menuType}"
+                              class="flex items-center justify-between w-full p-5 font-medium text-left text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      >
+                        <span :class="{'dark:text-white': openFilter.menuType}"> Menüart </span>
+                        <svg :class="{'rotate-180': openFilter.menuType}" data-accordion-icon
+                             class="w-6 h-6 shrink-0" fill="currentColor"
+                             viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                          <path fill-rule="evenodd"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                      </button>
+                    </h2>
+                    <div :class="{ 'hidden': !openFilter.menuType}" class="border dark:border-gray-700 border-t-0"
+                         aria-labelledby="accordion-collapse-heading-2">
+                      <div class="p-2 rounded">
+                        <input type="radio" v-model="recipeType" value="0"/>
+                        <label class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-white">Hauptgerichte</label>
+                        <br/>
+                        <input type="radio" v-model="recipeType" value="1"/>
+                        <label
+                            class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-white">Frühstück</label>
+                        <br/>
+                        <input type="radio" v-model="recipeType" value="2"/>
+                        <label
+                            class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-white">Dessert</label>
+                        <br/>
+                        <input type="radio" v-model="recipeType" value="3"/>
+                        <label
+                            class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-white">Backen</label>
+                        <br/>
+                        <input type="radio" v-model="recipeType" value="4"/>
+                        <label
+                            class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-white">Getränke</label>
                       </div>
                     </div>
                   </div>
