@@ -8,6 +8,8 @@ import {useRecipeFilterStore} from "@/stores/RecipeFilterStore";
 let recipeStore = useRecipeStore()
 let recipeFilterRefs = useRecipeFilterStore()
 const show = ref(false)
+const showSortPopup = ref(false)
+const ordering = ref(null as string | null)
 const searchString = ref('')
 const openFilter = ref({
   nutrients: false,
@@ -52,6 +54,16 @@ let sliders = ref([
     }
   },
 ])
+const orderings = ref([
+  {
+    title: "Relevanz",
+    value: "relevancy"
+  },
+  {
+    title: "Zutaten",
+    value: "availIngredients"
+  }
+])
 let recipeType = ref(null as number | null)
 let sources = ref([] as number[])
 
@@ -66,6 +78,8 @@ const applyFilter = () => {
   recipeFilterRefs.fat_lt = sliders.value[3].value[1]
   recipeFilterRefs.recipeType = recipeType.value
   recipeFilterRefs.sources = sources.value
+  recipeFilterRefs.ordering = ordering.value
+  console.log(recipeFilterRefs.ordering)
 
   recipeFilterRefs.page = "1"
 }
@@ -90,6 +104,15 @@ const updateComponentValues = () => {
   sliders.value[3].value = [recipeFilterRefs.fat_gt, recipeFilterRefs.fat_lt]
   recipeType.value = recipeFilterRefs.recipeType
   sources.value = recipeFilterRefs.sources
+  ordering.value = recipeFilterRefs.ordering
+}
+
+const sortBy = (key: string) => {
+  ordering.value = key;
+  applyFilter();
+  recipeStore.fetch_recipes(true, false);
+  showSortPopup.value = false
+
 }
 updateComponentValues()
 </script>
@@ -297,6 +320,35 @@ updateComponentValues()
         Suche
       </button>
     </div>
+    <OnClickOutside @trigger="showSortPopup = false">
+      <div class="relative inline-block text-left">
+        <div>
+          <button type="button"
+                  @click="showSortPopup = !showSortPopup"
+                  class="text-white ml-2 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                  id="sort-menu" aria-expanded="false" aria-haspopup="true">
+            Sort
+            <svg class="w-4 h-4 ml-2 -mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                 fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-2a6 6 0 100-12 6 6 0 000 12zm-1-5a1 1 0 112 0v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0v-1H8a1 1 0 110-2h1v-1z"
+                    clip-rule="evenodd"/>
+            </svg>
+          </button>
+        </div>
+        <div v-if="showSortPopup" class="origin-top-right absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white ring-1 ring-black
+            ring-opacity-5"
+             role="menu" aria-orientation="vertical" aria-labelledby="sort-menu">
+          <div class="py-1" role="none">
+            <button v-for="ordering in orderings"
+                    @click="sortBy(ordering.value)"
+                    class="w-full block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                    role="menuitem">{{ ordering.title }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </OnClickOutside>
   </div>
 
 </template>
