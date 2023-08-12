@@ -2,10 +2,10 @@ import {defineStore} from 'pinia'
 
 
 enum AlertBannerType {
-    INFO = 'info',
-    WARNING = 'warning',
-    ERROR = 'error',
-    SUCCESS = 'success',
+    INFO = 'blue',
+    WARNING = 'orange',
+    ERROR = 'red',
+    SUCCESS = 'green',
 }
 
 export default AlertBannerType
@@ -23,12 +23,11 @@ export const useAlertBannerStore = defineStore({
     getters: {},
     actions: {
         async showBanner(alertBannerType: AlertBannerType, title: string, message: string) {
-            console.log(alertBannerType)
             this.banner_information.show = true
+            this.banner_information.alertBannerType = alertBannerType
             this.banner_information.title = title
             this.banner_information.message = message
-            await this.delay(100000)
-            console.log("test")
+            await this.delay(3000)
             this.banner_information.show = false
 
         },

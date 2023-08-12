@@ -5,7 +5,8 @@
   <div v-if="bannerInformation.show"
        class="fixed inset-x-0 top-4 flex items-center justify-center">
     <div
-        class="flex p-4 mb-4 text-sm border rounded-lg bg-gray-800 text-green-400 border-green-800"
+        class="flex p-4 mb-4 text-sm border rounded-lg bg-gray-800"
+        :class="['text-' + bannerInformation.alertBannerType + '-400', 'border-' + bannerInformation.alertBannerType + '-800']"
         role="alert">
       <svg aria-hidden="true" class="flex-shrink-0 inline w-5 h-5 mr-3" fill="currentColor"
            viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -38,6 +39,21 @@ import {watch} from "vue";
 const alertBannerStore = useAlertBannerStore()
 
 const bannerInformation = alertBannerStore.banner_information
+
+const getBannerClass = () => {
+  switch (bannerInformation.value.type) {
+    case AlertBannerType.INFO:
+      return 'bg-blue-800 text-blue-400 border-blue-800';
+    case AlertBannerType.WARNING:
+      return 'bg-orange-800 text-orange-400 border-orange-800';
+    case AlertBannerType.ERROR:
+      return 'bg-red-800 text-red-400 border-red-800';
+    case AlertBannerType.SUCCESS:
+      return 'bg-green-800 text-green-400 border-green-800';
+    default:
+      return ''; // Default class or error handling
+  }
+};
 
 watch(() => alertBannerStore.bannerInformation, (newBannerInformation) => {
   if (newBannerInformation) {
