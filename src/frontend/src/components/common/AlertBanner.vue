@@ -1,8 +1,4 @@
 <template>
-  <button class="text-white"
-          @click="alertBannerStore.showBanner(AlertBannerType.ERROR, 'Link kopiert!', 'Der Link zum Rezept wurde in die\n' + 'Zwischenablage kopiert')">
-    Test banner
-  </button>
   <div v-for="(banner, index) in banners">
     <transition name="fade" mode="out-in">
       <div v-if="banner.show" key="banner" :style="{'top': (1 + index*4)+'rem'}"
@@ -37,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import AlertBannerType, {useAlertBannerStore} from "@/stores/AlertBannerStore";
+import {useAlertBannerStore} from "@/stores/AlertBannerStore";
 import {watch} from "vue";
 
 const alertBannerStore = useAlertBannerStore();
