@@ -40,21 +40,6 @@ const alertBannerStore = useAlertBannerStore()
 
 const bannerInformation = alertBannerStore.banner_information
 
-const getBannerClass = () => {
-  switch (bannerInformation.value.type) {
-    case AlertBannerType.INFO:
-      return 'bg-blue-800 text-blue-400 border-blue-800';
-    case AlertBannerType.WARNING:
-      return 'bg-orange-800 text-orange-400 border-orange-800';
-    case AlertBannerType.ERROR:
-      return 'bg-red-800 text-red-400 border-red-800';
-    case AlertBannerType.SUCCESS:
-      return 'bg-green-800 text-green-400 border-green-800';
-    default:
-      return ''; // Default class or error handling
-  }
-};
-
 watch(() => alertBannerStore.bannerInformation, (newBannerInformation) => {
   if (newBannerInformation) {
     bannerInformation.value = newBannerInformation;
