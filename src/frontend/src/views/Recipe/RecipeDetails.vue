@@ -262,6 +262,7 @@
 import {useRouter} from "vue-router";
 import {useRecipeStore} from "@/stores/RecipeStore";
 import {ref, watch} from "vue";
+import AlertBannerType, {useAlertBannerStore} from "@/stores/AlertBannerStore";
 
 let recipeStore = useRecipeStore()
 
@@ -274,6 +275,12 @@ const servings = ref(null)
 const showAlert = ref(false)
 const completed = ref({})
 const share = () => {
+  try {
+    navigator.share({title: recipeStore.detailRecipe.name, url: location.href})
+  } catch (e) {
+    useAlertBannerStore().showBanner(AlertBannerType.SUCCESS, "Link kopiert!", "Der Link zum Rezept wurde in die Zwischenablage kopiert.")
+    navigator.clipboard.writeText(location.href);
+  }
 }
 watch(() => recipeStore.detailRecipe, (newDetailRecipe) => {
   if (newDetailRecipe) {

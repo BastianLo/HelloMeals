@@ -1,4 +1,5 @@
 <template>
+  <AlertBanner/>
   <div>
     <!-- Top Bar -->
     <div v-if="commonStore.request_fetching.value" class="fixed top-0 left-0 z-50 flex justify-between w-full p-4 ">
@@ -55,6 +56,7 @@
 <script setup lang="ts">
 import {useCommonStore} from "@/stores/CommonStore";
 import {storeToRefs} from "pinia";
+import AlertBanner from "@/components/common/AlertBanner.vue";
 
 let commonStore = storeToRefs(useCommonStore())
 const menuItems = [
