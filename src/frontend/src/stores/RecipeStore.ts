@@ -3,6 +3,7 @@ import {Recipe} from "@/types/Recipe";
 import {Navigation} from "@/types/common/Navigation";
 import authorizedFetch, {useCommonStore} from "@/stores/CommonStore";
 import {useRecipeFilterStore} from "@/stores/RecipeFilterStore";
+import type {FullRecipe} from "@/types/FullRecipe";
 
 const baseUrl = import.meta.env.DEV ? 'http://localhost:8000/api' : window.location.origin + "/api"
 
@@ -10,6 +11,7 @@ export const useRecipeStore = defineStore({
     id: 'recipeStore',
     state: () => ({
         recipes: [] as Recipe[],
+        detailRecipe: {} as FullRecipe,
         recipeFilterStore: useRecipeFilterStore(),
         navigation: new Navigation(),
         base_information: {
@@ -54,8 +56,22 @@ export const useRecipeStore = defineStore({
                 this.navigation = new Navigation(nav)
             }
         },
+        async fetch_recipes_detail(id: string) {
+            const response = await authorizedFetch(baseUrl + '/FullRecipe/' + id, {
+                method: "GET",
+            });
+            const jsonResponse = await response!.json();
+            if (response!.ok) {
+                this.detailRecipe = jsonResponse
+            }
+        },
         async favorite_recipe(recipe: Recipe) {
             await authorizedFetch(baseUrl + `/Recipe/${recipe.helloFreshId}/favorite/${!recipe.favorited}`, {
+                method: "POST",
+            });
+        },
+        async favorite_recipe_value(id: String, value: boolean) {
+            await authorizedFetch(baseUrl + `/Recipe/${id}/favorite/${value}`, {
                 method: "POST",
             });
         },

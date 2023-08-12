@@ -15,8 +15,8 @@ export interface FullRecipe {
     updatedAt?: string | null;
     averageRating?: string | null;
     ratingCount?: number | null;
-    servings?: number | null;
-    image?: string | null;
+    servings: number | null;
+    image: string | null;
     HelloFreshImageUrl?: string | null;
     isPremium?: boolean | null;
     headline?: string | null;
@@ -34,15 +34,36 @@ export interface FullRecipe {
     viewCount?: number | null;
     isPlus?: boolean | null;
     healthScore?: number | null;
-    nutrients?: string | null;
+    nutrients: Nutrient;
+    work_steps: WorkStep[];
+}
+
+export interface WorkStep {
+    id: string;
+    index: number;
+    description: string;
+    image: string;
+    HelloFreshImageUrl: string;
+    relatedRecipe: string;
 }
 
 export interface RecipeUtensil {
     utensil: Utensil;
 }
 
+interface Nutrient {
+    energyKj: number | null,
+    energyKcal: number | null,
+    fat: number | null,
+    fatSaturated: number | null,
+    carbs: number | null,
+    sugar: number | null,
+    protein: number | null,
+    salt: number | null
+}
+
 export interface Utensil {
-    // Define properties for the Utensil if needed.
+    name: string;
 }
 
 export interface IngredientGroupBase {
