@@ -8,28 +8,26 @@ enum AlertBannerType {
     SUCCESS = 'green',
 }
 
+interface AlertBannerInformation {
+    alertBannerType: AlertBannerType
+    title: string
+    message: string
+    show: boolean
+}
+
 export default AlertBannerType
 
 export const useAlertBannerStore = defineStore({
     id: 'alertBannerStore',
     state: () => ({
-        banner_information: {
-            alertBannerType: AlertBannerType.INFO,
-            title: '',
-            message: '',
-            show: false
-        },
+        banners: [] as AlertBannerInformation[],
     }),
     getters: {},
     actions: {
         async showBanner(alertBannerType: AlertBannerType, title: string, message: string) {
-            this.banner_information.show = true
-            this.banner_information.alertBannerType = alertBannerType
-            this.banner_information.title = title
-            this.banner_information.message = message
+            this.banners.push({title: title, message: message, alertBannerType: alertBannerType, show: true})
             await this.delay(3000)
-            this.banner_information.show = false
-
+            this.banners.shift()
         },
         delay(ms: number) {
             return new Promise(resolve => setTimeout(resolve, ms));
