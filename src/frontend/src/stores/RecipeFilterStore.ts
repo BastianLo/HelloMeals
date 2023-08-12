@@ -15,6 +15,7 @@ export const useRecipeFilterStore = defineStore({
         recipeType: null as number | null,
         sources: [] as number[],
         srch: '',
+        favorited: null as boolean | null,
 
         ordering: null as string | null,
 
@@ -36,6 +37,7 @@ export const useRecipeFilterStore = defineStore({
             this.recipeType = null
             this.sources = []
             this.srch = ''
+            this.favorited = null
 
             this.ordering = null
 
@@ -55,6 +57,7 @@ export const useRecipeFilterStore = defineStore({
             this.recipeType = parsedUrl.searchParams.get('recipeType') as number | null
             this.sources = (parsedUrl.searchParams.get('source') || '').split(",").filter(s => s !== '').map(s => parseInt(s))
             this.srch = parsedUrl.searchParams.get('srch') || ''
+            this.favorited = this.favorited ? this.favorited : parsedUrl.searchParams.get('favorited') ? parsedUrl.searchParams.get('favorited') === 'true' : null
 
             this.ordering = parsedUrl.searchParams.get('ordering')
 
@@ -89,6 +92,8 @@ export const useRecipeFilterStore = defineStore({
                 query.ordering = this.ordering
             if (this.srch)
                 query.srch = this.srch
+            if (this.favorited)
+                query.favorited = this.favorited.toString()
             return query
         },
         get_query_string() {

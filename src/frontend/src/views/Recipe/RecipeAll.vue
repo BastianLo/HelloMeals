@@ -18,8 +18,13 @@ import {useRecipeStore} from "@/stores/RecipeStore";
 import RecipeCard from "@/components/Recipe/RecipeCard.vue";
 import Navigation from "@/components/common/Navigation.vue";
 import RecipeFilterSearch from "@/components/Recipe/RecipeFilterSearch.vue";
+import {useRouter} from "vue-router";
+import {useRecipeFilterStore} from "@/stores/RecipeFilterStore";
 
+
+const isFavoritePage = useRouter().currentRoute.value.name === "RecipeFavorites"
 let recipeStore = useRecipeStore()
+useRecipeFilterStore().favorited = isFavoritePage
 recipeStore.fetch_recipes()
 </script>
 

@@ -17,7 +17,7 @@
       <!-- Favorite Recipes Link -->
       <router-link
           class="px-6 py-3 text-white font-medium rounded-lg text-sm inline-flex items-center bg-gradient-to-r from-yellow-500 to-yellow-700 hover:from-yellow-600 hover:to-yellow-800 focus:ring-4 focus:ring-yellow-800 focus:outline-none shadow-md block w-full"
-          to="/Recipe/favorites"
+          to="/Recipe/Favorites"
       >
         <span class="mr-2">Lieblingsrezepte</span>
         <span
