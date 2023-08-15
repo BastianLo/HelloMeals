@@ -22,4 +22,4 @@ jobs:
         with:
           push: true
           tags:
-            bastianlo/hellomeals:${{ github.ref == 'refs/heads/main' && 'latest' || 'dev' }}, bastianlo/hellomeals:${{env.GITHUB_RUN_NUMBER}}
+            bastianlo/hellomeals:${{ github.ref == 'refs/heads/main' && 'latest' || 'dev' }}, bastianlo/hellomeals:$GITHUB_RUN_ID
