@@ -28,6 +28,8 @@ export const useRecipeStore = defineStore({
             await useCommonStore().router.push({query: this.recipeFilterStore.get_query()})
             if (keep_url_params) {
                 apiUrl += '?' + this.recipeFilterStore.get_query_string()
+            } else {
+                apiUrl += '?favorited=' + this.recipeFilterStore.favorited
             }
             await this.fetch_recipes_by_url(apiUrl)
         },
@@ -57,6 +59,7 @@ export const useRecipeStore = defineStore({
             }
         },
         async fetch_recipes_detail(id: string) {
+            this.detailRecipe = {} as FullRecipe
             const response = await authorizedFetch(baseUrl + '/FullRecipe/' + id, {
                 method: "GET",
             });

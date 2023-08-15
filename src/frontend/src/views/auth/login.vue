@@ -37,7 +37,6 @@
       </div>
     </div>
   </section>
-  <p class="text-white">{{ user }}</p>
 </template>
 
 <script setup lang="ts">

@@ -34,10 +34,10 @@
 
 <script setup lang="ts">
 import {useAlertBannerStore} from "@/stores/AlertBannerStore";
-import {watch} from "vue";
+import {ref, watch} from "vue";
 
 const alertBannerStore = useAlertBannerStore();
-const banners = alertBannerStore.banners;
+const banners = ref(alertBannerStore.banners);
 
 watch(() => alertBannerStore.banners, (newBanners) => {
   if (newBanners) {

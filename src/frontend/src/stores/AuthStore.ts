@@ -45,7 +45,15 @@ export const useAuthStore = defineStore({
             const jsonResponse = await response.json()
             if (response.ok) {
                 this.set_access_token(jsonResponse.access)
+            } else if (response.status === 401) {
+                this.logout()
             }
+        },
+        logout() {
+            this.set_access_token(null)
+            this.set_refresh_token(null)
+            this.set_user(null)
+            console.log("user logged out")
         },
         async login(username: string, password: string) {
             const response = await fetch(baseUrl + '/auth/token/', {
@@ -74,17 +82,32 @@ export const useAuthStore = defineStore({
             this.set_user(jsonResponse)
         },
 
-        set_access_token(token: string) {
-            this.access_token = token
-            localStorage.setItem("access_token", token)
+        set_access_token(token: string | null) {
+            if (token !== null) {
+                this.access_token = token
+                localStorage.setItem("access_token", token)
+            } else {
+                localStorage.removeItem("access_token")
+                this.access_token = ""
+            }
         },
-        set_refresh_token(token: string) {
-            this.refresh_token = token
-            localStorage.setItem("refresh_token", token)
+        set_refresh_token(token: string | null) {
+            if (token !== null) {
+                this.refresh_token = token
+                localStorage.setItem("refresh_token", token)
+            } else {
+                localStorage.removeItem("refresh_token")
+                this.refresh_token = ""
+            }
         },
         set_user(user: any) {
-            this.user = user
-            localStorage.setItem("user", JSON.stringify(user))
+            if (user !== null) {
+                this.user = user
+                localStorage.setItem("user", JSON.stringify(user))
+            } else {
+                this.user = "{}"
+                localStorage.removeItem("user")
+            }
         }
     }
 })

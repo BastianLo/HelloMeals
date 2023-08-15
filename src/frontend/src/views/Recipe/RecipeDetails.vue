@@ -116,7 +116,7 @@
                     class="ml-2 bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">Schwierig</span>
             </div>
           </div>
-          <div class="mb-4">
+          <div class="mb-4" v-if="recipeStore.detailRecipe.nutrients">
             <span v-if="recipeStore.detailRecipe.nutrients.energyKcal"
                   class="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300"
                   style="white-space: nowrap;"
@@ -270,10 +270,13 @@ const recipeId = useRouter().currentRoute.value.params.id
 
 recipeStore.fetch_recipes_detail(recipeId as string)
 
-const servings = ref(null)
+const servings = ref(0)
 
 const showAlert = ref(false)
-const completed = ref({})
+const completed = ref([] as boolean[])
+
+window.scrollTo({top: 0});
+
 const share = () => {
   try {
     navigator.share({title: recipeStore.detailRecipe.name, url: location.href})
@@ -284,7 +287,7 @@ const share = () => {
 }
 watch(() => recipeStore.detailRecipe, (newDetailRecipe) => {
   if (newDetailRecipe) {
-    servings.value = newDetailRecipe.servings;
+    servings.value = newDetailRecipe.servings || 0;
   }
 });
 </script>
