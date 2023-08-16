@@ -173,50 +173,32 @@
               <div v-if="group.ingredients.length > 0">
                 <h3 class="text-lg font-semibold dark:text-white mb-2" v-text="group.name"></h3>
                 <div class="overflow-x-auto">
-                  <table class="table-auto border-collapse border border-gray-300">
-                    <colgroup>
-                      <col class="w-1/6">
-                      <col class="w-1/6">
-                      <col class="w-4/6">
-                    </colgroup>
-                    <thead>
-                    <tr>
-                      <th class="px-4 py-2 bg-gray-800 border border-gray-300 text-white">
-                        Menge
-                      </th>
-                      <th class="px-4 py-2 bg-gray-800 border border-gray-300 text-white">
-                        Einheit
-                      </th>
-                      <th class="px-4 py-2 bg-gray-800 border border-gray-300 text-white">
-                        Zutat
-                      </th>
-                    </tr>
-                    </thead>
+                  <table class="table-auto border-collapse">
                     <tbody>
-                    <tr v-for="ingredient in group.ingredients">
-                      <td class="px-2 py-2 border border-gray-300 dark:text-white max-w-xs"
+                    <tr v-for="ingredient in group.ingredients" class="odd:bg-slate-700">
+                      <td>
+                        <button
+                            class="mt-2 flex items-center justify-center w-8 h-8 border border-gray-100 dark:border-gray-500 rounded-full">
+                          <svg v-if="ingredient.ingredient.available" class="w-6 h-6 text-green-500" aria-hidden="true"
+                               fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm-3-9l2 2 5-5"></path>
+                          </svg>
+                          <svg v-else class="w-6 h-6 text-gray-500" aria-hidden="true"
+                               fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm-3-9l2 2 5-5"></path>
+                          </svg>
+                        </button>
+                      </td>
+                      <td class="px-2 py-2 text-white max-w-xs"
                           v-if="recipeStore.detailRecipe.servings"
                           v-text="ingredient.amount > 0 ? Math.round(ingredient.amount / recipeStore.detailRecipe.servings * servings*100)/100 : ''"></td>
-                      <td class="px-4 py-2 border border-gray-300 dark:text-white"
+                      <td class="px-4 py-2 text-white"
                           v-text="ingredient.unit"></td>
-                      <td class=" border border-gray-300">
+                      <td class="">
                         <div class="h-max px-4 py-2 dark:text-white break-all flex items-center">
-                          <button
+                          <span
                               class="flex-grow"
-                              v-text="ingredient.ingredient.name"></button>
-                          <button v-if="ingredient.ingredient.available"
-                                  class="p-1 rounded-lg bg-lime-500 hover:bg-lime-600 focus:outline-none">
-                            <svg class="w-6 h-6 text-black" aria-hidden="true"
-                                 fill="none" stroke="currentColor"
-                                 stroke-width="1.5"
-                                 viewBox="0 0 24 24"
-                                 xmlns="http://www.w3.org/2000/svg">
-                              <path
-                                  d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"></path>
-                            </svg>
-                          </button>
+                              v-text="ingredient.ingredient.name"></span>
                         </div>
                       </td>
                     </tr>
