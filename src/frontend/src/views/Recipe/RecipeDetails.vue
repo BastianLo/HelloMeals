@@ -63,11 +63,12 @@
                 </button>
               </div>
             </div>
-            <a v-if="recipeStore.detailRecipe.websiteLink !== null" :href="recipeStore.detailRecipe.websiteLink"
+            <a class="action-button" v-if="recipeStore.detailRecipe.websiteLink !== null"
+               :href="recipeStore.detailRecipe.websiteLink"
                target="_blank" rel="noopener noreferrer">
               <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5"
                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
-                   class="inline-block w-8 h-8 mb-1 mr-1 dark:text-white">
+                   class="inline-block w-8 h-8 dark:text-white button-icon">
                 <path
                     d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"
                     stroke-linecap="round" stroke-linejoin="round"></path>
