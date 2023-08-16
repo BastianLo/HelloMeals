@@ -7,15 +7,17 @@
           <p class="text-base text-gray-700 dark:text-gray-400" v-text="recipeStore.detailRecipe.headline"></p>
           <!-- Top menu buttons -->
           <div class="flex items-center gap-2">
-            <button
-                @click="recipeStore.favorite_recipe_value(recipeStore.detailRecipe.helloFreshId, !recipeStore.detailRecipe.favorited); recipeStore.fetch_recipes_detail(recipeId as string)">
-              <svg v-if="recipeStore.detailRecipe.favorited" class="w-8 h-8 mb-1 text-red-400" aria-hidden="true"
+            <button class="action-button"
+                    @click="recipeStore.favorite_recipe_value(recipeStore.detailRecipe.helloFreshId, !recipeStore.detailRecipe.favorited); recipeStore.fetch_recipes_detail(recipeId as string, false)">
+              <svg v-if="recipeStore.detailRecipe.favorited" class="w-8 h-8 text-red-400 button-icon"
+                   aria-hidden="true"
                    fill="currentColor" viewBox="0 0 24 24"
                    xmlns="http://www.w3.org/2000/svg">
                 <path
                     d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z"></path>
               </svg>
-              <svg v-if="!recipeStore.detailRecipe.favorited" class="w-8 h-8 mb-1 text-gray-500 dark:text-red-400"
+              <svg v-if="!recipeStore.detailRecipe.favorited"
+                   class="w-8 h-8 text-gray-500 dark:text-red-400 button-icon"
                    aria-hidden="true" fill="none"
                    stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
                    xmlns="http://www.w3.org/2000/svg">
@@ -24,11 +26,10 @@
                     stroke-linecap="round" stroke-linejoin="round"></path>
               </svg>
             </button>
-            <!-- TODO: If navigator.share not working, copy link to clipboard and notify with popup -->
-            <button @click="share()">
+            <button @click="share()" class="action-button">
               <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5"
                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
-                   class="inline-block w-8 h-8 mb-1 mr-1 dark:text-white">
+                   class="inline-block w-8 h-8 mr-1 dark:text-white button-icon">
                 <path
                     d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"
                     stroke-linecap="round" stroke-linejoin="round"></path>
@@ -273,7 +274,5 @@ watch(() => recipeStore.detailRecipe, (newDetailRecipe) => {
   }
 });
 </script>
-
-<style scoped>
-
+<style>
 </style>

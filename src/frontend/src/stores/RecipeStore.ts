@@ -58,8 +58,9 @@ export const useRecipeStore = defineStore({
                 this.navigation = new Navigation(nav)
             }
         },
-        async fetch_recipes_detail(id: string) {
-            this.detailRecipe = {} as FullRecipe
+        async fetch_recipes_detail(id: string, resetRecipe: boolean = true) {
+            if (resetRecipe)
+                this.detailRecipe = {} as FullRecipe
             const response = await authorizedFetch(baseUrl + '/FullRecipe/' + id, {
                 method: "GET",
             });

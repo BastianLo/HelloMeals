@@ -1,0 +1,7 @@
+.action-button {
+    @apply inline-flex items-center justify-center w-16 h-10 mr-2 mb-2 rounded-full bg-gray-600 hover:bg-gray-400 cursor-pointer transition duration-200 border border-gray-500 shadow-md;
+}
+
+.button-icon {
+    @apply w-6 h-6;
+}
