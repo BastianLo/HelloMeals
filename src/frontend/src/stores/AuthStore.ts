@@ -49,7 +49,17 @@ export const useAuthStore = defineStore({
                 this.logout()
             }
         },
-        logout() {
+        async logout() {
+            const response = await fetch(baseUrl + '/auth/logout/', {
+                method: "POST",
+                body: JSON.stringify({
+                    "refresh": this.refresh_token
+                }),
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            })
+            console.log(response)
             this.set_access_token(null)
             this.set_refresh_token(null)
             this.set_user(null)

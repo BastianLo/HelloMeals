@@ -29,6 +29,11 @@ def current_user(request):
         'email': user.email,
         'firstName': user.first_name,
         'lastName': user.last_name,
+        'is_superuser': user.is_superuser,
+        'is_staff': user.is_staff,
+        'is_active': user.is_active,
+        'groups': [group.name for group in user.groups.all()],
+        'user_permissions': [perm.name for perm in user.user_permissions.all()],
         'permissions': [perm.pk for perm in user.user_permissions.all()],
     })
 

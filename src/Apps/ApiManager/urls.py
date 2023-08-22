@@ -7,6 +7,7 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 from rest_framework.routers import SimpleRouter
+from rest_framework_simplejwt.views import TokenBlacklistView
 
 from .views import scraperView, recipeView, tagView, authentification_view, ingredientView, stockView
 
@@ -38,6 +39,7 @@ urlpatterns = [
     ### --- API Authentification --- ###
     path('auth/token/', authentification_view.ObtainTokenPairView.as_view(), name='token_obtain_pair'),
     path('auth/register/', authentification_view.RegisterView.as_view(), name='register_user'),
+    path('auth/logout/', TokenBlacklistView.as_view(), name='token_blacklist'),
     path('auth/me/', authentification_view.current_user, name='current_user'),
     path('auth/refresh/', authentification_view.RefreshTokenView.as_view(), name='token_obtain_pair'),
     path('auth/invites/', authentification_view.InviteListCreate.as_view()),
