@@ -28,7 +28,7 @@ let cutoff = (text: string | null, limit: number) => {
 <template>
   <Observer @intersect="visible=true"/>
   <div
-      class="increaseOnHover min-h-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 flex flex-col justify-stretch">
+      class="increaseOnHover min-h-full max-w-sm border rounded-lg shadow bg-gray-800 border-gray-700 flex flex-col justify-stretch">
     <router-link :to="recipe.helloFreshId">
       <div>
         <div class="flex flex-col relative">
@@ -66,9 +66,9 @@ let cutoff = (text: string | null, limit: number) => {
         <path
             d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
       </svg>
-      <p class="ml-2 text-sm font-bold text-gray-900 dark:text-white" v-text="recipe.averageRating"></p>
-      <span class="w-1 h-1 mx-1.5 bg-gray-500 rounded-full dark:bg-gray-400"></span>
-      <p class="text-sm font-medium text-gray-900 dark:text-white"
+      <p class="ml-2 text-sm font-bold text-white" v-text="recipe.averageRating"></p>
+      <span class="w-1 h-1 mx-1.5 rounded-full bg-gray-400"></span>
+      <p class="text-sm font-medium text-white"
          v-text="recipe.ratingCount + ' Bewertungen'">
       </p>
 
@@ -80,7 +80,7 @@ let cutoff = (text: string | null, limit: number) => {
             <path
                 d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z"></path>
           </svg>
-          <svg v-if="!recipe.favorited" class="w-8 h-8 mb-1 text-gray-500 dark:text-red-400" aria-hidden="true"
+          <svg v-if="!recipe.favorited" class="w-8 h-8 mb-1 text-red-400" aria-hidden="true"
                fill="none"
 
                stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
@@ -127,10 +127,10 @@ let cutoff = (text: string | null, limit: number) => {
     </div>
     <div class="p-5">
       <router-link :to="recipe.helloFreshId">
-        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
+        <h5 class="mb-2 text-2xl font-bold tracking-tight text-white"
             v-text="recipe.name"></h5>
       </router-link>
-      <p class="mb-3 font-normal text-gray-700 dark:text-gray-400"
+      <p class="mb-3 font-normal text-gray-400"
          v-text="cutoff(recipe.headline, 100)"></p>
     </div>
   </div>

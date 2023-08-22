@@ -17,7 +17,7 @@
             <span class="font-medium">{{ banner.title }}</span> {{ banner.message }}
           </div>
           <button type="button" @click="banners.splice(index, 1)"
-                  class="ml-2 flex-shrink-0 p-1 transition duration-300 ease-in-out rounded-full hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 dark:hover:bg-red-800 dark:focus:ring-red-500">
+                  class="ml-2 flex-shrink-0 p-1 transition duration-300 ease-in-out rounded-full focus:outline-none focus:ring-2 hover:bg-red-800 focus:ring-red-500">
             <span class="sr-only">Dismiss</span>
             <svg aria-hidden="true" class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"
                  xmlns="http://www.w3.org/2000/svg">

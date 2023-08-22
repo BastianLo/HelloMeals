@@ -130,14 +130,14 @@ updateComponentValues()
         <OnClickOutside @trigger="search()">
           <div style="width: 400px"
                class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-            <div class="w-lg shadow p-5 rounded-lg dark:bg-gray-800">
+            <div class="w-lg shadow p-5 rounded-lg bg-gray-800">
               <!-- Popup head -->
               <div class="flex items-center justify-between mt-4">
-                <p class="font-medium dark:text-white">
+                <p class="font-medium text-white">
                   Filter
                 </p>
                 <button @click="search()"
-                        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        class="text-white  hover: focus:ring-4 focus:outline-none focus: font-medium rounded-lg text-sm px-4 py-2 bg-blue-600 hover:bg-blue-700 focus:ring-blue-800">
                   Anwenden
                 </button>
                 <button @click="clearFilter()"
@@ -153,9 +153,9 @@ updateComponentValues()
                       <button type="button"
                               @click="openFilter.nutrients = !openFilter.nutrients"
                               :class="{'border-b-0':openFilter.nutrients}"
-                              class="flex items-center justify-between w-full p-5 font-medium text-left text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                              class="flex items-center justify-between w-full p-5 font-medium text-left border focus:ring-4 focus:ring-gray-800 border-gray-700 text-gray-400 hover:bg-gray-800"
                       >
-                        <span :class="{'dark:text-white': openFilter.nutrients}"> Nährwerte </span>
+                        <span :class="{'text-white': openFilter.nutrients}"> Nährwerte </span>
                         <svg :class="{'rotate-180': openFilter.nutrients}" data-accordion-icon
                              class="w-6 h-6 shrink-0" fill="currentColor"
                              viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -165,22 +165,22 @@ updateComponentValues()
                         </svg>
                       </button>
                     </h2>
-                    <div :class="{ 'hidden': !openFilter.nutrients}" class="border dark:border-gray-700 border-t-0"
+                    <div :class="{ 'hidden': !openFilter.nutrients}" class="border border-gray-700 border-t-0"
                          aria-labelledby="accordion-collapse-heading-2">
                       <div class="p-2 rounded">
                         <div v-for="slider in sliders" class="mb-4">
                           <div class="flex items-center mb-4 justify-between">
                             <p v-text="slider.title"
-                               class="mr-4 text-lg font-extrabold leading-none tracking-tight text-gray-900 dark:text-white">
+                               class="mr-4 text-lg font-extrabold leading-none tracking-tight text-white">
                             </p>
                             <div class="flex items-center">
                                                       <span
-                                                          class="mr-2 text-lg font-extrabold leading-none tracking-tight text-gray-900 dark:text-white"
+                                                          class="mr-2 text-lg font-extrabold leading-none tracking-tight text-white"
                                                           v-text="slider.value[0]"></span>
                               <span
-                                  class="mr-2 text-lg font-extrabold leading-none tracking-tight text-gray-900 dark:text-white">-</span>
+                                  class="mr-2 text-lg font-extrabold leading-none tracking-tight text-white">-</span>
                               <span
-                                  class="text-lg font-extrabold leading-none tracking-tight text-gray-900 dark:text-white"
+                                  class="text-lg font-extrabold leading-none tracking-tight text-white"
                                   v-text="slider.value[1]"></span>
                             </div>
                           </div>
@@ -202,9 +202,9 @@ updateComponentValues()
                       <button type="button"
                               @click="openFilter.source = !openFilter.source"
                               :class="{'border-b-0':openFilter.source}"
-                              class="flex items-center justify-between w-full p-5 font-medium text-left text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                              class="flex items-center justify-between w-full p-5 font-medium text-left border focus:ring-4 focus:ring-gray-800 border-gray-700 text-gray-400 hover:bg-gray-800"
                       >
-                        <span :class="{'dark:text-white': openFilter.source}"> Quelle </span>
+                        <span :class="{'text-white': openFilter.source}"> Quelle </span>
                         <svg :class="{'rotate-180': openFilter.source}" data-accordion-icon
                              class="w-6 h-6 shrink-0" fill="currentColor"
                              viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -214,32 +214,32 @@ updateComponentValues()
                         </svg>
                       </button>
                     </h2>
-                    <div :class="{ 'hidden': !openFilter.source}" class="border dark:border-gray-700 border-t-0"
+                    <div :class="{ 'hidden': !openFilter.source}" class="border border-gray-700 border-t-0"
                          aria-labelledby="accordion-collapse-heading-2">
                       <div class="p-2 rounded">
                         <input type="checkbox" value="1" v-model="sources" class="w-4 h-4 rounded focus:ring-2">
                         <label
-                            class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-white">HelloFresh</label>
+                            class="w-full ml-2 text-sm font-medium rounded text-white">HelloFresh</label>
                         <br/>
                         <input type="checkbox" value="2" v-model="sources" class="w-4 h-4 rounded focus:ring-2">
                         <label
-                            class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-white">Kitchenstories</label>
+                            class="w-full ml-2 text-sm font-medium rounded text-white">Kitchenstories</label>
                         <br/>
                         <input type="checkbox" value="3" v-model="sources" class="w-4 h-4 rounded focus:ring-2">
                         <label
-                            class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-white">Chefkoch</label>
+                            class="w-full ml-2 text-sm font-medium rounded text-white">Chefkoch</label>
                         <br/>
                         <input type="checkbox" value="4" v-model="sources" class="w-4 h-4 rounded focus:ring-2">
                         <label
-                            class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-white">Lecker</label>
+                            class="w-full ml-2 text-sm font-medium rounded text-white">Lecker</label>
                         <br/>
                         <input type="checkbox" value="5" v-model="sources" class="w-4 h-4 rounded focus:ring-2">
                         <label
-                            class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-white">EatSmarter</label>
+                            class="w-full ml-2 text-sm font-medium rounded text-white">EatSmarter</label>
                         <br/>
                         <input type="checkbox" value="6" v-model="sources" class="w-4 h-4 rounded focus:ring-2">
                         <label
-                            class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-white">Yazio</label>
+                            class="w-full ml-2 text-sm font-medium rounded text-white">Yazio</label>
                         <br/>
                       </div>
                     </div>
@@ -249,9 +249,9 @@ updateComponentValues()
                       <button type="button"
                               @click="openFilter.menuType = !openFilter.menuType"
                               :class="{'border-b-0':openFilter.menuType}"
-                              class="flex items-center justify-between w-full p-5 font-medium text-left text-gray-500 border border-gray-200 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                              class="flex items-center justify-between w-full p-5 font-medium text-left border focus:ring-4 focus:ring-gray-800 border-gray-700 text-gray-400 hover:bg-gray-800"
                       >
-                        <span :class="{'dark:text-white': openFilter.menuType}"> Menüart </span>
+                        <span :class="{'text-white': openFilter.menuType}"> Menüart </span>
                         <svg :class="{'rotate-180': openFilter.menuType}" data-accordion-icon
                              class="w-6 h-6 shrink-0" fill="currentColor"
                              viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -261,27 +261,27 @@ updateComponentValues()
                         </svg>
                       </button>
                     </h2>
-                    <div :class="{ 'hidden': !openFilter.menuType}" class="border dark:border-gray-700 border-t-0"
+                    <div :class="{ 'hidden': !openFilter.menuType}" class="border border-gray-700 border-t-0"
                          aria-labelledby="accordion-collapse-heading-2">
                       <div class="p-2 rounded">
                         <input type="radio" v-model="recipeType" value="0"/>
-                        <label class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-white">Hauptgerichte</label>
+                        <label class="w-full ml-2 text-sm font-medium rounded text-white">Hauptgerichte</label>
                         <br/>
                         <input type="radio" v-model="recipeType" value="1"/>
                         <label
-                            class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-white">Frühstück</label>
+                            class="w-full ml-2 text-sm font-medium rounded text-white">Frühstück</label>
                         <br/>
                         <input type="radio" v-model="recipeType" value="2"/>
                         <label
-                            class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-white">Dessert</label>
+                            class="w-full ml-2 text-sm font-medium rounded text-white">Dessert</label>
                         <br/>
                         <input type="radio" v-model="recipeType" value="3"/>
                         <label
-                            class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-white">Backen</label>
+                            class="w-full ml-2 text-sm font-medium rounded text-white">Backen</label>
                         <br/>
                         <input type="radio" v-model="recipeType" value="4"/>
                         <label
-                            class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-white">Getränke</label>
+                            class="w-full ml-2 text-sm font-medium rounded text-white">Getränke</label>
                       </div>
                     </div>
                   </div>
@@ -295,7 +295,7 @@ updateComponentValues()
   </div>
   <div class="mt-5 mb-5 flex flex-row justify-center ">
     <button class="p-1 mr-4" @click="show = !show">
-      <svg class="w-6 h-6 mb-1 text-gray-500 dark:text-gray-400" aria-hidden="true" fill="currentColor"
+      <svg class="w-6 h-6 mb-1 text-gray-400" aria-hidden="true" fill="currentColor"
            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path clip-rule="evenodd"
               d="M2.628 1.601C5.028 1.206 7.49 1 10 1s4.973.206 7.372.601a.75.75 0 01.628.74v2.288a2.25 2.25 0 01-.659 1.59l-4.682 4.683a2.25 2.25 0 00-.659 1.59v3.037c0 .684-.31 1.33-.844 1.757l-1.937 1.55A.75.75 0 018 18.25v-5.757a2.25 2.25 0 00-.659-1.591L2.659 6.22A2.25 2.25 0 012 4.629V2.34a.75.75 0 01.628-.74z"
@@ -303,10 +303,10 @@ updateComponentValues()
       </svg>
     </button>
     <label for="default-search"
-           class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Suche</label>
+           class="mb-2 text-sm font-medium sr-only text-white">Suche</label>
     <div class="relative" style="width: 400px">
       <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-        <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none"
+        <svg aria-hidden="true" class="w-5 h-5 text-gray-400" fill="none"
              stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -314,10 +314,10 @@ updateComponentValues()
       </div>
       <input type="search" id="default-search" @keyup.enter="search()"
              v-model="searchString"
-             class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+             class="block w-full p-4 pl-10 text-sm border rounded-lg bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
              placeholder="Rezeptname" required>
       <button type="button" @click="search()"
-              class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+              class="text-white absolute right-2.5 bottom-2.5 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-4 py-2 bg-blue-600 hover:bg-blue-700 focus:ring-blue-800">
         Suche
       </button>
     </div>
@@ -326,7 +326,7 @@ updateComponentValues()
         <div>
           <button type="button"
                   @click="showSortPopup = !showSortPopup"
-                  class="text-white ml-2 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                  class="text-white ml-2 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-4 py-2 bg-blue-600 hover:bg-blue-700 focus:ring-blue-800"
                   id="sort-menu" aria-expanded="false" aria-haspopup="true">
             Sort
             <svg class="w-4 h-4 ml-2 -mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
