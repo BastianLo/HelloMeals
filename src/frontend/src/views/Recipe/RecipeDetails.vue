@@ -238,7 +238,8 @@
                   </div>
                 </template>
                 <div class="ml-3">
-                        <span class="text-white ml-1"
+                        <span class=" ml-1"
+                              :class="{'text-white': !completed[index], 'text-gray-500': completed[index]}"
                               v-html="step.description.replace('\n', '<br>').replace('\r', '<br>')"></span>
                 </div>
               </div>
