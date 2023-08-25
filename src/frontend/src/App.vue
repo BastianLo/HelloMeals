@@ -19,7 +19,7 @@
         </button>
       </div>
     </div>
-    <nav class="border-b border-gray-600">
+    <nav class="border-b border-gray-600 mb-8">
       <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <RouterLink class="flex items-center" to="/">
           <img src="@/assets/logo_512px.png" class="h-8 mr-3" alt="Flowbite Logo"/>

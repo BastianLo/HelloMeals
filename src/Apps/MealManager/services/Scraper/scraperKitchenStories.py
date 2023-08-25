@@ -1,7 +1,6 @@
 import logging
 import os
 import threading
-import uuid
 from datetime import timedelta
 
 import requests
@@ -26,8 +25,8 @@ class KSScraper:
 
     def get_status(self):
         return {
-            "max_page": self.config.ks_max_page,
-            "page": self.config.ks_page,
+            "max": self.config.ks_max_page,
+            "index": self.config.ks_page,
             "running": self.is_running(),
             "exception": self.exception
         }

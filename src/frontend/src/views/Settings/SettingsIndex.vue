@@ -21,8 +21,8 @@ import {useAuthStore} from "@/stores/AuthStore";
         </svg>
         Profil
       </router-link>
-      <button v-if="useAuthStore().user.is_superuser"
-              class="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b focus:z-10 focus:ring-2 border-gray-600 hover:bg-gray-600 hover:text-white focus:ring-gray-500 focus:text-white">
+      <router-link :to="{ name: 'SettingsAdmin' }" v-if="useAuthStore().user.is_superuser"
+                   class="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b focus:z-10 focus:ring-2 border-gray-600 hover:bg-gray-600 hover:text-white focus:ring-gray-500 focus:text-white">
         <svg aria-hidden="true" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" stroke-width="1.5"
              viewBox="0 0 24 24"
              xmlns="http://www.w3.org/2000/svg">
@@ -31,7 +31,7 @@ import {useAuthStore} from "@/stores/AuthStore";
               stroke-linecap="round" stroke-linejoin="round"></path>
         </svg>
         Admin
-      </button>
+      </router-link>
 
       <button
           class="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium rounded-b-lg focus:z-10 focus:ring-2 border-gray-600 hover:bg-gray-600 hover:text-white focus:ring-gray-500 focus:text-white">

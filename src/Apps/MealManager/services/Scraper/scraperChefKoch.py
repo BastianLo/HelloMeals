@@ -1,7 +1,6 @@
 import logging
 import os
 import threading
-import uuid
 from datetime import timedelta
 
 import requests
@@ -29,8 +28,8 @@ class Scraper:
 
     def get_status(self):
         return {
-            "max_recipes": self.config.ck_skip,
-            "start_index": self.config.ck_index,
+            "max": self.config.ck_skip,
+            "index": self.config.ck_index,
             "running": self.is_running(),
             "exception": self.exception
         }

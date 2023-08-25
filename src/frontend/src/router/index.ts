@@ -70,6 +70,16 @@ const router = createRouter({
             name: 'SettingsProfile',
             component: () => import('../views/Settings/Profile/SettingsProfile.vue')
         },
+        {
+            path: '/Settings/Admin',
+            name: 'SettingsAdmin',
+            component: () => import('../views/Settings/Admin/SettingsAdminIndex.vue')
+        },
+        {
+            path: '/Settings/Admin/Downloader',
+            name: 'SettingsAdminDownloader',
+            component: () => import('../views/Settings/Admin/SettingsAdminDownloader.vue')
+        },
     ]
 })
 
