@@ -3,41 +3,17 @@ import authorizedFetch from "@/stores/CommonStore";
 
 const baseUrl = import.meta.env.DEV ? 'http://localhost:8000/api' : window.location.origin + "/api"
 
+interface status {
+    max: number,
+    index: number,
+    running: boolean,
+    exception: string
+}
+
 export const useDownloaderStore = defineStore({
     id: 'downloaderStore',
     state: () => ({
-        status: {
-            Chefkoch: {
-                max: 0,
-                index: 0,
-                running: false,
-                exception: null
-            },
-            KitchenStories: {
-                max: 0,
-                index: 0,
-                running: false,
-                exception: null
-            },
-            HelloFresh: {
-                max: 0,
-                index: 0,
-                running: false,
-                exception: null
-            },
-            Lecker: {
-                index: 0,
-                max: 0,
-                running: false,
-                exception: null
-            },
-            EatSmarter: {
-                max: 0,
-                index: 0,
-                running: false,
-                exception: null
-            }
-        }
+        status: {} as Record<string, status>
     }),
     getters: {},
     actions: {
