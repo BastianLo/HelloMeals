@@ -119,42 +119,42 @@
                     class="ml-2 text-xs font-medium mr-2 px-2.5 py-0.5 rounded bg-red-900 text-red-300">Schwierig</span>
             </div>
           </div>
-          <div class="mb-4 flex flex-wrap gap-1" v-if="recipeStore.detailRecipe.nutrients">
-            <span v-if="recipeStore.detailRecipe.nutrients.energyKcal"
-                  class="text-xs font-medium mr-2 px-2.5 py-0.5 rounded bg-blue-900 text-blue-300"
-                  style="white-space: nowrap;"
-                  v-text="recipeStore.detailRecipe.nutrients.energyKcal + `kcal`"></span>
-            <span v-if="recipeStore.detailRecipe.nutrients.carbs"
-                  class="text-xs font-medium mr-2 px-2.5 py-0.5 rounded bg-blue-900 text-blue-300"
-                  style="white-space: nowrap;"
-                  v-text="recipeStore.detailRecipe.nutrients.carbs + `g Kohlenhydrate`"></span>
-            <span v-if="recipeStore.detailRecipe.nutrients.protein"
-                  class="text-xs font-medium mr-2 px-2.5 py-0.5 rounded bg-blue-900 text-blue-300"
-                  style="white-space: nowrap;"
-                  v-text="recipeStore.detailRecipe.nutrients.protein + `g Protein`"></span>
-            <span v-if="recipeStore.detailRecipe.nutrients.fat"
-                  class="text-xs font-medium mr-2 px-2.5 py-0.5 rounded bg-blue-900 text-blue-300"
-                  style="white-space: nowrap;"
-                  v-text="recipeStore.detailRecipe.nutrients.fat + `g Fett`"></span>
-            <span v-if="recipeStore.detailRecipe.nutrients.fatSaturated"
-                  class=" text-xs font-medium mr-2 px-2.5 py-0.5 rounded bg-blue-900 text-blue-300"
-                  style="white-space: nowrap;"
-                  v-text="recipeStore.detailRecipe.nutrients.fatSaturated + `g Gesättigte Fettsäuren`"></span>
-            <span v-if="recipeStore.detailRecipe.nutrients.sugar"
-                  class=" text-xs font-medium mr-2 px-2.5 py-0.5 rounded bg-blue-900 text-blue-300"
-                  style="white-space: nowrap;"
-                  v-text="recipeStore.detailRecipe.nutrients.sugar + `g Zucker`"></span>
-            <span v-if="recipeStore.detailRecipe.nutrients.salt"
-                  class=" text-xs font-medium mr-2 px-2.5 py-0.5 rounded bg-blue-900 text-blue-300"
-                  style="white-space: nowrap;"
-                  v-text="recipeStore.detailRecipe.nutrients.salt + `g Salz`"></span>
+          <p class="text-sm text-white mb-4" v-text="recipeStore.detailRecipe.description"></p>
+          <div class="mb-4 grid grid-cols-3 gap-4" v-if="recipeStore.detailRecipe.nutrients">
+            <div class="bg-gray-100 p-2 rounded-lg" v-if="recipeStore.detailRecipe.nutrients.energyKcal">
+              <p class="text-sm font-semibold mb-2">Energie:</p>
+              <p class="text-md">{{ recipeStore.detailRecipe.nutrients.energyKcal }} kcal</p>
+            </div>
+            <div class="bg-gray-100 p-2 rounded-lg" v-if="recipeStore.detailRecipe.nutrients.carbs">
+              <p class="text-xs font-semibold mb-2">Kohlenhydrate:</p>
+              <p class="text-lg">{{ recipeStore.detailRecipe.nutrients.carbs }} g</p>
+            </div>
+            <div class="bg-gray-100 p-2 rounded-lg" v-if="recipeStore.detailRecipe.nutrients.protein">
+              <p class="text-sm font-semibold mb-2">Protein:</p>
+              <p class="text-lg">{{ recipeStore.detailRecipe.nutrients.protein }} g</p>
+            </div>
+            <div class="bg-gray-100 p-2 rounded-lg" v-if="recipeStore.detailRecipe.nutrients.fat">
+              <p class="text-sm font-semibold mb-2">Fett:</p>
+              <p class="text-lg">{{ recipeStore.detailRecipe.nutrients.fat }} g</p>
+            </div>
+            <div class="bg-gray-100 p-2 rounded-lg" v-if="recipeStore.detailRecipe.nutrients.fatSaturated">
+              <p class="text-sm font-semibold mb-2">Gesättigte Fettsäuren:</p>
+              <p class="text-lg">{{ recipeStore.detailRecipe.nutrients.fatSaturated }} g</p>
+            </div>
+            <div class="bg-gray-100 p-2 rounded-lg" v-if="recipeStore.detailRecipe.nutrients.sugar">
+              <p class="text-sm font-semibold mb-2">Zucker:</p>
+              <p class="text-lg">{{ recipeStore.detailRecipe.nutrients.sugar }} g</p>
+            </div>
+            <div class="bg-gray-100 p-2 rounded-lg" v-if="recipeStore.detailRecipe.nutrients.salt">
+              <p class="text-sm font-semibold mb-2">Salz:</p>
+              <p class="text-lg">{{ recipeStore.detailRecipe.nutrients.salt }} g</p>
+            </div>
           </div>
           <div class="mb-4 flex flex-wrap">
             <span v-for="utensil in recipeStore.detailRecipe.utensils"
                   class=" text-xs font-medium mr-2 mb-2 px-2.5 py-0.5 rounded bg-green-900 text-green-300"
                   v-text="utensil.utensil.name" style="white-space: nowrap;"></span>
           </div>
-          <p class="text-sm text-white mb-4" v-text="recipeStore.detailRecipe.description"></p>
           <div class="mb-4">
             <img class="w-full" v-if="recipeStore.detailRecipe.image" :src="recipeStore.detailRecipe.image"
                  alt="Recipe Image">
