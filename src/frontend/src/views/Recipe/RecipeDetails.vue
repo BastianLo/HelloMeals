@@ -120,32 +120,40 @@
             </div>
           </div>
           <p class="text-sm text-white mb-4" v-text="recipeStore.detailRecipe.description"></p>
-          <div class="mb-4 grid grid-cols-3 gap-4" v-if="recipeStore.detailRecipe.nutrients">
-            <div class="bg-gray-100 p-2 rounded-lg" v-if="recipeStore.detailRecipe.nutrients.energyKcal">
+          <div class="mb-4 grid grid-cols-3 max-sm:grid-cols-2 gap-4" v-if="recipeStore.detailRecipe.nutrients">
+            <div
+                :class="{'bg-green-200': recipeStore.detailRecipe.nutrients.energyKcal < 600, 'bg-orange-200': recipeStore.detailRecipe.nutrients.energyKcal > 600 && recipeStore.detailRecipe.nutrients.energyKcal <  800, 'bg-red-200': recipeStore.detailRecipe.nutrients.energyKcal >= 800}"
+                class="p-4 rounded-lg" v-if="recipeStore.detailRecipe.nutrients.energyKcal">
               <p class="text-sm font-semibold mb-2">Energie:</p>
-              <p class="text-md">{{ recipeStore.detailRecipe.nutrients.energyKcal }} kcal</p>
+              <p class="text-lg">{{ recipeStore.detailRecipe.nutrients.energyKcal }} kcal</p>
             </div>
-            <div class="bg-gray-100 p-2 rounded-lg" v-if="recipeStore.detailRecipe.nutrients.carbs">
-              <p class="text-xs font-semibold mb-2">Kohlenhydrate:</p>
+            <div
+                :class="{'bg-green-200': nutrientDensities.carbs < 0.07, 'bg-orange-200': nutrientDensities.carbs >= 0.07 && nutrientDensities.carbs < 0.12 , 'bg-red-200': nutrientDensities.carbs >= 0.12}"
+                class="p-4 rounded-lg" v-if="recipeStore.detailRecipe.nutrients.carbs">
+              <p class="text-sm font-semibold mb-2">Kohlenhydrate:</p>
               <p class="text-lg">{{ recipeStore.detailRecipe.nutrients.carbs }} g</p>
             </div>
-            <div class="bg-gray-100 p-2 rounded-lg" v-if="recipeStore.detailRecipe.nutrients.protein">
+            <div
+                :class="{'bg-green-200': nutrientDensities.protein > 0.07, 'bg-orange-200': nutrientDensities.protein <= 0.07 && nutrientDensities.protein > 0.04 , 'bg-red-200': nutrientDensities.protein <= 0.04}"
+                class="p-4 rounded-lg" v-if="recipeStore.detailRecipe.nutrients.protein">
               <p class="text-sm font-semibold mb-2">Protein:</p>
               <p class="text-lg">{{ recipeStore.detailRecipe.nutrients.protein }} g</p>
             </div>
-            <div class="bg-gray-100 p-2 rounded-lg" v-if="recipeStore.detailRecipe.nutrients.fat">
+            <div
+                :class="{'bg-green-200': nutrientDensities.fat < 0.07, 'bg-orange-200': nutrientDensities.fat >= 0.07 && nutrientDensities.fat < 0.12 , 'bg-red-200': nutrientDensities.fat >= 0.12}"
+                class="p-4 rounded-lg" v-if="recipeStore.detailRecipe.nutrients.fat">
               <p class="text-sm font-semibold mb-2">Fett:</p>
               <p class="text-lg">{{ recipeStore.detailRecipe.nutrients.fat }} g</p>
             </div>
-            <div class="bg-gray-100 p-2 rounded-lg" v-if="recipeStore.detailRecipe.nutrients.fatSaturated">
-              <p class="text-sm font-semibold mb-2">Gesättigte Fettsäuren:</p>
-              <p class="text-lg">{{ recipeStore.detailRecipe.nutrients.fatSaturated }} g</p>
-            </div>
-            <div class="bg-gray-100 p-2 rounded-lg" v-if="recipeStore.detailRecipe.nutrients.sugar">
+            <div
+                :class="{'bg-green-200': nutrientDensities.sugar < 0.05, 'bg-orange-200': nutrientDensities.sugar >= 0.05 && nutrientDensities.sugar < 0.1 , 'bg-red-200': nutrientDensities.sugar >= 0.1}"
+                class="p-4 rounded-lg" v-if="recipeStore.detailRecipe.nutrients.sugar">
               <p class="text-sm font-semibold mb-2">Zucker:</p>
               <p class="text-lg">{{ recipeStore.detailRecipe.nutrients.sugar }} g</p>
             </div>
-            <div class="bg-gray-100 p-2 rounded-lg" v-if="recipeStore.detailRecipe.nutrients.salt">
+            <div
+                :class="{'bg-green-200': nutrientDensities.salt < 0.002, 'bg-orange-200': nutrientDensities.salt >= 0.002 && nutrientDensities.salt < 0.004 , 'bg-red-200': nutrientDensities.salt >= 0.004}"
+                class="p-4 rounded-lg" v-if="recipeStore.detailRecipe.nutrients.salt">
               <p class="text-sm font-semibold mb-2">Salz:</p>
               <p class="text-lg">{{ recipeStore.detailRecipe.nutrients.salt }} g</p>
             </div>
@@ -246,7 +254,7 @@
 <script setup lang="ts">
 import {useRouter} from "vue-router";
 import {useRecipeStore} from "@/stores/RecipeStore";
-import {ref, watch} from "vue";
+import {computed, ref, watch} from "vue";
 import AlertBannerType, {useAlertBannerStore} from "@/stores/AlertBannerStore";
 
 let recipeStore = useRecipeStore()
@@ -274,6 +282,20 @@ watch(() => recipeStore.detailRecipe, (newDetailRecipe) => {
   if (newDetailRecipe) {
     servings.value = newDetailRecipe.servings || 0;
   }
+});
+
+const nutrientDensities = computed(() => {
+  const nutrients = recipeStore.detailRecipe.nutrients;
+  if (nutrients.energyKcal === null) {
+    nutrients.energyKcal = 0
+  }
+  return {
+    carbs: nutrients.carbs ? (nutrients.carbs / nutrients.energyKcal) : 0,
+    protein: nutrients.protein ? (nutrients.protein / nutrients.energyKcal) : 0,
+    fat: nutrients.fat ? (nutrients.fat / nutrients.energyKcal) : 0,
+    sugar: nutrients.sugar ? (nutrients.sugar / nutrients.energyKcal) : 0,
+    salt: nutrients.salt ? (nutrients.salt / nutrients.energyKcal) : 0,
+  };
 });
 </script>
 <style>
