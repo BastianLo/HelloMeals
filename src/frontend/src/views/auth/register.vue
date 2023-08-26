@@ -65,7 +65,7 @@ let register = async () => {
   if (password.value !== passwordConfirm.value) {
     errorMessage.value = "Passwörter stimmen nicht überein!"
   }
-  const response = await authStore.register(username.value, password.value, inviteId)
+  const response = await authStore.register(username.value, password.value, inviteId as string)
   if (response.ok) {
     await authStore.login(username.value, password.value)
     await router.push(authStore.returnUrl)
