@@ -14,7 +14,7 @@ load()
 <template>
   <div data-dial-init class="fixed right-6 bottom-6 group mb-24">
     <button @click="store.createInvite()"
-            class="flex items-center justify-center text-white bg-blue-700 rounded-lg w-14 h-14 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:focus:ring-blue-800">
+            class="flex items-center justify-center text-white rounded-lg w-14 h-14 bg-blue-600 hover:bg-blue-700 focus:ring-4:ring-blue-300 focus:outline-none focus:ring-blue-800">
       <svg aria-hidden="true" class="w-8 h-8" fill="none"
            stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -34,8 +34,8 @@ load()
       </thead>
       <tbody>
       <tr v-for="invite in store.invites" class="odd:bg-slate-700">
-        <td class="dark:text-white text-xl mr-2" v-text="invite.id"></td>
-        <td class="dark:text-white text-xl mr-2" v-text="invite.issuer_name"></td>
+        <td class="text-white text-xl mr-2" v-text="invite.id"></td>
+        <td class="text-white text-xl mr-2" v-text="invite.issuer_name"></td>
         <td>
           <button @click="store.deleteInvite(invite.id)"
                   class="flex items-center justify-center p-1 rounded-lg bg-red-500 hover:bg-red-600 focus:outline-none">

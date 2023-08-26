@@ -3,11 +3,11 @@
     <!-- Status block -->
     <div class="w-fit mb-6" v-for="(status, name) in store.status">
       <div class="flex justify-between mb-1">
-        <span class="text-base font-medium text-blue-700 dark:text-white">{{ name }}</span>
+        <span class="text-base font-medium text-white">{{ name }}</span>
         <template v-if="status.running">
           <div role="status">
             <svg aria-hidden="true"
-                 class="inline w-4 h-4 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-lime-300"
+                 class="inline w-4 h-4 mr-2 animate-spin text-gray-600 fill-lime-300"
                  viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                   d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
@@ -19,32 +19,32 @@
             <span class="sr-only">Loading...</span>
           </div>
         </template>
-        <span class="text-sm font-medium text-blue-700 dark:text-white"
+        <span class="text-sm font-medium text-white"
               v-text="status.index + ` von ` + status.max"></span>
       </div>
 
-      <div class="w-full bg-gray-200 rounded-full dark:bg-gray-700">
+      <div class="w-full rounded-full bg-gray-700">
         <div class="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
              :style="'width: '+ Math.round(status.index/status.max*100) +'%'"
              v-text="Math.round(status.index/status.max*100) + '%'"></div>
       </div>
       <div class="mt-2">
         <button @click="store.start(name)"
-                class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+                class="focus:outline-none text-white focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-green-600 hover:bg-green-700 focus:ring-green-800">
           Starten
         </button>
         <button @click="store.restart(name)"
-                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                class="text-white focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800">
           Neustarten
         </button>
         <button @click="store.stop(name)"
-                class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
+                class="focus:outline-none text-white focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 bg-red-600 hover:bg-red-700 focus:ring-red-900">
           Stoppen
         </button>
       </div>
       <template v-if="status.exception != null">
         <div
-            class="w-64 flex p-4 mb-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800"
+            class="w-64 flex p-4 mb-4 text-sm border rounded-lg bg-gray-800 text-red-400 border-red-800"
             role="alert">
           <svg aria-hidden="true" class="flex-shrink-0 inline w-5 h-5 mr-3" fill="currentColor"
                viewBox="0 0 20 20"
