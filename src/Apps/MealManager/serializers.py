@@ -146,6 +146,11 @@ class InviteTokenSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
         model = InviteToken
         exclude = []
 
+    issuer_name = serializers.SerializerMethodField()
+
+    def get_issuer_name(self, obj):
+        return obj.issuer.username
+
 
 ### Recipe ###
 

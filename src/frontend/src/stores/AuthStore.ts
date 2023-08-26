@@ -118,6 +118,20 @@ export const useAuthStore = defineStore({
                 this.user = "{}"
                 localStorage.removeItem("user")
             }
+        },
+        async register(username: string, password: string, inviteToken: string) {
+            return await fetch(baseUrl + '/auth/register/', {
+                method: "POST",
+                body: JSON.stringify({
+                    username: username,
+                    password: password,
+                    token: inviteToken
+                }),
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            })
+
         }
     }
 })

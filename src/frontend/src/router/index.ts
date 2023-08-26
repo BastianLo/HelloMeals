@@ -26,6 +26,11 @@ const router = createRouter({
                     path: 'login',
                     name: 'login',
                     component: () => import('../views/auth/login.vue')
+                },
+                {
+                    path: 'register/:id',
+                    name: 'register',
+                    component: () => import('../views/auth/register.vue')
                 }
             ]
         },
@@ -79,6 +84,11 @@ const router = createRouter({
             path: '/Settings/Admin/Downloader',
             name: 'SettingsAdminDownloader',
             component: () => import('../views/Settings/Admin/SettingsAdminDownloader.vue')
+        },
+        {
+            path: '/Settings/Admin/Invites',
+            name: 'SettingsAdminInvites',
+            component: () => import('../views/Settings/Admin/SettingsAdminInvites.vue')
         },
     ]
 })

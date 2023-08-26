@@ -1,6 +1,8 @@
 from Apps.MealManager.models import InviteToken
 from Apps.MealManager.serializers import InviteTokenSerializer
 from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
 from rest_framework import serializers
@@ -56,11 +58,18 @@ class RegisterView(APIView):
         username = serializer.validated_data['username']
         password = serializer.validated_data['password']
 
+        if User.objects.filter(username=username).exists():
+            return Response({"error": "Benutzername existiert bereits"}, status=status.HTTP_400_BAD_REQUEST)
+
         try:
             invite_token = InviteToken.objects.get(id=token)
+            try:
+                validate_password(password)
+            except ValidationError as e:
+                return Response({"error": e.messages}, status=status.HTTP_400_BAD_REQUEST)
             User.objects.create_user(username=username, email=None, password=password)
         except InviteToken.DoesNotExist:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Ungültiger Einladungslink"}, status=status.HTTP_400_BAD_REQUEST)
 
         invite_token.delete()
         return Response(status=status.HTTP_200_OK)

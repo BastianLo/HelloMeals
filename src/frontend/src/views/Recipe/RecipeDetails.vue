@@ -27,7 +27,7 @@
                     stroke-linecap="round" stroke-linejoin="round"></path>
               </svg>
             </button>
-            <button @click="share()" class="action-button">
+            <button @click="share(recipeStore.detailRecipe.name, current_url)" class="action-button">
               <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5"
                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
                    class="inline-block w-8 h-8 mr-1 text-white button-icon">
@@ -257,13 +257,14 @@
 import {useRouter} from "vue-router";
 import {useRecipeStore} from "@/stores/RecipeStore";
 import {computed, ref, watch} from "vue";
-import AlertBannerType, {useAlertBannerStore} from "@/stores/AlertBannerStore";
 import RefreshSwiper from "@/components/common/RefreshSwiper.vue";
+import {share} from "@/reusableMethods/share";
 
 let recipeStore = useRecipeStore()
 
 const recipeId = useRouter().currentRoute.value.params.id
 
+const current_url = window.location.href
 
 const servings = ref(0)
 
@@ -275,14 +276,7 @@ const load = () => {
   recipeStore.fetch_recipes_detail(recipeId as string)
 }
 load()
-const share = () => {
-  try {
-    navigator.share({title: recipeStore.detailRecipe.name, url: location.href})
-  } catch (e) {
-    useAlertBannerStore().showBanner(AlertBannerType.SUCCESS, "Link kopiert!", "Der Link zum Rezept wurde in die Zwischenablage kopiert.")
-    navigator.clipboard.writeText(location.href);
-  }
-}
+
 watch(() => recipeStore.detailRecipe, (newDetailRecipe) => {
   if (newDetailRecipe) {
     servings.value = newDetailRecipe.servings || 0;
