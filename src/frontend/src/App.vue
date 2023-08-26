@@ -65,7 +65,6 @@ import {ref} from "vue";
 
 const path = ref("/");
 router.afterEach((to) => {
-  console.log(to.fullPath)
   path.value = to.fullPath
 });
 

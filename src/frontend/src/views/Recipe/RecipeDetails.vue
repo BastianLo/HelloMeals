@@ -250,6 +250,7 @@
     </div>
   </div>
 
+  <RefreshSwiper @refresh="load()"/>
 </template>
 
 <script setup lang="ts">
@@ -257,12 +258,12 @@ import {useRouter} from "vue-router";
 import {useRecipeStore} from "@/stores/RecipeStore";
 import {computed, ref, watch} from "vue";
 import AlertBannerType, {useAlertBannerStore} from "@/stores/AlertBannerStore";
+import RefreshSwiper from "@/components/common/RefreshSwiper.vue";
 
 let recipeStore = useRecipeStore()
 
 const recipeId = useRouter().currentRoute.value.params.id
 
-recipeStore.fetch_recipes_detail(recipeId as string)
 
 const servings = ref(0)
 
@@ -270,7 +271,10 @@ const showAlert = ref(false)
 const completed = ref([] as boolean[])
 
 window.scrollTo({top: 0});
-
+const load = () => {
+  recipeStore.fetch_recipes_detail(recipeId as string)
+}
+load()
 const share = () => {
   try {
     navigator.share({title: recipeStore.detailRecipe.name, url: location.href})

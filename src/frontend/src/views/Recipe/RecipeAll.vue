@@ -10,7 +10,7 @@
     <navigation/>
 
   </div>
-
+  <RefreshSwiper @refresh="load()"/>
 </template>
 
 <script setup lang="ts">
@@ -20,12 +20,18 @@ import Navigation from "@/components/common/Navigation.vue";
 import RecipeFilterSearch from "@/components/Recipe/RecipeFilterSearch.vue";
 import {useRouter} from "vue-router";
 import {useRecipeFilterStore} from "@/stores/RecipeFilterStore";
+import RefreshSwiper from "@/components/common/RefreshSwiper.vue";
 
 
 const isFavoritePage = useRouter().currentRoute.value.name === "RecipeFavorites"
 let recipeStore = useRecipeStore()
 useRecipeFilterStore().favorited = isFavoritePage
-recipeStore.fetch_recipes()
+const load = () => {
+  recipeStore.fetch_recipes()
+}
+
+load()
+
 </script>
 
 <style scoped>

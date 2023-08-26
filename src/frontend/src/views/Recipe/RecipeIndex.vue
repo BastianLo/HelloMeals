@@ -1,4 +1,5 @@
 <template>
+  <RefreshSwiper @refresh="load()"/>
   <div class="flex flex-col items-center mt-12">
     <h2 class="text-lg font-semibold mb-6 text-gray-200">Explore Our Recipes</h2>
     <div class="space-y-4">
@@ -35,10 +36,14 @@
 <script setup lang="ts">
 import {storeToRefs} from "pinia";
 import {useRecipeStore} from "@/stores/RecipeStore";
+import RefreshSwiper from "@/components/common/RefreshSwiper.vue";
 
 let {base_information} = storeToRefs(useRecipeStore());
 
-useRecipeStore().fetch_base_information();
+const load = () => {
+  useRecipeStore().fetch_base_information();
+}
+load()
 </script>
 
 <style>
