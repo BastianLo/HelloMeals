@@ -1,10 +1,10 @@
 import AlertBannerType, {useAlertBannerStore} from "@/stores/AlertBannerStore";
 
-export const share = (title: string, url: string) => {
+export const share = (title: string, url: string, bannerTitle: string, bannerMessage: string) => {
     try {
-        navigator.share({title: title, url: url})
+        navigator.share({title: title, url: url});
     } catch (e) {
-        useAlertBannerStore().showBanner(AlertBannerType.SUCCESS, "Link kopiert!", "Der Link zum Rezept wurde in die Zwischenablage kopiert.")
+        useAlertBannerStore().showBanner(AlertBannerType.SUCCESS, bannerTitle, bannerMessage)
         navigator.clipboard.writeText(url);
     }
 }

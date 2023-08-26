@@ -49,8 +49,9 @@ load()
           </button>
         </td>
         <td>
-          <button @click="share('Invite', base_url + '/auth/register/' + invite.id)"
-                  class="flex items-center justify-center p-1 rounded-lg bg-blue-500 hover:bg-blue-600 focus:outline-none">
+          <button
+              @click="share('Invite', base_url + '/auth/register/' + invite.id, 'Link kopiert', 'Der Einladungslink wurde in die Zwischenablage kopiert!')"
+              class="flex items-center justify-center p-1 rounded-lg bg-blue-500 hover:bg-blue-600 focus:outline-none">
             <svg class="w-6 h-6 text-white" aria-hidden="true" fill="none" stroke="currentColor"
                  stroke-width="1.5"
                  viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

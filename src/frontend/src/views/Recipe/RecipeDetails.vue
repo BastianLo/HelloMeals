@@ -27,7 +27,9 @@
                     stroke-linecap="round" stroke-linejoin="round"></path>
               </svg>
             </button>
-            <button @click="share(recipeStore.detailRecipe.name, current_url)" class="action-button">
+            <button
+                @click="share(recipeStore.detailRecipe.name, current_url, 'Link kopiert!', 'Der Link zum Rezept wurde in die Zwischenablage kopiert.')"
+                class="action-button">
               <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5"
                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
                    class="inline-block w-8 h-8 mr-1 text-white button-icon">
