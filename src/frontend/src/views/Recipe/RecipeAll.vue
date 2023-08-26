@@ -1,4 +1,5 @@
 <template>
+  <RefreshSwiper @refresh="load()"/>
   <div style="position: absolute; left:20px;right:20px;">
     <RecipeFilterSearch/>
     <navigation class="mt-10"/>
@@ -10,7 +11,6 @@
     <navigation/>
 
   </div>
-  <RefreshSwiper @refresh="load()"/>
 </template>
 
 <script setup lang="ts">
