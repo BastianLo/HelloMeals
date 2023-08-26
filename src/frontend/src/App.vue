@@ -34,7 +34,7 @@
         <div class="grid h-16 max-w-lg mx-auto font-medium" :class="'grid-cols-4'">
           <RouterLink v-for="item in menuItems" :to="{name:item.href}"
                       :class="{'bg-gray-800' : path.includes(item.path)}"
-                      class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-600 group border-x border-gray-600">
+                      class="inline-flex flex-col items-center justify-center px-5 md:hover:bg-gray-600 group border-x border-gray-600">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" :fill="item.fill ? 'currentcolor' : 'none'"
                  :stroke="item.fill ? 'none' : 'currentColor'"
                  stroke-width="2"
@@ -43,8 +43,8 @@
                   :d="item.svg"></path>
             </svg>
             <span v-text="item.name"
-                  :class="{'text-blue-500' : path.includes(item.path)}"
-                  class="text-sm text-gray-400"></span>
+                  :class="{'text-blue-500' : path.includes(item.path), 'text-gray-400' : !path.includes(item.path)}"
+                  class="text-sm"></span>
           </RouterLink>
         </div>
 
