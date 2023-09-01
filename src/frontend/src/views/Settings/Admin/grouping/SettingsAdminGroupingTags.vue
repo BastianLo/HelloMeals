@@ -63,27 +63,27 @@ const deleteTags = async () => {
 
 <template>
   <div class="flex justify-center mb-24">
-    <div class="space-y-4 text-gray-500 list-decimal list-inside dark:text-gray-400">
+    <div class="space-y-4 list-decimal list-inside text-gray-400">
       <div class="flex flex-row justify-center">
         <button class="p-1 mr-4" @click="selected = []">
-          <svg class="w-6 h-6 mb-1 text-gray-500 dark:text-gray-400" aria-hidden="true" fill="currentColor"
+          <svg class="w-6 h-6 mb-1 text-gray-400" aria-hidden="true" fill="currentColor"
                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" fill-rule="evenodd" clip-rule="evenodd"
                   stroke-width="2"></path>
           </svg>
         </button>
         <label for="default-search"
-               class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+               class="mb-2 text-sm font-medium sr-only text-white">Search</label>
         <div class="relative">
           <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-            <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none"
+            <svg aria-hidden="true" class="w-5 h-5 text-gray-400" fill="none"
                  stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
             </svg>
           </div>
           <input type="search" v-model="tagSearchString"
-                 class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                 class="block w-full p-4 pl-10 text-sm border rounded-lg bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
                  placeholder="Tag Name" required>
         </div>
       </div>
@@ -94,9 +94,9 @@ const deleteTags = async () => {
             <div v-if="tag.name.toLowerCase().includes(tagSearchString.toLowerCase())">
               <input id="default-checkbox" type="checkbox" :value="tag"
                      v-model="selected"
-                     class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                     class="w-4 h-4 text-blue-600 rounded focus:ring-blue-600 ring-offset-gray-800 focus:ring-2 bg-gray-700 border-gray-600">
               <label for="default-checkbox"
-                     class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                     class="ml-2 text-sm font-medium text-gray-300"
                      v-text="tag.name"></label>
             </div>
           </div>
@@ -110,7 +110,7 @@ const deleteTags = async () => {
       <div :class="{ 'hidden': !show }" id="speed-dial-menu-text-inside-button-square"
            class="flex flex-col items-center mb-4 space-y-2">
         <button @click="dialogs.confirmDelete=true"
-                class="w-[56px] h-[56px] text-gray-500 bg-white rounded-lg border border-gray-200 hover:text-gray-900 dark:border-gray-600 shadow-sm dark:hover:text-white dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 focus:ring-4 focus:ring-gray-300 focus:outline-none dark:focus:ring-gray-400">
+                class="w-[56px] h-[56px] bg-white rounded-lg border border-gray-600 shadow-sm hover:text-white text-gray-400 hover:bg-gray-600 focus:ring-4 focus:outline-none focus:ring-gray-400">
           <svg class="w-6 h-6 mx-auto mt-px" aria-hidden="true" fill="none" stroke="currentColor"
                stroke-width="1.5" viewBox="0 0 24 24"
                xmlns="http://www.w3.org/2000/svg">
@@ -122,7 +122,7 @@ const deleteTags = async () => {
         </button>
 
         <button @click="dialogs.confirmMove=true"
-                class="w-[56px] h-[56px] text-gray-500 bg-white rounded-lg border border-gray-200 hover:text-gray-900 dark:border-gray-600 shadow-sm dark:hover:text-white dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 focus:ring-4 focus:ring-gray-300 focus:outline-none dark:focus:ring-gray-400">
+                class="w-[56px] h-[56px] rounded-lg border border-gray-600 shadow-sm hover:text-white text-gray-400 bg-gray-700 hover:bg-gray-600 focus:ring-4 focus:outline-none focus:ring-gray-400">
           <svg class="w-6 h-6 mx-auto mt-px" aria-hidden="true" fill="none" stroke="currentColor"
                stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path
@@ -133,7 +133,7 @@ const deleteTags = async () => {
         </button>
 
         <button @click="dialogs.confirmMerge=true"
-                class="w-[56px] h-[56px] text-gray-500 bg-white rounded-lg border border-gray-200 hover:text-gray-900 dark:border-gray-600 shadow-sm dark:hover:text-white dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 focus:ring-4 focus:ring-gray-300 focus:outline-none dark:focus:ring-gray-400">
+                class="w-[56px] h-[56px] rounded-lg border border-gray-600 shadow-sm hover:text-white text-gray-400 bg-gray-700 hover:bg-gray-600 focus:ring-4 focus:outline-none focus:ring-gray-400">
           <svg class="w-6 h-6 mx-auto mt-px" aria-hidden="true" fill="none" stroke="currentColor"
                stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path
@@ -145,7 +145,7 @@ const deleteTags = async () => {
 
       </div>
       <button @click="show = !show"
-              class="flex items-center justify-center text-white bg-blue-700 rounded-lg w-14 h-14 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:focus:ring-blue-800">
+              class="flex items-center justify-center text-white rounded-lg w-14 h-14 bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-800">
         <svg aria-hidden="true" class="w-8 h-8 transition-transform group-hover:rotate-45" fill="none"
              stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -158,9 +158,9 @@ const deleteTags = async () => {
     <div id="popup-modal" :class="{ 'hidden': !dialogs.confirmDelete }" tabindex="-1"
          class="bg-gray-500 bg-opacity-75 flex justify-center fixed top-0 left-0 right-0 z-50 p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
       <div class="relative w-full max-w-md max-h-full">
-        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+        <div class="relative rounded-lg shadow bg-gray-700">
           <button type="button"
-                  class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white"
+                  class="absolute top-3 right-2.5 text-gray-400 bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center hover:bg-gray-800 hover:text-white"
                   data-modal-hide="popup-modal">
             <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
                  xmlns="http://www.w3.org/2000/svg">
@@ -171,19 +171,19 @@ const deleteTags = async () => {
             <span class="sr-only">Close modal</span>
           </button>
           <div class="p-6 text-center">
-            <svg aria-hidden="true" class="mx-auto mb-4 text-gray-400 w-14 h-14 dark:text-gray-200" fill="none"
+            <svg aria-hidden="true" class="mx-auto mb-4 w-14 h-14 text-gray-200" fill="none"
                  stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
-            <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Sollen die ausgewählten Tags wirklich
+            <h3 class="mb-5 text-lg font-normal text-gray-400">Sollen die ausgewählten Tags wirklich
               dauerhaft gelöscht werden?</h3>
             <button @click="deleteTags(); dialogs.confirmDelete = false"
-                    class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2">
+                    class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2">
               Bestätigen
             </button>
             <button @click="dialogs.confirmDelete = false; selected = []"
-                    class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
+                    class="focus:ring-4 focus:outline-none rounded-lg border text-sm font-medium px-5 py-2.5 focus:z-10 bg-gray-700 text-gray-300 border-gray-500 hover:text-white hover:bg-gray-600 focus:ring-gray-600">
               Abbrechen
             </button>
           </div>
@@ -195,14 +195,14 @@ const deleteTags = async () => {
          class=" bg-gray-500 bg-opacity-75 flex justify-center fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
       <div class="relative w-full max-w-lg max-h-full">
         <!-- Modal content -->
-        <div class="mb-24 relative bg-white rounded-lg shadow dark:bg-gray-700">
+        <div class="mb-24 relative rounded-lg shadow bg-gray-700">
           <!-- Modal header -->
-          <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-gray-600">
-            <h3 class="text-xl font-medium text-gray-900 dark:text-white">
+          <div class="flex items-center justify-between p-5 border-b rounded-t border-gray-600">
+            <h3 class="text-xl font-medium text-white">
               Mergen in
             </h3>
             <button @click="selected = []; dialogs.confirmMerge = false"
-                    class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                    class="text-gray-400 bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center hover:bg-gray-600 hover:text-white"
                     data-modal-hide="medium-modal">
               <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
                    xmlns="http://www.w3.org/2000/svg">
@@ -215,17 +215,17 @@ const deleteTags = async () => {
           </div>
           <!-- Modal body -->
           <label for="default-search"
-                 class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+                 class="mb-2 text-sm font-medium sr-only text-white">Search</label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none"
+              <svg aria-hidden="true" class="w-5 h-5 text-gray-400" fill="none"
                    stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
               </svg>
             </div>
             <input type="search" v-model="mergeSearchString"
-                   class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                   class="block w-full p-4 pl-10 text-sm border rounded-lg bg-gray-50 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
                    placeholder="Tag Name" required>
           </div>
           <div class="p-6">
@@ -237,7 +237,7 @@ const deleteTags = async () => {
                   <div>
                     <input v-model="mergeInto" type="radio" :value="tag.helloFreshId.toString()"
                            :id="tag.helloFreshId">
-                    <label class="text-gray-900 dark:text-white" :for="tag.name"
+                    <label class="text-white" :for="tag.name"
                            v-text="tag.name"></label>
                   </div>
                 </div>
@@ -245,13 +245,13 @@ const deleteTags = async () => {
             </div>
           </div>
           <!-- Modal footer -->
-          <div class="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
+          <div class="flex items-center p-6 space-x-2 border-t rounded-b border-gray-600">
             <button @click="mergeTags(); dialogs.confirmMerge = false"
-                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                    class="text-white focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-blue-600 hover:bg-blue-700 focus:ring-blue-800">
               Bestätigen
             </button>
             <button @click="selected = []; dialogs.confirmMerge = false"
-                    class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
+                    class="focus:ring-4 focus:outline-none rounded-lg border text-sm font-medium px-5 py-2.5 focus:z-10 bg-gray-700 text-gray-300 border-gray-500 hover:text-white hover:bg-gray-600 focus:ring-gray-600">
               Abbrechen
             </button>
           </div>
@@ -263,14 +263,14 @@ const deleteTags = async () => {
          class=" bg-gray-500 bg-opacity-75 flex justify-center fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
       <div class="relative w-full max-w-lg max-h-full">
         <!-- Modal content -->
-        <div class="mb-24 relative bg-white rounded-lg shadow dark:bg-gray-700">
+        <div class="mb-24 relative rounded-lg shadow bg-gray-700">
           <!-- Modal header -->
-          <div class="flex items-center justify-between p-5 border-b rounded-t dark:border-gray-600">
-            <h3 class="text-xl font-medium text-gray-900 dark:text-white">
+          <div class="flex items-center justify-between p-5 border-b rounded-t border-gray-600">
+            <h3 class="text-xl font-medium text-white">
               Gruppieren in
             </h3>
             <button @click="selected = []; dialogs.confirmMove = false"
-                    class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                    class="text-gray-400 bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center hover:bg-gray-600 hover:text-white"
                     data-modal-hide="medium-modal">
               <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
                    xmlns="http://www.w3.org/2000/svg">
@@ -283,17 +283,17 @@ const deleteTags = async () => {
           </div>
           <!-- Modal body -->
           <label for="default-search"
-                 class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+                 class="mb-2 text-sm font-medium sr-only text-white">Search</label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none"
+              <svg aria-hidden="true" class="w-5 h-5 text-gray-400" fill="none"
                    stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
               </svg>
             </div>
             <input type="search" v-model="groupSearchString"
-                   class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                   class="block w-full p-4 pl-10 text-sm border rounded-lg focus bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
                    placeholder="Tag Group Name" required>
           </div>
           <div class="p-6">
@@ -303,19 +303,19 @@ const deleteTags = async () => {
                 <div>
                   <input v-model="groupInto" type="radio" :value="tagGroup"
                          :id="tagGroup">
-                  <label class="text-gray-900 dark:text-white" :for="tagGroup" v-text="tagGroup"></label>
+                  <label class="text-white" :for="tagGroup" v-text="tagGroup"></label>
                 </div>
               </div>
             </div>
           </div>
           <!-- Modal footer -->
-          <div class="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
+          <div class="flex items-center p-6 space-x-2 border-t rounded-b border-gray-600">
             <button @click="groupTags(); dialogs.confirmMove = false"
-                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                    class="text-white focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-blue-600 hover:bg-blue-700 focus:ring-blue-800">
               Bestätigen
             </button>
             <button @click="selected = []; dialogs.confirmMove = false"
-                    class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
+                    class="focus:ring-4 focus:outline-none rounded-lg border text-sm font-medium px-5 py-2.5 focus:z-10 bg-gray-700 text-gray-300 border-gray-500 hover:text-white hover:bg-gray-600 focus:ring-gray-600">
               Abbrechen
             </button>
           </div>
