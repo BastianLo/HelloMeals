@@ -3,11 +3,12 @@ from threading import Thread
 import django_filters
 from Apps.MealManager.models import Ingredient, RecipeIngredient, Stock, Recipe, RecipeStockIngredientCount
 from Apps.MealManager.serializers import IngredientSerializer
-from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import Count
 from django_filters import rest_framework as filters
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
-from rest_framework.decorators import permission_classes, api_view
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
+from rest_framework.decorators import permission_classes, api_view, authentication_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from util.pagination import RqlPagination
@@ -125,8 +126,9 @@ def add_ingredient_to_shopping_list(request, ingredient_id):
     return Response(response)
 
 
-@staff_member_required
+@authentication_classes([SessionAuthentication, BasicAuthentication, TokenAuthentication])
 @api_view(['POST'])
+@swagger_auto_schema()
 @permission_classes([IsAuthenticated, IsAdminUser])
 def assign_ingredient_parent(request, helloFreshId, parentId=None):
     try:

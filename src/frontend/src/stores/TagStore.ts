@@ -11,6 +11,10 @@ interface tag {
     tagGroup: string
 }
 
+interface tagGroup {
+    name: string
+}
+
 export const useTagStore = defineStore({
     id: 'TagStore',
     state: () => ({
@@ -34,7 +38,7 @@ export const useTagStore = defineStore({
             });
             const jsonResponse = await response!.json();
             if (response!.ok) {
-                this.tagGroups = jsonResponse.results.map(tg => tg.name)
+                this.tagGroups = (jsonResponse.results as tagGroup[]).map(tg => tg.name)
             }
         },
         async deleteTags(tags: tag[]) {
