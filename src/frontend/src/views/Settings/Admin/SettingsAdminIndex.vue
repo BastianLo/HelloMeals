@@ -19,8 +19,8 @@
         </svg>
         Downloader
       </router-link>
-      <button
-          class="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b rounded-b-lg focus:z-10 focus:ring-2 border-gray-600 hover:bg-gray-600 hover:text-white focus:ring-gray-500 focus:text-white">
+      <router-link :to="{ name: 'SettingsAdminGrouping' }"
+                   class="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b rounded-b-lg focus:z-10 focus:ring-2 border-gray-600 hover:bg-gray-600 hover:text-white focus:ring-gray-500 focus:text-white">
         <svg aria-hidden="true" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" stroke-width="1.5"
              viewBox="0 0 24 24"
              xmlns="http://www.w3.org/2000/svg">
@@ -29,7 +29,7 @@
               stroke-linecap="round" stroke-linejoin="round"></path>
         </svg>
         Gruppierungen
-      </button>
+      </router-link>
       <router-link :to="{ name: 'SettingsAdminInvites' }"
                    class="relative inline-flex items-center w-full px-4 py-2 text-sm font-medium border-b rounded-b-lg focus:z-10 focus:ring-2 border-gray-600 hover:bg-gray-600 hover:text-white focus:ring-gray-500 focus:text-white">
         <svg aria-hidden="true" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" stroke-width="1.5"

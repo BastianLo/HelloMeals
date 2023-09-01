@@ -90,6 +90,21 @@ const router = createRouter({
             name: 'SettingsAdminInvites',
             component: () => import('../views/Settings/Admin/SettingsAdminInvites.vue')
         },
+        {
+            path: '/Settings/Admin/Grouping',
+            name: 'SettingsAdminGrouping',
+            component: () => import('../views/Settings/Admin/grouping/SettingsAdminGroupingIndex.vue')
+        },
+        {
+            path: '/Settings/Admin/Grouping/Tags',
+            name: 'SettingsAdminGroupingTags',
+            component: () => import('../views/Settings/Admin/grouping/SettingsAdminGroupingTags.vue')
+        },
+        {
+            path: '/Settings/Admin/Grouping/Ingredients',
+            name: 'SettingsAdminGroupingIngredients',
+            component: () => import('../views/Settings/Admin/grouping/SettingsAdminGroupingIngredients.vue')
+        },
     ]
 })
 
