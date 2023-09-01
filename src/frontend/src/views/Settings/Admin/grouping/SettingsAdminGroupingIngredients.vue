@@ -202,6 +202,7 @@ load()
           <div>
             <li class="px-2 hover:bg-secondary-100 text-white flex items-center">
               <input id="default-checkbox" type="checkbox" :value="ingredient.helloFreshId"
+                     v-if="ingredient.children.length === 0"
                      v-model="sourceIngredients"
                      class="mr-2 w-4 h-4 text-blue-600 rounded focus:ring-blue-600 ring-offset-gray-800 focus:ring-2 bg-gray-700 border-gray-600">
               <div v-if="ingredient.children.length > 0">
