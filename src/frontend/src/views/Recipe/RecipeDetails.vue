@@ -1,4 +1,5 @@
 <template>
+  <p>{{ test }}</p>
   <RefreshSwiper @refresh="load()"/>
   <div class="bg-gray-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -175,13 +176,9 @@
           <div>
             <h2 class="text-2xl font-semibold text-white mb-4">Zutaten</h2>
             <div class="mt-1">
-              <div class="flex items-center mb-4">
-                <label for="servings"
-                       class="text-white mr-2">Portionen:</label>
-                <input type="number" id="servings" min="1" step="1"
-                       class="w-16 py-1 px-2 border border-gray-300 rounded text-white bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                       v-model="servings">
-              </div>
+              <label for="servings"
+                     class="text-white mr-2">Portionen:</label>
+              <NumberInput v-model="servings"></NumberInput>
             </div>
             <div v-for="group in recipeStore.detailRecipe.ingredient_groups">
               <div v-if="group.ingredients.length > 0">
@@ -261,6 +258,7 @@ import {useRecipeStore} from "@/stores/RecipeStore";
 import {computed, ref, watch} from "vue";
 import RefreshSwiper from "@/components/common/RefreshSwiper.vue";
 import {share} from "@/reusableMethods/share";
+import NumberInput from "@/components/common/NumberInput.vue";
 
 let recipeStore = useRecipeStore()
 
@@ -269,6 +267,8 @@ const recipeId = useRouter().currentRoute.value.params.id
 const current_url = window.location.href
 
 const servings = ref(0)
+
+const test = ref(0)
 
 const showAlert = ref(false)
 const completed = ref([] as boolean[])
