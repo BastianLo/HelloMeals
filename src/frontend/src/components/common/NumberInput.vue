@@ -13,7 +13,7 @@
         class="border p-2 text-center outline-none bg-gray-800 text-white w-16 [&::-webkit-inner-spin-button]:appearance-none"
         type="text"
         :value="modelValue"
-        @input="$emit('update:modelValue', $event.target.value)"
+        @input="$emit('update:modelValue', ($event.target as any).value)"
     />
 
     <div
