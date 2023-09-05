@@ -40,6 +40,9 @@ const increase = () => {
 };
 
 const decrease = () => {
+  if (parseInt(props.modelValue) <= 1) {
+    return
+  }
   emit('update:modelValue', parseInt(props.modelValue) - 1);
 };
 
