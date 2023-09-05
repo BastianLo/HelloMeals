@@ -1,22 +1,24 @@
 <template>
   <div class="inline-flex">
-    <div class="select-none border py-2 px-4 cursor-pointer bg-gray-100 hover:bg-gray-200 rounded-l"
+    <div class="select-none border py-2 px-4 cursor-pointer bg-gray-700 hover:bg-gray-600 rounded-l text-white"
          @click="decrease()">
       -
     </div>
 
-    <input class="border p-2 text-center outline-none [&::-webkit-inner-spin-button]:appearance-none" type="text"
-           :value="modelValue"
-           @input="$emit('update:modelValue', $event.target.value)"
+    <input
+        class="border p-2 text-center outline-none bg-gray-800 text-white w-16 [&::-webkit-inner-spin-button]:appearance-none"
+        type="text"
+        :value="modelValue"
+        @input="$emit('update:modelValue', $event.target.value)"
     />
 
-    <div class="select-none border py-2 px-4 cursor-pointer bg-gray-100 hover:bg-gray-200 rounded-r"
+    <div class="select-none border py-2 px-4 cursor-pointer bg-gray-700 hover:bg-gray-600 rounded-r text-white"
          @click="increase()">
       +
     </div>
   </div>
-</template>
 
+</template>
 <script setup lang="ts">
 
 const props = defineProps(['modelValue'])
