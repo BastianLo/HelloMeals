@@ -28,7 +28,6 @@
 </template>
 
 <script setup lang="ts">
-import {defineEmits, defineProps} from 'vue';
 
 const props = defineProps(['modelValue']);
 const emit = defineEmits(['update:modelValue']);
