@@ -1,7 +1,11 @@
 <template>
   <div class="inline-flex">
-    <div class="select-none border py-2 px-4 cursor-pointer bg-gray-700 hover:bg-gray-600 rounded-l text-white"
-         @click="decrease()">
+    <div
+        class="select-none border py-2 px-4 cursor-pointer bg-gray-700 hover:bg-gray-600 rounded-l text-white"
+        @mousedown="startDecrease"
+        @mouseup="stopChange"
+        @mouseleave="stopChange"
+    >
       -
     </div>
 
@@ -12,22 +16,47 @@
         @input="$emit('update:modelValue', $event.target.value)"
     />
 
-    <div class="select-none border py-2 px-4 cursor-pointer bg-gray-700 hover:bg-gray-600 rounded-r text-white"
-         @click="increase()">
+    <div
+        class="select-none border py-2 px-4 cursor-pointer bg-gray-700 hover:bg-gray-600 rounded-r text-white"
+        @mousedown="startIncrease"
+        @mouseup="stopChange"
+        @mouseleave="stopChange"
+    >
       +
     </div>
   </div>
-
 </template>
-<script setup lang="ts">
 
-const props = defineProps(['modelValue'])
-const emit = defineEmits(['update:modelValue'])
+<script setup lang="ts">
+import {defineEmits, defineProps} from 'vue';
+
+const props = defineProps(['modelValue']);
+const emit = defineEmits(['update:modelValue']);
+
+let intervalId: number | null = null;
 
 const increase = () => {
-  emit('update:modelValue', parseInt(props.modelValue) + 1)
-}
+  emit('update:modelValue', parseInt(props.modelValue) + 1);
+};
+
 const decrease = () => {
-  emit('update:modelValue', parseInt(props.modelValue) - 1)
-}
+  emit('update:modelValue', parseInt(props.modelValue) - 1);
+};
+
+const startIncrease = () => {
+  increase();
+  intervalId = setInterval(increase, 200);
+};
+
+const startDecrease = () => {
+  decrease();
+  intervalId = setInterval(decrease, 200);
+};
+
+const stopChange = () => {
+  if (intervalId !== null) {
+    clearInterval(intervalId);
+    intervalId = null;
+  }
+};
 </script>
