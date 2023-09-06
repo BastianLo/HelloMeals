@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import TheWelcome from '../components/TheWelcome.vue'
 </script>
 
 <template>
   <main>
-    <TheWelcome/>
-    <p>Hallo</p>
+    <p class="text-white text-2xl">Homepage</p>
+    <p class="text-white text-lg">Diese Seite wurde noch nicht vollständig umgesetzt</p>
   </main>
 </template>

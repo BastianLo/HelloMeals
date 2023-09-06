@@ -1,7 +1,7 @@
 <template>
   <RefreshSwiper @refresh="load()"/>
   <div class="flex flex-col items-center mt-12">
-    <h2 class="text-lg font-semibold mb-6 text-gray-200">Explore Our Recipes</h2>
+    <h2 class="text-lg font-semibold mb-6 text-gray-200">Rezepte-Datenbank</h2>
     <div class="space-y-4">
       <!-- Total Recipes Link -->
       <router-link
@@ -28,7 +28,7 @@
       </router-link>
     </div>
     <p class="text-gray-400 text-sm mt-6 text-center max-w-md">
-      Looking for some delicious recipes to try? Browse our collection of recipes to find your next favorite dish!
+      Durchsuche die Rezepte-Datenbank nach den gewünschten Rezepten. Alternativ erstelle deine eigenen Rezepte!
     </p>
   </div>
 </template>
