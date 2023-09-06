@@ -2,6 +2,7 @@
 import {useTagStore} from "@/stores/TagStore";
 import {ref, watch} from "vue";
 import type {Ref} from "@vue/runtime-core";
+import RefreshSwiper from "@/components/common/RefreshSwiper.vue";
 
 const store = useTagStore()
 
@@ -62,6 +63,7 @@ const deleteTags = async () => {
 </script>
 
 <template>
+  <RefreshSwiper @refresh="load()"/>
   <div class="flex justify-center mb-24">
     <div class="space-y-4 list-decimal list-inside text-gray-400">
       <div class="flex flex-row justify-center">

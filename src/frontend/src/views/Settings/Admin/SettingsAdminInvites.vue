@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {useInviteStore} from "@/stores/InviteStore";
 import {share} from "@/reusableMethods/share";
+import RefreshSwiper from "@/components/common/RefreshSwiper.vue";
 
 const store = useInviteStore()
 
@@ -12,6 +13,7 @@ load()
 </script>
 
 <template>
+  <RefreshSwiper @refresh="load()"/>
   <div data-dial-init class="fixed right-6 bottom-6 group mb-24">
     <button @click="store.createInvite()"
             class="flex items-center justify-center text-white rounded-lg w-14 h-14 bg-blue-600 hover:bg-blue-700 focus:ring-4:ring-blue-300 focus:outline-none focus:ring-blue-800">

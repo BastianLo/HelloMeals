@@ -1,4 +1,5 @@
 <template>
+  <RefreshSwiper @refresh="load()"/>
   <div class="flex flex-col items-center justify-center mb-24">
     <!-- Status block -->
     <div class="w-fit mb-6" v-for="(status, name) in store.status">
@@ -67,10 +68,16 @@
 <script setup lang="ts">
 import {useDownloaderStore} from "@/stores/DownloaderStore";
 import {onBeforeUnmount} from "@vue/runtime-core";
+import RefreshSwiper from "@/components/common/RefreshSwiper.vue";
 
 const store = useDownloaderStore()
 
-store.fetchStatus()
+const load = () => {
+  store.fetchStatus()
+}
+
+load()
+
 
 const interval = setInterval(() => {
   store.fetchStatus()

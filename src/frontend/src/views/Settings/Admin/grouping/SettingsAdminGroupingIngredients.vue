@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {useIngredientStore} from "@/stores/IngredientStore";
 import {ref} from "vue";
+import RefreshSwiper from "@/components/common/RefreshSwiper.vue";
 
 const store = useIngredientStore()
 
@@ -28,6 +29,7 @@ load()
 </script>
 
 <template>
+  <RefreshSwiper @refresh="load()"/>
   <div>
     <div @mouseover="show = true" @mouseleave="show = false" data-dial-init
          class="fixed right-6 bottom-6 group mb-16">
