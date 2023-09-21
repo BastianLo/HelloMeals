@@ -1,12 +1,8 @@
-name: Docker Image CI
+name: Docker build and deploy image
 
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
-      - develop
-  pull_request:
     branches:
       - main
       - develop
