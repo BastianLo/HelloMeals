@@ -3,10 +3,13 @@ name: Docker Image CI
 on:
   workflow_dispatch:
   push:
-    branches: [ "**" ]
+    branches:
+      - main
+      - develop
   pull_request:
-    branches: [ "**" ]
-
+    branches:
+      - main
+      - develop
 jobs:
   build:
     runs-on: ubuntu-latest
