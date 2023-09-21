@@ -56,5 +56,8 @@ def remove_membership(request):
             "successful": True
         }
     elif request.method == 'GET':
-        response = {"stockId": old_stock.id if old_stock else None}
+        response = {
+            "stockId": old_stock.id if old_stock else None,
+            "members": [profile.user.username for profile in Profile.objects.filter(stock=old_stock).all()]
+        }
     return Response(response)

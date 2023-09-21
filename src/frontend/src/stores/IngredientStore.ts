@@ -5,7 +5,7 @@ import type {Navigation} from "@/types/common/Navigation";
 const baseUrl = import.meta.env.DEV ? 'http://localhost:8000/api' : window.location.origin + "/api"
 
 
-interface ingredient {
+export interface ingredient {
     helloFreshId: string
     image: string
     name: string

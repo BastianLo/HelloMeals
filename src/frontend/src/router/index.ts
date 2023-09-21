@@ -48,8 +48,25 @@ const router = createRouter({
         },
         {
             path: '/Pantry',
-            name: 'PantryIndex',
-            component: () => import('../views/PlaceholderView.vue')
+            name: 'PantryBase',
+            component: () => import('../views/Pantry/PantryBase.vue'),
+            children: [
+                {
+                    path: 'Index',
+                    name: 'PantryIndex',
+                    component: () => import('../views/Pantry/PantryIndex.vue')
+                },
+                {
+                    path: 'Pantry',
+                    name: 'PantryPantry',
+                    component: () => import('../views/Pantry/PantryPantry.vue')
+                },
+                {
+                    path: 'ShoppingList',
+                    name: 'PantryShoppingList',
+                    component: () => import('../views/Pantry/PantryShoppingList.vue')
+                },
+            ]
         },
         {
             path: '/Planner',
