@@ -7,6 +7,7 @@ import {useIngredientStore} from "@/stores/IngredientStore";
 const store = usePantryStore()
 const ingredientStore = useIngredientStore()
 const focus = ref(false)
+const suggestionsHovered = ref(false)
 const searchString = ref('')
 
 interface ingredient {
@@ -26,9 +27,7 @@ const updateSuggestions = async () => {
 }
 
 const unFocus = () => {
-  setTimeout(function () {
-    focus.value = false
-  }, 200)
+  focus.value = false
 }
 </script>
 
@@ -48,7 +47,8 @@ const unFocus = () => {
           @blur="unFocus()"
           @input="updateSuggestions()"
       />
-      <div v-if="focus" id="autocomplete"
+      <div v-if="focus || suggestionsHovered" id="autocomplete" @mouseenter="suggestionsHovered = true"
+           @mouseleave="suggestionsHovered = false"
            class="absolute left-0 mt-2 w-full max-w-sm mx-auto bg-gray-700 rounded-lg shadow-md z-50">
         <div @click="store.addIngredientToPantry(suggestion.helloFreshId); searchString = ''"
              v-for="suggestion in suggestions" class="p-2 hover:bg-gray-600 cursor-pointer">
