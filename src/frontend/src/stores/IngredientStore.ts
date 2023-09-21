@@ -89,6 +89,12 @@ export const useIngredientStore = defineStore({
                 } as Navigation
             } as result
         },
+        async getIngredients(searchString: string) {
+            const path = baseUrl + '/Ingredient?page_size=5' + (searchString ? `&srch=${searchString}` : '')
+            const result: result = await this.fetchByUrl(path)
+            return result.results
+
+        }
 
 
     }
