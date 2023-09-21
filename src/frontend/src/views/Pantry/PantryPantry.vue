@@ -4,13 +4,12 @@ import {usePantryStore} from "@/stores/PantryStore";
 import type {Ref} from "@vue/runtime-core";
 import {useIngredientStore} from "@/stores/IngredientStore";
 import type {Navigation} from "@/types/common/Navigation";
-import {OnClickOutside} from "@vueuse/components/index";
+import {OnClickOutside} from '@vueuse/components'
 
 const store = usePantryStore()
 const ingredientStore = useIngredientStore()
 const focus = ref(false)
 const suggestionsHovered = ref(false)
-const suggestionsAcutalHovered = ref(false)
 const searchString = ref('')
 
 interface ingredient {
@@ -81,14 +80,14 @@ const unFocus = () => {
                 class="font-semibold text-white"
                 v-text="suggestionNavigation.count"></span> Einträgen
             </span>
-            <button @click="updateSuggestionsByUrl(suggestionNavigation.previous)"
+            <button @click="updateSuggestionsByUrl(suggestionNavigation.previous!)"
                     class="w-6 h-4 mr-2 ml-4 bg-gray-600 text-white  flex items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                    class="w-4 h-4">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
               </svg>
             </button>
-            <button @click="updateSuggestionsByUrl(suggestionNavigation.next)"
+            <button @click="updateSuggestionsByUrl(suggestionNavigation.next!)"
                     class="w-6 h-4 bg-gray-600 text-white  flex items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                    class="w-4 h-4">
