@@ -48,7 +48,7 @@ const unFocus = () => {
 
 
   <div class="bg-slate-900 text-white font-sans p-4">
-    <h1 class="text-3xl font-semibold mb-4">Einkaufsliste</h1>
+    <h1 class="text-3xl font-semibold mb-4">Vorratsliste</h1>
     <div class="mt-4 relative">
       <input
           id="ingredientInput"
@@ -63,8 +63,9 @@ const unFocus = () => {
       <OnClickOutside @trigger="suggestionsHovered = focus">
         <div v-if="focus || suggestionsHovered" id="autocomplete"
              class="absolute left-0 mt-2 w-full max-w-sm mx-auto bg-gray-700 rounded-lg shadow-md z-50">
-          <div @click="store.addIngredientToPantry(suggestion.helloFreshId); searchString = ''"
-               v-for="suggestion in suggestions" class="p-2 hover:bg-gray-600 cursor-pointer">
+          <div
+              @click="store.addIngredientToPantry(suggestion.helloFreshId); searchString = ''; focus=false; suggestionsHovered = false"
+              v-for="suggestion in suggestions" class="p-2 hover:bg-gray-600 cursor-pointer">
             <div class="flex justify-between items-center">
               <span>{{ suggestion.name }}</span>
               <span class="text-gray-500">{{ suggestion.usage_count }}</span>
