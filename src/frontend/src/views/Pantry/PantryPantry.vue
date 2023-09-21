@@ -4,6 +4,7 @@ import {usePantryStore} from "@/stores/PantryStore";
 import type {Ref} from "@vue/runtime-core";
 import {useIngredientStore} from "@/stores/IngredientStore";
 import type {Navigation} from "@/types/common/Navigation";
+import {OnClickOutside} from "@vueuse/components/index";
 
 const store = usePantryStore()
 const ingredientStore = useIngredientStore()
@@ -38,7 +39,9 @@ const updateSuggestionsByUrl = async (url: string) => {
 
 
 const unFocus = () => {
-  focus.value = false
+  setTimeout(() => {
+    focus.value = false
+  }, 1000)
 }
 </script>
 
@@ -54,46 +57,47 @@ const unFocus = () => {
           class="bg-gray-800 text-white px-4 py-2 rounded-md w-full"
           placeholder="Füge ein Produkt hinzu"
           v-model="searchString"
-          @focus="focus = true"
+          @focus="focus = true; suggestionsHovered = true"
           @blur="unFocus()"
           @input="updateSuggestions()"
       />
-      <div v-if="focus || suggestionsHovered" id="autocomplete" @mouseenter="suggestionsHovered = true"
-           @mouseleave="suggestionsHovered = false"
-           class="absolute left-0 mt-2 w-full max-w-sm mx-auto bg-gray-700 rounded-lg shadow-md z-50">
-        <div @click="store.addIngredientToPantry(suggestion.helloFreshId); searchString = ''"
-             v-for="suggestion in suggestions" class="p-2 hover:bg-gray-600 cursor-pointer">
-          <div class="flex justify-between items-center">
-            <span>{{ suggestion.name }}</span>
-            <span class="text-gray-500">{{ suggestion.usage_count }}</span>
+      <OnClickOutside @trigger="suggestionsHovered = focus">
+        <div v-if="focus || suggestionsHovered" id="autocomplete"
+             class="absolute left-0 mt-2 w-full max-w-sm mx-auto bg-gray-700 rounded-lg shadow-md z-50">
+          <div @click="store.addIngredientToPantry(suggestion.helloFreshId); searchString = ''"
+               v-for="suggestion in suggestions" class="p-2 hover:bg-gray-600 cursor-pointer">
+            <div class="flex justify-between items-center">
+              <span>{{ suggestion.name }}</span>
+              <span class="text-gray-500">{{ suggestion.usage_count }}</span>
+            </div>
           </div>
-        </div>
 
-        <div class="flex justify-center mt-2">
-          <span class="text-sm text-gray-400">
+          <div class="flex justify-center mt-2" v-if="suggestions.length > 0">
+            <span class="text-sm text-gray-400">
               Zeige <span class="font-semibold text-white"
                           v-text="suggestionNavigation.start"></span> bis <span
-              class="font-semibold text-white"
-              v-text="suggestionNavigation.end"></span> von <span
-              class="font-semibold text-white"
-              v-text="suggestionNavigation.count"></span> Einträgen
+                class="font-semibold text-white"
+                v-text="suggestionNavigation.end"></span> von <span
+                class="font-semibold text-white"
+                v-text="suggestionNavigation.count"></span> Einträgen
             </span>
-          <button @click="updateSuggestionsByUrl(suggestionNavigation.previous)"
-                  class="w-6 h-4 mr-2 ml-4 bg-gray-600 text-white  flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                 class="w-4 h-4">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-            </svg>
-          </button>
-          <button @click="updateSuggestionsByUrl(suggestionNavigation.next)"
-                  class="w-6 h-4 bg-gray-600 text-white  flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                 class="w-4 h-4">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-          </button>
+            <button @click="updateSuggestionsByUrl(suggestionNavigation.previous)"
+                    class="w-6 h-4 mr-2 ml-4 bg-gray-600 text-white  flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                   class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+              </svg>
+            </button>
+            <button @click="updateSuggestionsByUrl(suggestionNavigation.next)"
+                    class="w-6 h-4 bg-gray-600 text-white  flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                   class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
         </div>
-      </div>
+      </OnClickOutside>
 
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
