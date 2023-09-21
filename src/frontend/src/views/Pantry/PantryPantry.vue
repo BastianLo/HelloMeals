@@ -3,11 +3,13 @@ import {ref} from "vue";
 import {usePantryStore} from "@/stores/PantryStore";
 import type {Ref} from "@vue/runtime-core";
 import {useIngredientStore} from "@/stores/IngredientStore";
+import type {Navigation} from "@/types/common/Navigation";
 
 const store = usePantryStore()
 const ingredientStore = useIngredientStore()
 const focus = ref(false)
 const suggestionsHovered = ref(false)
+const suggestionsAcutalHovered = ref(false)
 const searchString = ref('')
 
 interface ingredient {
@@ -21,10 +23,19 @@ interface ingredient {
 }
 
 const suggestions = ref([]) as Ref<ingredient[]>
+const suggestionNavigation = ref({} as Navigation)
 
 const updateSuggestions = async () => {
-  suggestions.value = await ingredientStore.getIngredients(searchString.value)
+  const result = await ingredientStore.getIngredients(searchString.value)
+  suggestions.value = result.results
+  suggestionNavigation.value = result.navigation
 }
+const updateSuggestionsByUrl = async (url: string) => {
+  const result = await ingredientStore.fetchByUrl(url)
+  suggestions.value = result.results
+  suggestionNavigation.value = result.navigation
+}
+
 
 const unFocus = () => {
   focus.value = false
@@ -56,6 +67,31 @@ const unFocus = () => {
             <span>{{ suggestion.name }}</span>
             <span class="text-gray-500">{{ suggestion.usage_count }}</span>
           </div>
+        </div>
+
+        <div class="flex justify-center mt-2">
+          <span class="text-sm text-gray-400">
+              Zeige <span class="font-semibold text-white"
+                          v-text="suggestionNavigation.start"></span> bis <span
+              class="font-semibold text-white"
+              v-text="suggestionNavigation.end"></span> von <span
+              class="font-semibold text-white"
+              v-text="suggestionNavigation.count"></span> Einträgen
+            </span>
+          <button @click="updateSuggestionsByUrl(suggestionNavigation.previous)"
+                  class="w-6 h-4 mr-2 ml-4 bg-gray-600 text-white  flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                 class="w-4 h-4">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+          </button>
+          <button @click="updateSuggestionsByUrl(suggestionNavigation.next)"
+                  class="w-6 h-4 bg-gray-600 text-white  flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                 class="w-4 h-4">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
         </div>
       </div>
 
