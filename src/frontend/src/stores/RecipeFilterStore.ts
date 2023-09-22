@@ -60,6 +60,8 @@ export const useRecipeFilterStore = defineStore({
 
             this.ordering = parsedUrl.searchParams.get('ordering')
 
+            this.ingredientId = parsedUrl.searchParams.get('ingredients') ? parsedUrl.searchParams.get('ingredients') : this.ingredientId
+
             this.page = parsedUrl.searchParams.get('page')!
             this.page_size = parsedUrl.searchParams.get('page_size')!
         },
