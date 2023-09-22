@@ -101,27 +101,54 @@ const unFocus = () => {
 
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-      <!-- @vue-ignore -->
-      <div v-for="(ingredient, index) in store.PantryIngredients" :key="index"
-           @mouseover="ingredient.isHovered = true"
-           @mousedown="ingredient.isHovered = true"
-           @mouseup="ingredient.isHovered = false"
-           @mouseout="ingredient.isHovered = false"
-           class="bg-gray-800 rounded-lg p-4 shadow-md">
+      <div
+          v-for="(ingredient, index) in store.PantryIngredients"
+          :key="index"
+          @mouseover="ingredient.isHovered = true"
+          @mousedown="ingredient.isHovered = true"
+          @mouseup="ingredient.isHovered = false"
+          @mouseout="ingredient.isHovered = false"
+          class="bg-gray-800 rounded-lg p-4 shadow-md relative"
+      >
         <div class="flex justify-between">
-        <span
-            class="text-xl overflow-hidden overflow-ellipsis whitespace-nowrap max-w-[80%]"
-            :class="{ 'hover:max-w-none hover:whitespace-normal': ingredient.isHovered }"
-        >
-            {{ ingredient.name }}
-        </span>
-          <button @click="store.removeIngredientFromPantry(ingredient.helloFreshId)"
-                  class="bg-red-500 text-white px-2 py-1 rounded">Remove
-          </button>
+      <span
+          class="text-xl overflow-hidden overflow-ellipsis whitespace-nowrap max-w-[80%]"
+          :class="{ 'hover:max-w-none hover:whitespace-normal': ingredient.isHovered }"
+      >
+        {{ ingredient.name }}
+      </span>
+          <div class="flex items-center whitespace-nowrap">
+            <button
+                @click="store.removeIngredientFromPantry(ingredient.helloFreshId)"
+                class="bg-red-500 text-white px-2 py-1 rounded"
+            >
+              Remove
+            </button>
+            <button @click="ingredient.showMenu = !ingredient.showMenu"
+                    class="ml-2 py-1 text-white whitespace-nowrap relative">
+              <!-- Vertical dots SVG or other icon representing more options -->
+              <svg width="20px" height="15px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#ffffff"
+                   class="bi bi-three-dots-vertical">
+                <path
+                    d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+              </svg>
+              <OnClickOutside @trigger="ingredient.showMenu = false">
+                <div v-if="ingredient.showMenu"
+                     class="absolute left-0 mt-2 w-48 bg-gray-700 rounded-lg shadow-md z-50 transform -translate-x-44 hover:bg-gray-600"
+                >
+                  <router-link :to="{name: 'RecipeAll', query: {ingredientId: ingredient.helloFreshId}}"
+                               class="pt-2  cursor-pointer">
+                    <p>Zeige Rezepte</p>
+                  </router-link>
+                </div>
+              </OnClickOutside>
+            </button>
+          </div>
         </div>
       </div>
-
     </div>
+
+
   </div>
 
 

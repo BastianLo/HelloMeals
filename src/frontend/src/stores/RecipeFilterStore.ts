@@ -16,6 +16,7 @@ export const useRecipeFilterStore = defineStore({
         sources: [] as number[],
         srch: '',
         favorited: null as boolean | null,
+        ingredientId: null as string | null,
 
         ordering: null as string | null,
 
@@ -92,6 +93,8 @@ export const useRecipeFilterStore = defineStore({
                 query.srch = this.srch
             if (this.favorited)
                 query.favorited = this.favorited.toString()
+            if (this.ingredientId)
+                query.ingredients = this.ingredientId!
             return query
         },
         get_query_string() {

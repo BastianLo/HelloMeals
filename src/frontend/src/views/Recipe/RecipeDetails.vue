@@ -188,8 +188,8 @@
                     <tbody>
                     <tr v-for="ingredient in group.ingredients" class="odd:bg-slate-700">
                       <td>
-                        <button
-                            class="mt-2 flex items-center justify-center w-8 h-8 border border-gray-500 rounded-full">
+                        <button @click="handleIngredientClick(ingredient)"
+                                class="mt-2 flex items-center justify-center w-8 h-8 border border-gray-500 rounded-full">
                           <svg v-if="ingredient.ingredient.available" class="w-6 h-6 text-green-500" aria-hidden="true"
                                fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm-3-9l2 2 5-5"></path>
@@ -259,8 +259,10 @@ import {computed, ref, watch} from "vue";
 import RefreshSwiper from "@/components/common/RefreshSwiper.vue";
 import {share} from "@/reusableMethods/share";
 import NumberInput from "@/components/common/NumberInput.vue";
+import {usePantryStore} from "@/stores/PantryStore";
 
 let recipeStore = useRecipeStore()
+let pantryStore = usePantryStore()
 
 const recipeId = useRouter().currentRoute.value.params.id
 
@@ -274,10 +276,19 @@ const showAlert = ref(false)
 const completed = ref([] as boolean[])
 
 window.scrollTo({top: 0});
-const load = () => {
-  recipeStore.fetch_recipes_detail(recipeId as string)
+const load = (reset = true) => {
+  recipeStore.fetch_recipes_detail(recipeId as string, reset)
 }
 load()
+
+const handleIngredientClick = (ingredient: any) => {
+  if (ingredient.ingredient.available) {
+    pantryStore.removeIngredientFromPantry(ingredient.ingredient.helloFreshId)
+  } else {
+    pantryStore.addIngredientToPantry(ingredient.ingredient.helloFreshId)
+  }
+  load(false)
+}
 
 watch(() => recipeStore.detailRecipe, (newDetailRecipe) => {
   if (newDetailRecipe) {

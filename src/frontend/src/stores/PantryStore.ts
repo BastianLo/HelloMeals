@@ -11,7 +11,8 @@ interface pantry {
 }
 
 interface extendedIngredient extends ingredient {
-    isHovered: boolean
+    isHovered: boolean,
+    showMenu: boolean
 }
 
 export const usePantryStore = defineStore({

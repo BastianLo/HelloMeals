@@ -22,6 +22,9 @@ import {useRouter} from "vue-router";
 import {useRecipeFilterStore} from "@/stores/RecipeFilterStore";
 import RefreshSwiper from "@/components/common/RefreshSwiper.vue";
 
+const ingredientId: any = useRouter().currentRoute.value.query.ingredientId
+useRecipeFilterStore().ingredientId = ingredientId
+console.log(ingredientId)
 
 const isFavoritePage = useRouter().currentRoute.value.name === "RecipeFavorites"
 let recipeStore = useRecipeStore()
