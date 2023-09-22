@@ -25,9 +25,9 @@ load()
 
 <template>
   <RefreshSwiper @refresh="load()"/>
-  <div class="fixed bottom-20 left-0 z-50 w-full" v-if="store.joinedPantryId">
+  <div class="fixed bottom-20 left-1/2 transform -translate-x-1/2 z-50 max-w-screen-lg" v-if="store.joinedPantryId">
     <div class="w-full">
-      <div class="grid max-w-xs grid-cols-2 gap-1 p-1 mx-auto my-2 rounded-lg bg-gray-600" role="group">
+      <div class="grid max-w-xs grid-cols-2 gap-1 p-1 mx-auto my-2 rounded-lg bg-gray-600 w-64" role="group">
         <RouterLink :to="{ name: 'PantryPantry' }" :class="isFocused('PantryPantry') ? classesFocused : classesDefault"
                     class="relative">
           Vorrat
