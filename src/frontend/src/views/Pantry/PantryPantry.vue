@@ -120,7 +120,7 @@ const unFocus = () => {
           <div class="flex items-center whitespace-nowrap">
             <button
                 @click="store.removeIngredientFromPantry(ingredient.helloFreshId)"
-                class="bg-red-500 text-white px-2 py-1 rounded"
+                class="text-white px-2 py-1 rounded hover:bg-red-700 focus:ring-red-900 bg-red-600 focus:outline-none focus:ring-4"
             >
               Remove
             </button>
