@@ -10,7 +10,7 @@
           <!-- Top menu buttons -->
           <div class="flex items-center gap-2">
             <button class="action-button"
-                    @click="recipeStore.favorite_recipe_value(recipeStore.detailRecipe.helloFreshId, !recipeStore.detailRecipe.favorited); recipeStore.fetch_recipes_detail(recipeId as string, false)">
+                    @click="switchFavoriteRecipe()">
               <svg v-if="recipeStore.detailRecipe.favorited" class="w-8 h-8 text-red-400 button-icon"
                    aria-hidden="true"
                    fill="currentColor" viewBox="0 0 24 24"
@@ -276,18 +276,23 @@ const showAlert = ref(false)
 const completed = ref([] as boolean[])
 
 window.scrollTo({top: 0});
-const load = (reset = true) => {
-  recipeStore.fetch_recipes_detail(recipeId as string, reset)
+const load = async (reset = true) => {
+  await recipeStore.fetch_recipes_detail(recipeId as string, reset)
 }
 load()
 
-const handleIngredientClick = (ingredient: any) => {
+const handleIngredientClick = async (ingredient: any) => {
   if (ingredient.ingredient.available) {
-    pantryStore.removeIngredientFromPantry(ingredient.ingredient.helloFreshId)
+    await pantryStore.removeIngredientFromPantry(ingredient.ingredient.helloFreshId)
   } else {
-    pantryStore.addIngredientToPantry(ingredient.ingredient.helloFreshId)
+    await pantryStore.addIngredientToPantry(ingredient.ingredient.helloFreshId)
   }
-  load(false)
+  await load(false)
+}
+
+const switchFavoriteRecipe = async () => {
+  await recipeStore.favorite_recipe_value(recipeStore.detailRecipe.helloFreshId, !recipeStore.detailRecipe.favorited)
+  await recipeStore.fetch_recipes_detail(recipeId as string, false)
 }
 
 watch(() => recipeStore.detailRecipe, (newDetailRecipe) => {
