@@ -1,0 +1,27 @@
+{
+  "main": {
+    "hello": "Hallo Welt"
+  },
+  "recipe": {
+    "navLabel": "Rezepte",
+    "allRecipes": "Alle Rezepte",
+    "favoriteRecipes": "Favoriten"
+  },
+  "storage": {
+    "navLabel": "Vorrat"
+  },
+  "planner": {
+    "navLabel": "Planer"
+  },
+  "settings": {
+    "navLabel": "Einstellungen"
+  },
+  "auth": {
+    "login": {
+      "title": " Melde dich mit deinem Account an",
+      "button": "Anmelden"
+    },
+    "username": "Benutzername",
+    "password": "Passwort"
+  }
+}

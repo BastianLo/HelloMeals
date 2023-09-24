@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-23 17:14+0000\n"
+"POT-Creation-Date: 2023-06-27 14:12+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -43,7 +43,7 @@ msgid "base.settings"
 msgstr "Settings"
 
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeDetails.html:71
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:194
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:232
 msgid "common.loading.label"
 msgstr "Loading"
 
@@ -113,91 +113,91 @@ msgstr "See more"
 msgid "recipe.favorites.label"
 msgstr "Favorites"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:210
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:248
 msgid "filter.label"
 msgstr "Filter"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:214
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:252
 msgid "filter.apply"
 msgstr "Apply"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:218
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:256
 msgid "filter.reset"
 msgstr "Reset"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:226
-msgid "nutrients.calories"
-msgstr "Kalorien"
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:269
+msgid "filter.nutrients.label"
+msgstr "Nutrients"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:249
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:316
 msgid "filter.source.label"
 msgstr "Source"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:336
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:403
 msgid "filter.recipeType.label"
 msgstr "Recipe type"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:373
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:440
 msgid "filter.properties.label"
 msgstr "Properties"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:405
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:472
 msgid "filter.categories.label"
 msgstr "Categories"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:464
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:479
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:531
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:546
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:238
 msgid "search"
 msgstr "Search"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:476
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:543
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:250
 msgid "recipe.name"
 msgstr "Recipe name"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:487
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:629
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:588
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:730
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:243
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:182
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:257
 msgid "common.navigation.showing"
 msgstr "Showing"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:488
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:630
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:589
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:731
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:245
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:184
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:258
 msgid "common.navigation.to"
 msgstr "to"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:490
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:632
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:591
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:733
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:248
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:187
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:260
 msgid "common.navigation.of"
 msgstr "of"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:492
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:634
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:593
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:735
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:252
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:191
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:262
 msgid "common.navigation.entries"
 msgstr "Entries"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:497
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:639
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:598
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:740
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:257
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:196
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:267
 msgid "common.navigation.previous"
 msgstr "prev"
 
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:501
-#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:643
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:602
+#: Apps/ClientManager/templates/ClientManager/components/pageComponents/Recipes/RecipeOverview.html:744
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/Stock/Stock.html:261
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:200
 #: Apps/ClientManager/templates/ClientManager/components/pageComponents/settings/settingsGroupingIngredients.html:271
@@ -379,25 +379,28 @@ msgstr "Invalid link"
 msgid "The token you provided is invalid."
 msgstr "The invite link is not valid!"
 
-#: Apps/MealManager/models.py:172
+#: Apps/MealManager/models.py:174
 msgid "Hauptgericht"
 msgstr "Main Course"
 
-#: Apps/MealManager/models.py:173
+#: Apps/MealManager/models.py:175
 msgid "Frühstück"
 msgstr "Breakfast"
 
-#: Apps/MealManager/models.py:174
+#: Apps/MealManager/models.py:176
 msgid "Dessert"
 msgstr "Dessert"
 
-#: Apps/MealManager/models.py:175
+#: Apps/MealManager/models.py:177
 msgid "Backen"
 msgstr "Baking"
 
-#: Apps/MealManager/models.py:176
+#: Apps/MealManager/models.py:178
 msgid "Getränke"
 msgstr "Drinks"
+
+#~ msgid "nutrients.calories"
+#~ msgstr "Kalorien"
 
 #~ msgid "recipe.overview.label"
 #~ msgstr "Overview"

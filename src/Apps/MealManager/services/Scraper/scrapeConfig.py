@@ -13,16 +13,16 @@ class ScrapeConfig:
         else:
             self.config_data = {}
         self.hf_start_index = self.config_data["hellofresh"][
-            "start_index"] if "hellofresh" in self.config_data and "start_index" in self.config_data[
+            "index"] if "hellofresh" in self.config_data and "index" in self.config_data[
             "hellofresh"] else 0
         self.hf_max_recipes = self.config_data["hellofresh"][
-            "max_recipes"] if "hellofresh" in self.config_data and "max_recipes" in self.config_data[
+            "max"] if "hellofresh" in self.config_data and "max" in self.config_data[
             "hellofresh"] else 1000000
         self.ks_page = self.config_data["kitchenstories"][
-            "page"] if "kitchenstories" in self.config_data and "page" in self.config_data[
+            "index"] if "kitchenstories" in self.config_data and "index" in self.config_data[
             "kitchenstories"] else 1
         self.ks_max_page = self.config_data["kitchenstories"][
-            "max_page"] if "kitchenstories" in self.config_data and "max_page" in self.config_data[
+            "max"] if "kitchenstories" in self.config_data and "max" in self.config_data[
             "kitchenstories"] else 1000000
         self.ck_index = self.config_data["chefkoch"][
             "index"] if "chefkoch" in self.config_data and "index" in self.config_data[
@@ -31,10 +31,10 @@ class ScrapeConfig:
             "main_tag_index"] if "chefkoch" in self.config_data and "main_tag_index" in self.config_data[
             "chefkoch"] else 0
         self.ck_tag_index = self.config_data["chefkoch"][
-            "tag_index"] if "chefkoch" in self.config_data and "tag_index" in self.config_data[
+            "index"] if "chefkoch" in self.config_data and "index" in self.config_data[
             "chefkoch"] else 0
         self.ck_skip = self.config_data["chefkoch"][
-            "skip"] if "chefkoch" in self.config_data and "skip" in self.config_data[
+            "index"] if "chefkoch" in self.config_data and "index" in self.config_data[
             "chefkoch"] else 1000000
         self.lk_index = self.config_data["lecker"][
             "index"] if "lecker" in self.config_data and "index" in self.config_data[

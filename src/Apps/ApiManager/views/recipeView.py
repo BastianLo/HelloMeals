@@ -4,13 +4,17 @@ import django_filters
 from Apps.MealManager.models import Recipe, Ingredient
 from Apps.MealManager.serializers import RecipeFullSerializer, RecipeBaseSerializer
 from django.contrib.postgres.search import TrigramSimilarity
-from django.db.models import Count, F, FloatField, ExpressionWrapper, Q
-from django.db.models.functions import Coalesce
+from django.db.models import F, FloatField, ExpressionWrapper, Q, Case, When, Value
+from django.db.models.functions import Coalesce, Cast
 from django_filters import rest_framework as filters
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
+from rest_framework import serializers
+from rest_framework import status
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from util.pagination import RqlPagination
 
 
@@ -22,15 +26,29 @@ class RecipeFilterSet(filters.FilterSet):
     srch = django_filters.CharFilter(method='filter_search')
     difficulty = django_filters.NumberFilter(field_name='difficulty')
     recipeType = django_filters.NumberFilter(field_name='recipeType')
-    ingredient_count__lt = django_filters.NumberFilter(
-        method='filter_ingredient_count',
-        label='Ingredient Count less than',
-    )
+    ingredient_count__lt = django_filters.NumberFilter(method='filter_ingredient_count_lt')
+    ingredient_count__gt = django_filters.NumberFilter(method='filter_ingredient_count_gt')
+    average_rating_gte = django_filters.NumberFilter(field_name="averageRating", lookup_expr='gte')
+    average_rating_lte = django_filters.NumberFilter(field_name="averageRating", lookup_expr='lte')
+    rating_count_gte = django_filters.NumberFilter(field_name="ratingCount", lookup_expr='gte')
+    rating_count_lte = django_filters.NumberFilter(field_name="ratingCount", lookup_expr='lte')
+    health_score_gte = django_filters.NumberFilter(field_name="healthScore", lookup_expr='gte')
+    health_score_lte = django_filters.NumberFilter(field_name="healthScore", lookup_expr='lte')
+    view_count_lte = django_filters.NumberFilter(field_name="viewCount", lookup_expr='lte')
+    view_count_gte = django_filters.NumberFilter(field_name="viewCount", lookup_expr='gte')
+    prep_time_gte = django_filters.DurationFilter(field_name="prepTime", lookup_expr='gte')
+    prep_time_lte = django_filters.DurationFilter(field_name="prepTime", lookup_expr='lte')
     relevancy = django_filters.CharFilter(method='filter_relevancy')
     favorited = django_filters.BooleanFilter(field_name='favorited_by', method='filter_favorited')
 
     calories_gt = django_filters.NumberFilter(field_name='nutrients__energyKcal', lookup_expr='gt')
     calories_lt = django_filters.NumberFilter(field_name='nutrients__energyKcal', lookup_expr='lt')
+    protein_gt = django_filters.NumberFilter(field_name='nutrients__protein', lookup_expr='gt')
+    protein_lt = django_filters.NumberFilter(field_name='nutrients__protein', lookup_expr='lt')
+    carbs_gt = django_filters.NumberFilter(field_name='nutrients__carbs', lookup_expr='gt')
+    carbs_lt = django_filters.NumberFilter(field_name='nutrients__carbs', lookup_expr='lt')
+    fat_gt = django_filters.NumberFilter(field_name='nutrients__fat', lookup_expr='gt')
+    fat_lt = django_filters.NumberFilter(field_name='nutrients__fat', lookup_expr='lt')
 
     def filter_favorited(self, queryset, name, value):
         user = self.request.user
@@ -52,10 +70,15 @@ class RecipeFilterSet(filters.FilterSet):
             )
         ).order_by('-relevancy')
 
-    def filter_ingredient_count(self, queryset, name, value):
+    def filter_ingredient_count_lt(self, queryset, name, value):
         return queryset.annotate(
-            ingredient_count=Count('recipeingredient')
-        ).filter(ingredient_count__lte=value)
+            ingredient_count=F('recipestockingredientcount__ingredientMax')
+        ).filter(ingredient_count__lte=value).distinct()
+
+    def filter_ingredient_count_gt(self, queryset, name, value):
+        return queryset.annotate(
+            ingredient_count=F('recipestockingredientcount__ingredientMax')
+        ).filter(ingredient_count__gte=value).distinct()
 
     def filter_relevancy(self, queryset, name, value):
         return queryset.annotate(
@@ -156,9 +179,22 @@ class RecipeBaseList(generics.ListAPIView):
             hellofresh_ids = queryset.values_list('recipetag__tag__helloFreshId', flat=True).distinct()
             random_hellofresh_ids = random.sample(list(hellofresh_ids), min(sample_size, len(hellofresh_ids)))
             queryset = queryset.filter(recipetag__tag__helloFreshId__in=random_hellofresh_ids)
-        elif ordering and ordering != 'relevancy':
+        elif ordering and ordering not in ['relevancy', 'availIngredients']:
             fields = ordering.split(',')
             queryset = queryset.order_by(*fields)
+        elif ordering and ordering == 'availIngredients':
+            queryset = queryset.annotate(
+                ratio=Case(
+                    When(
+                        recipestockingredientcount__stock=self.request.user.profile.stock,
+                        recipestockingredientcount__ingredientMax__gt=0,
+                        then=Cast(F('recipestockingredientcount__ingredientCount'), FloatField()) / Cast(
+                            F('recipestockingredientcount__ingredientMax'), FloatField())
+                    ),
+                    default=Value(0),
+                    output_field=FloatField()
+                )
+            ).order_by('-ratio').distinct()
         return queryset
 
 
@@ -192,3 +228,19 @@ def set_favorite(request, helloFreshId, favorite):
     }
 
     return Response(response)
+
+
+class RecipeSerializer(serializers.Serializer):
+    totalRecipeCount = serializers.IntegerField()
+    favoriteRecipeCount = serializers.IntegerField()
+
+
+class RecipeBaseInformationView(APIView):
+    @swagger_auto_schema(
+        responses={200: RecipeSerializer()}
+    )
+    def get(self, request):
+        return Response(status=status.HTTP_200_OK, data=RecipeSerializer({
+            "totalRecipeCount": len(RecipeBaseList().queryset.all()),
+            "favoriteRecipeCount": len(RecipeBaseList().queryset.filter(favoriteBy=request.user)),
+        }).data)

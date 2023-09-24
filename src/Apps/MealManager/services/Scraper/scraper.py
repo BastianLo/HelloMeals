@@ -1,7 +1,6 @@
 import logging
 import os
 import threading
-import uuid
 
 import requests
 from dynamic_preferences.registries import global_preferences_registry
@@ -32,8 +31,8 @@ class Scraper:
 
     def get_status(self):
         return {
-            "max_recipes": self.config.hf_max_recipes,
-            "start_index": self.config.hf_start_index,
+            "max": self.config.hf_max_recipes,
+            "index": self.config.hf_start_index,
             "running": self.is_running(),
             "exception": self.exception
         }

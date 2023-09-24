@@ -1,4 +1,3 @@
-from django.db.models import Q
 from django_restql.mixins import DynamicFieldsMixin
 from rest_framework import serializers
 
@@ -147,6 +146,11 @@ class InviteTokenSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
         model = InviteToken
         exclude = []
 
+    issuer_name = serializers.SerializerMethodField()
+
+    def get_issuer_name(self, obj):
+        return obj.issuer.username
+
 
 ### Recipe ###
 
@@ -191,10 +195,8 @@ class RecipeBaseSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
         request = self.context.get('request')
         if request.user.profile.stock is None:
             return 0
-        ingredients = RecipeIngredient.objects.filter(ingredient_group__in=instance.ingredient_groups.all())
-        ingredients = ingredients.filter(Q(ingredient__parent__in=request.user.profile.stock.ingredients.all()) | Q(
-            ingredient__in=request.user.profile.stock.ingredients.all()))
-        return len(ingredients)
+        return RecipeStockIngredientCount.get_or_create(recipe=instance,
+                                                        stock=request.user.profile.stock).ingredientCount
 
     def get_nutrients(self, instance):
         recipe_nutrients = Nutrients.objects.filter(recipe=instance).first()

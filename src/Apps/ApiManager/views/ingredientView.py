@@ -1,13 +1,15 @@
+from threading import Thread
+
 import django_filters
-from Apps.MealManager.models import Ingredient, RecipeIngredient
-from Apps.MealManager.models import Stock
+from Apps.MealManager.models import Ingredient, RecipeIngredient, Stock, Recipe, RecipeStockIngredientCount
 from Apps.MealManager.serializers import IngredientSerializer
-from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import Count
 from django_filters import rest_framework as filters
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
-from rest_framework.decorators import permission_classes, api_view
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
+from rest_framework.decorators import permission_classes, api_view, authentication_classes
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from util.pagination import RqlPagination
 
@@ -69,12 +71,21 @@ class stockList(generics.ListAPIView):
 @api_view(['POST', 'DELETE'])
 def add_ingredient_to_stock(request, ingredient_id):
     successful = None
+    ingredient = Ingredient.objects.get(helloFreshId=ingredient_id)
     if request.method == 'POST':
-        ingredient = Ingredient.objects.get(helloFreshId=ingredient_id)
+        ingredient = ingredient
         successful = request.user.profile.stock.add(ingredient)
     elif request.method == 'DELETE':
-        ingredient = Ingredient.objects.get(helloFreshId=ingredient_id)
+        ingredient = ingredient
         successful = request.user.profile.stock.remove(ingredient)
+
+    def update_recipes(ingredient):
+        recipes = Recipe.objects.filter(
+            helloFreshId__in=[i.helloFreshId for i in ingredient.get_related_recipes()])
+        [RecipeStockIngredientCount.updateRecipe(recipe) for recipe in recipes]
+
+    thread = Thread(target=update_recipes, args=(ingredient,))
+    thread.start()
 
     response = {
         "successful": successful
@@ -115,8 +126,10 @@ def add_ingredient_to_shopping_list(request, ingredient_id):
     return Response(response)
 
 
-@staff_member_required
+@authentication_classes([SessionAuthentication, BasicAuthentication, TokenAuthentication])
 @api_view(['POST'])
+@swagger_auto_schema()
+@permission_classes([IsAuthenticated, IsAdminUser])
 def assign_ingredient_parent(request, helloFreshId, parentId=None):
     try:
         source = Ingredient.objects.get(helloFreshId=helloFreshId)

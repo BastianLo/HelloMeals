@@ -1,4 +1,4 @@
-FROM python:3.9.7-buster
+FROM nikolaik/python-nodejs:python3.11-nodejs20
 LABEL authors="bastianlobe"
 
 # Install Nginx web server
@@ -8,22 +8,30 @@ RUN apt-get update && \
 
 # Create a directory for the Django project
 RUN mkdir HelloMeals
+COPY requirements.txt /HelloMeals/
 
-# Copy the entire current directory to the /HelloMeals directory in the container
-COPY . /HelloMeals/
-
-# Set the working directory to /HelloMeals
 WORKDIR /HelloMeals
-# Upgrade pip
+
+### Install dependencies ###
+# Python
 RUN pip install --upgrade pip
-# Install Python packages listed in requirements.txt
 RUN pip install -r requirements.txt
+# npm
+COPY src/frontend/package.json /HelloMeals/src/frontend/
+COPY src/frontend/package-lock.json /HelloMeals/src/frontend/
+RUN npm --prefix /HelloMeals/src/frontend install
+
+### Copy project files ###
+COPY nginx.conf /etc/nginx/sites-available/default
+COPY scripts scripts
+COPY src src
 
 # Create a directory for static files
 RUN mkdir /static
 
-# Copy the Nginx configuration file to the container's /etc/nginx/sites-available directory
-COPY nginx.conf /etc/nginx/sites-available/default
+RUN npm --prefix /HelloMeals/src/frontend run build
+#Move files to nginx directory, so nginx can access them
+RUN mv /HelloMeals/src/frontend/dist/* /usr/share/nginx/html/
 
 # Expose port 6753 for the container
 EXPOSE 6753

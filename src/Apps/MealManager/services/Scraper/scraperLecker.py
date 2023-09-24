@@ -1,7 +1,6 @@
 import logging
 import re
 import threading
-import uuid
 
 import requests
 from dynamic_preferences.registries import global_preferences_registry
@@ -25,8 +24,8 @@ class Scraper:
 
     def get_status(self):
         return {
-            "index": self.config.lk_index,
             "max": self.config.lk_max,
+            "index": self.config.lk_index,
             "running": self.is_running(),
             "exception": self.exception
         }
