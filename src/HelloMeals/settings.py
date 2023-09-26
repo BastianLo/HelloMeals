@@ -178,10 +178,6 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOG_PATH = BASE_DIR / 'data'
-print("--------")
-print("LOG PATH")
-print(LOG_PATH)
-print("--------")
 if not os.path.exists(LOG_PATH):
     os.mkdir(LOG_PATH)
 
