@@ -22,7 +22,7 @@ export default defineConfig({
                 background_color: '#0F172A',
                 icons: [
                     {
-                        src: '/src/assets/logo_512px.png',
+                        src: 'logo_512px.png',
                         sizes: '512x512',
                         type: 'image/png',
                     },
