@@ -17,6 +17,7 @@ export const useRecipeFilterStore = defineStore({
         srch: '',
         favorited: null as boolean | null,
         ingredientId: null as string | null,
+        chechkochPlus: null as boolean | null,
 
         ordering: null as string | null,
 
@@ -38,6 +39,7 @@ export const useRecipeFilterStore = defineStore({
             this.recipeType = null
             this.sources = []
             this.srch = ''
+            this.chechkochPlus = null
 
             this.ordering = null
 
@@ -57,6 +59,7 @@ export const useRecipeFilterStore = defineStore({
             this.recipeType = parsedUrl.searchParams.get('recipeType') as number | null
             this.sources = (parsedUrl.searchParams.get('source') || '').split(",").filter(s => s !== '').map(s => parseInt(s))
             this.srch = parsedUrl.searchParams.get('srch') || ''
+            this.chechkochPlus = parsedUrl.searchParams.get('isPlus') || ''
 
             this.ordering = parsedUrl.searchParams.get('ordering')
 
@@ -95,6 +98,8 @@ export const useRecipeFilterStore = defineStore({
                 query.srch = this.srch
             if (this.favorited)
                 query.favorited = this.favorited.toString()
+            if (this.chechkochPlus)
+                query.isPlus = this.chechkochPlus.toString()
             if (this.ingredientId)
                 query.ingredients = this.ingredientId!
             return query
