@@ -13,7 +13,7 @@
 ---
 
 <p align="center"> HelloMeals is a self-hostable recipe manager with an integrated scraper to scrape recipes in a large scale.
-    <br> 
+    <br>
 </p>
 
 ## 📝 Table of Contents
@@ -37,6 +37,7 @@ WIP: Project is still in development and not feature complete!
   * Hellofresh
   * Lecker.de
   * Eatsmarter
+  * Mobkitchen
 * Pantry Management
   * Add ingredients to your pantry
   * View which recipes you can cook with the current ingredients in your pantry
@@ -127,7 +128,7 @@ services:
 - [Django](https://www.djangoproject.com/) - Web Framework
 - [Vue.js](https://vuejs.org/) - Frontend Framework
 - [Tailwind CSS](https://tailwindcss.com/) - CSS Framework
-- 
+-
 
 ## ✍️ Authors <a name = "authors"></a>
 

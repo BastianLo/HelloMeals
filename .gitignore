@@ -161,3 +161,7 @@ cython_debug/
 
 src/data/
 /dev_container_data/
+
+.idea
+
+**/.DS_Store

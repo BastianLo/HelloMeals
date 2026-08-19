@@ -240,6 +240,10 @@ updateComponentValues()
                         <label
                             class="w-full ml-2 text-sm font-medium rounded text-white">Yazio</label>
                         <br/>
+                        <input type="checkbox" value="7" v-model="sources" class="w-4 h-4 rounded focus:ring-2">
+                        <label
+                            class="w-full ml-2 text-sm font-medium rounded text-white">Mobkitchen</label>
+                        <br/>
                       </div>
                     </div>
                   </div>

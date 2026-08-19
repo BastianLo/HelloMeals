@@ -112,6 +112,9 @@ let cutoff = (text: string | null, limit: number) => {
       <div v-else-if="recipe.source==6">
         <span class="bg-pink-600 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded ">Yazio</span>
       </div>
+      <div v-else-if="recipe.source==7">
+        <span class="bg-gray-600 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded ">Mobkitchen</span>
+      </div>
       <div v-if="recipe.nutrients.energyKcal!==null">
         <span class=" text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded"
               :class="{'bg-red-500': recipe.nutrients.energyKj! > 900, 'bg-green-500': recipe.nutrients.energyKcal < 700, 'bg-orange-600': recipe.nutrients.energyKcal >= 700 && recipe.nutrients.energyKcal <= 900}"

@@ -103,4 +103,10 @@ urlpatterns = [
     path('Scraper/eatsmarter/restart', scraperView.restart_es_scraper),
     path('Scraper/eatsmarter/setprogress/<int:index>', scraperView.set_es_index),
 
+    path('Scraper/mob/status', scraperView.get_mob_status),
+    path('Scraper/mob/start', scraperView.start_mob_scraper),
+    path('Scraper/mob/stop', scraperView.stop_mob_scraper),
+    path('Scraper/mob/restart', scraperView.restart_mob_scraper),
+    path('Scraper/mob/setprogress/<int:index>', scraperView.set_mob_index),
+
 ]

@@ -1,0 +1,19 @@
+version: '3.3'
+services:
+  db:
+    container_name: hello-meals-db-local
+    image: postgres:16
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: hellomeals
+    ports:
+      - "5432:5432"
+    volumes:
+      - ../dev_container_data/postgres-data-local:/var/lib/postgresql/data

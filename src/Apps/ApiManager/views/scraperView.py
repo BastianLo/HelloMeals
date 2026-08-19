@@ -1,7 +1,7 @@
 import json
 
 from Apps.MealManager.services.Scraper import scraper, scraperKitchenStories, scraperChefKoch, scraperLecker, \
-    scraperEatSmarter
+    scraperEatSmarter, scraperMob
 from django.http import HttpResponse
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
@@ -257,6 +257,53 @@ def set_es_index(request, index):
     return HttpResponse(json.dumps(scraperEatSmarter.get_scraper().get_status()), content_type='application/json')
 
 
+### Mob Scraper ###
+
+@authentication_classes([SessionAuthentication, BasicAuthentication, TokenAuthentication])
+@permission_classes([IsAuthenticated])
+@api_view(['GET'])
+@swagger_auto_schema()
+@permission_classes([IsAuthenticated, IsAdminUser])
+def get_mob_status(request):
+    return HttpResponse(json.dumps(scraperMob.get_scraper().get_status()), content_type='application/json')
+
+
+@authentication_classes([SessionAuthentication, BasicAuthentication, TokenAuthentication])
+@api_view(['POST'])
+@swagger_auto_schema()
+@permission_classes([IsAuthenticated, IsAdminUser])
+def start_mob_scraper(request):
+    scraperMob.get_scraper().start()
+    return HttpResponse(json.dumps(scraperMob.get_scraper().get_status()), content_type='application/json')
+
+
+@authentication_classes([SessionAuthentication, BasicAuthentication, TokenAuthentication])
+@api_view(['POST'])
+@swagger_auto_schema()
+@permission_classes([IsAuthenticated, IsAdminUser])
+def stop_mob_scraper(request):
+    scraperMob.get_scraper().stop()
+    return HttpResponse(json.dumps(scraperMob.get_scraper().get_status()), content_type='application/json')
+
+
+@authentication_classes([SessionAuthentication, BasicAuthentication, TokenAuthentication])
+@api_view(['POST'])
+@swagger_auto_schema()
+@permission_classes([IsAuthenticated, IsAdminUser])
+def restart_mob_scraper(request):
+    scraperMob.get_scraper().restart()
+    return HttpResponse(json.dumps(scraperMob.get_scraper().get_status()), content_type='application/json')
+
+
+@authentication_classes([SessionAuthentication, BasicAuthentication, TokenAuthentication])
+@api_view(['POST'])
+@swagger_auto_schema()
+@permission_classes([IsAuthenticated, IsAdminUser])
+def set_mob_index(request, index):
+    scraperMob.get_scraper().set_progress(index)
+    return HttpResponse(json.dumps(scraperMob.get_scraper().get_status()), content_type='application/json')
+
+
 @authentication_classes([SessionAuthentication, BasicAuthentication, TokenAuthentication])
 @api_view(['GET'])
 @swagger_auto_schema()
@@ -268,5 +315,6 @@ def get_all_status(request):
         "HelloFresh": scraper.get_scraper().get_status(),
         "Lecker": scraperLecker.get_scraper().get_status(),
         "EatSmarter": scraperEatSmarter.get_scraper().get_status(),
+        "Mob": scraperMob.get_scraper().get_status(),
     }
     return HttpResponse(json.dumps(response), content_type='application/json')
