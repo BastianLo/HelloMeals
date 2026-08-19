@@ -15,6 +15,7 @@ const openFilter = ref({
   nutrients: false,
   source: false,
   menuType: false,
+  properties: false,
 })
 let sliders = ref([
   {
@@ -66,6 +67,9 @@ const orderings = ref([
 ])
 let recipeType = ref(null as number | null)
 let sources = ref([] as number[])
+let recipeProperties = ref({
+  ChechkochPlus: false
+})
 
 const applyFilter = () => {
   recipeFilterRefs.calories_gt = sliders.value[0].value[0]
@@ -80,6 +84,7 @@ const applyFilter = () => {
   recipeFilterRefs.sources = sources.value
   recipeFilterRefs.ordering = ordering.value
   recipeFilterRefs.srch = searchString.value
+  recipeFilterRefs.chechkochPlus = recipeProperties.value.ChechkochPlus
 
   recipeFilterRefs.page = "1"
 }
@@ -281,6 +286,33 @@ updateComponentValues()
                         <input type="radio" v-model="recipeType" value="4"/>
                         <label
                             class="w-full ml-2 text-sm font-medium rounded text-white">Getränke</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mb-5">
+                    <h2 id="accordion-collapse-heading-2">
+                      <button type="button"
+                              @click="openFilter.properties = !openFilter.properties"
+                              :class="{'border-b-0':openFilter.properties}"
+                              class="flex items-center justify-between w-full p-5 font-medium text-left border focus:ring-4 focus:ring-gray-800 border-gray-700 text-gray-400 hover:bg-gray-800"
+                      >
+                        <span :class="{'text-white': openFilter.properties}"> Eigenschaften </span>
+                        <svg :class="{'rotate-180': openFilter.properties}" data-accordion-icon
+                             class="w-6 h-6 shrink-0" fill="currentColor"
+                             viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                          <path fill-rule="evenodd"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                      </button>
+                    </h2>
+                    <div :class="{ 'hidden': !openFilter.properties}" class="border border-gray-700 border-t-0"
+                         aria-labelledby="accordion-collapse-heading-2">
+                      <div class="p-2 rounded">
+                        <input type="checkbox" v-model="recipeProperties.ChechkochPlus"
+                               class="w-4 h-4 rounded focus:ring-2">
+                        <label
+                            class="w-full ml-2 text-sm font-medium rounded text-white">Chefkoch Plus</label>
                       </div>
                     </div>
                   </div>

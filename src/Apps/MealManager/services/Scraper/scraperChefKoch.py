@@ -43,7 +43,8 @@ class Scraper:
             for tag in tags[self.config.ck_tag_index:]:
                 try:
                     while self.active and (self.config.ck_index < self.config.ck_skip or self.config.ck_index == 0):
-                        self.scrape(self.config.ck_index, tag, main_tag)
+                        self.scrape(self.config.ck_index, tag, main_tag, True)
+                        self.scrape(self.config.ck_index, tag, main_tag, False)
                         self.config.set_ck_index(self.config.ck_index + self.limit)
                 except Exception as e:
                     self.exception = str(e)
@@ -205,13 +206,16 @@ class Scraper:
             name = tg["key"].capitalize()
             tg_object, created = TagGroup.objects.get_or_create(name=name)
             for tag in tg["tags"]:
-                Tag.objects.update_or_create(helloFreshId=tag["id"], name=tag["name"], type=tag["name"],
-                                             tagGroup=tg_object)
-                tags.append(tag["id"])
+                try:
+                    Tag.objects.update_or_create(helloFreshId=tag["id"], name=tag["name"], type=tag["name"],
+                                                 tagGroup=tg_object)
+                    tags.append(tag["id"])
+                except:
+                    logging.warning(f"Tag {tag['name']} already exists")
         return tags
 
-    def scrape(self, index, tag, main_tag):
-        chefkoch_url = f"https://api.chefkoch.de/v2/search-gateway/recipes?tags={main_tag[0]},{tag}&minimumRating=4.2&limit={self.limit}&offset={index}"
+    def scrape(self, index, tag, main_tag, isPlus=False):
+        chefkoch_url = f"https://api.chefkoch.de/v2/search-gateway/recipes?tags={main_tag[0]},{tag}&minimumRating=4.2&limit={self.limit}&offset={index}&isPlus={1 if isPlus else 0}"
         response = requests.request("GET", chefkoch_url)
         self.create_all_tags(response.json()["tagGroups"])
         items = response.json()["results"]
