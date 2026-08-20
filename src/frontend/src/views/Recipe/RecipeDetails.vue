@@ -67,6 +67,24 @@
                 </button>
               </div>
             </div>
+            <button class="action-button" @click="exportToMealie()" title="Rezeptdaten für Mealie kopieren">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5"
+                   viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+                   class="inline-block w-8 h-8 text-white button-icon">
+                <path
+                    d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.057 1.123-.08M15.75 18H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08M15.75 18.75v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5A3.375 3.375 0 006.375 7.5H5.25m11.9-3.664A2.251 2.251 0 0015 2.25h-1.5a2.251 2.251 0 00-2.15 1.586m5.8 0c.065.21.1.433.1.664v.75h-6V4.5c0-.231.035-.454.1-.664M6.75 7.5H4.875c-.621 0-1.125.504-1.125 1.125v12c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125v-1.5"
+                    stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </button>
+            <button class="action-button" @click="copyShareLink()" title="Freigabe-Link für Mealie-URL-Import kopieren (1 Stunde gültig)">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5"
+                   viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+                   class="inline-block w-8 h-8 text-white button-icon">
+                <path
+                    d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"
+                    stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </button>
             <a class="action-button" v-if="recipeStore.detailRecipe.websiteLink !== null"
                :href="recipeStore.detailRecipe.websiteLink"
                target="_blank" rel="noopener noreferrer">
@@ -187,19 +205,6 @@
                   <table class="table-auto border-collapse">
                     <tbody>
                     <tr v-for="ingredient in group.ingredients" class="odd:bg-slate-700">
-                      <td>
-                        <button @click="handleIngredientClick(ingredient)"
-                                class="mt-2 flex items-center justify-center w-8 h-8 border border-gray-500 rounded-full">
-                          <svg v-if="ingredient.ingredient.available" class="w-6 h-6 text-green-500" aria-hidden="true"
-                               fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm-3-9l2 2 5-5"></path>
-                          </svg>
-                          <svg v-else class="w-6 h-6 text-gray-500" aria-hidden="true"
-                               fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm-3-9l2 2 5-5"></path>
-                          </svg>
-                        </button>
-                      </td>
                       <td class="px-2 py-2 text-white max-w-xs"
                           v-if="recipeStore.detailRecipe.servings"
                           v-text="ingredient.amount > 0 ? Math.round(ingredient.amount / recipeStore.detailRecipe.servings * servings*100)/100 : ''"></td>
@@ -259,10 +264,9 @@ import {computed, ref, watch} from "vue";
 import RefreshSwiper from "@/components/common/RefreshSwiper.vue";
 import {share} from "@/reusableMethods/share";
 import NumberInput from "@/components/common/NumberInput.vue";
-import {usePantryStore} from "@/stores/PantryStore";
+import AlertBannerType, {useAlertBannerStore} from "@/stores/AlertBannerStore";
 
 let recipeStore = useRecipeStore()
-let pantryStore = usePantryStore()
 
 const recipeId = useRouter().currentRoute.value.params.id
 
@@ -281,13 +285,26 @@ const load = async (reset = true) => {
 }
 load()
 
-const handleIngredientClick = async (ingredient: any) => {
-  if (ingredient.ingredient.available) {
-    await pantryStore.removeIngredientFromPantry(ingredient.ingredient.helloFreshId)
+const exportToMealie = async () => {
+  const success = await recipeStore.copyMealieExport(recipeStore.detailRecipe.helloFreshId)
+  if (success) {
+    useAlertBannerStore().showBanner(AlertBannerType.SUCCESS, "Kopiert!",
+        "Die Rezeptdaten wurden in die Zwischenablage kopiert - füge sie in Mealies HTML-Import ein.")
   } else {
-    await pantryStore.addIngredientToPantry(ingredient.ingredient.helloFreshId)
+    useAlertBannerStore().showBanner(AlertBannerType.ERROR, "Fehlgeschlagen",
+        "Die Rezeptdaten konnten nicht kopiert werden.")
   }
-  await load(false)
+}
+
+const copyShareLink = async () => {
+  const success = await recipeStore.copyMealieShareLink(recipeStore.detailRecipe.helloFreshId)
+  if (success) {
+    useAlertBannerStore().showBanner(AlertBannerType.SUCCESS, "Link kopiert!",
+        "Füge den Link 1 Stunde lang in Mealies URL-Import ein.")
+  } else {
+    useAlertBannerStore().showBanner(AlertBannerType.ERROR, "Fehlgeschlagen",
+        "Der Freigabe-Link konnte nicht erstellt werden.")
+  }
 }
 
 const switchFavoriteRecipe = async () => {

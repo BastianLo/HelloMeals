@@ -4,7 +4,6 @@ import {useRecipeStore} from "@/stores/RecipeStore";
 export class Recipe {
     helloFreshId: string;
     ingredient_count: number;
-    available_ingredient_count: number;
     similarity: number;
     relevancy: number;
     favorited: boolean;
@@ -44,7 +43,6 @@ export class Recipe {
     constructor(data: Partial<Recipe> = {}) {
         this.helloFreshId = data.helloFreshId || "";
         this.ingredient_count = data.ingredient_count || 0;
-        this.available_ingredient_count = data.available_ingredient_count || 0;
         this.similarity = data.similarity || 0;
         this.relevancy = data.relevancy || 0;
         this.favorited = data.favorited || false;

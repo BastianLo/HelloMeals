@@ -84,6 +84,5 @@ export interface Ingredient {
     name: string;
     image: string;
     usage_count: number;
-    available: boolean;
     HelloFreshImageUrl: string;
 }

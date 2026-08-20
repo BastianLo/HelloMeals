@@ -1,10 +1,8 @@
 import uuid
-from threading import Thread
 
 from cached_property import cached_property_with_ttl
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models import Q
 from django.db.models.signals import pre_delete, post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
@@ -291,115 +289,8 @@ def delete_related_ingredient_groups(sender, instance, **kwargs):
     instance.ingredient_groups.all().delete()
 
 
-class Stock(models.Model):
-    ingredients = models.ManyToManyField(Ingredient, blank=True)
-    name = models.CharField(max_length=255)
-
-    def add(self, ingredient: Ingredient):
-        while ingredient.parent is not None:
-            ingredient = ingredient.parent
-        if self.ingredients.filter(helloFreshId=ingredient.helloFreshId).exists():
-            return False
-        self.ingredients.add(ingredient)
-        return True
-
-    def remove(self, ingredient: Ingredient):
-        while ingredient.parent is not None:
-            ingredient = ingredient.parent
-        if not self.ingredients.filter(helloFreshId=ingredient.helloFreshId).exists():
-            return False
-        self.ingredients.remove(ingredient)
-        return True
-
-    def apply_parent(self, ingredient):
-        if ingredient.parent is None:
-            return
-        # if len(self.ingredients.filter(helloFreshId=ingredient.helloFreshId)) > 0:
-        self.ingredients.remove(ingredient)
-        self.ingredients.add(ingredient.parent)
-
-    def __str__(self):
-        return f"Stock {self.name}"
-
-
-class RecipeStockIngredientCount(models.Model):
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-    stock = models.ForeignKey(Stock, on_delete=models.CASCADE)
-    ingredientCount = models.IntegerField()
-    ingredientMax = models.IntegerField()
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['recipe', 'stock'], name='recipe_stock_primary_key'
-            )
-        ]
-
-    def get(recipe, stock):
-        return RecipeStockIngredientCount.objects.get(recipe=recipe, stock=stock)
-
-    def get_or_create(recipe, stock):
-        dbVal = RecipeStockIngredientCount.objects.filter(recipe=recipe, stock=stock)
-        if len(dbVal) == 1:
-            return dbVal[0]
-        return RecipeStockIngredientCount.create(recipe, stock)
-
-    def create(recipe, stock):
-        availableIngredients = RecipeIngredient.objects.filter(ingredient_group__in=recipe.ingredient_groups.all())
-        max_ingredients = len(availableIngredients)
-        availableIngredients = availableIngredients.filter(Q(ingredient__parent__in=stock.ingredients.all()) | Q(
-            ingredient__in=stock.ingredients.all()))
-        r = RecipeStockIngredientCount.objects.create(recipe=recipe, stock=stock,
-                                                      ingredientCount=len(availableIngredients),
-                                                      ingredientMax=max_ingredients)
-        r.save()
-        return RecipeStockIngredientCount.objects.get(recipe=recipe, stock=stock)
-
-    def updateObject(self):
-        RecipeStockIngredientCount.update(recipe=self.recipe, stock=self.stock)
-
-    def updateRecipe(recipe):
-        for rsic in RecipeStockIngredientCount.objects.filter(recipe=recipe).all():
-            rsic.updateObject()
-
-    def update(recipe, stock):
-        availableIngredients = RecipeIngredient.objects.filter(ingredient_group__in=recipe.ingredient_groups.all())
-        max_ingredients = len(availableIngredients)
-        availableIngredients = availableIngredients.filter(Q(ingredient__parent__in=stock.ingredients.all()) | Q(
-            ingredient__in=stock.ingredients.all()))
-        r = RecipeStockIngredientCount.objects.get(recipe=recipe, stock=stock)
-        r.ingredientCount = len(availableIngredients)
-        r.ingredientMax = max_ingredients
-        r.save()
-
-
-class ShoppingList(models.Model):
-    ingredients = models.ManyToManyField(Ingredient, blank=True)
-    stock = models.OneToOneField(Stock, on_delete=models.CASCADE)
-
-    def add(self, ingredient: Ingredient):
-        while ingredient.parent is not None:
-            ingredient = ingredient.parent
-        if self.ingredients.filter(helloFreshId=ingredient.helloFreshId).exists():
-            return False
-        self.ingredients.add(ingredient)
-        return True
-
-    def remove(self, ingredient: Ingredient):
-        while ingredient.parent is not None:
-            ingredient = ingredient.parent
-        if not self.ingredients.filter(helloFreshId=ingredient.helloFreshId).exists():
-            return False
-        self.ingredients.remove(ingredient)
-        return True
-
-    def __str__(self):
-        return f"Shopping List {self.stock.name}"
-
-
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    stock = models.ForeignKey(Stock, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return f"Profile {self.user}"
@@ -408,16 +299,6 @@ class Profile(models.Model):
 class InviteToken(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     issuer = models.ForeignKey(User, on_delete=models.CASCADE)
-
-
-@receiver(post_save, sender=Stock)
-def create_shopping_list(sender, instance, created, **kwargs):
-    def initialize():
-        [RecipeStockIngredientCount.get_or_create(recipe, instance) for recipe in Recipe.objects.all()]
-
-    if created:
-        Thread(target=initialize).start()
-        ShoppingList.objects.create(stock=instance)
 
 
 @receiver(post_save, sender=User)

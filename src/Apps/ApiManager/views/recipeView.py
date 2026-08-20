@@ -3,16 +3,20 @@ import random
 import django_filters
 from Apps.MealManager.models import Recipe, Ingredient
 from Apps.MealManager.serializers import RecipeFullSerializer, RecipeBaseSerializer
+from Apps.MealManager.services.mealie_export import build_recipe_html
+from Apps.MealManager.services.recipe_share import SHARE_LINK_MAX_AGE, make_share_token, resolve_share_token
 from django.contrib.postgres.search import TrigramSimilarity
-from django.db.models import F, FloatField, ExpressionWrapper, Q, Case, When, Value
-from django.db.models.functions import Coalesce, Cast
+from django.db.models import F, FloatField, ExpressionWrapper, Q
+from django.db.models.functions import Coalesce
+from django.http import HttpResponse
+from django.urls import reverse
 from django_filters import rest_framework as filters
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
 from rest_framework import serializers
 from rest_framework import status
 from rest_framework.decorators import permission_classes, api_view
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from util.pagination import RqlPagination
@@ -26,8 +30,6 @@ class RecipeFilterSet(filters.FilterSet):
     srch = django_filters.CharFilter(method='filter_search')
     difficulty = django_filters.NumberFilter(field_name='difficulty')
     recipeType = django_filters.NumberFilter(field_name='recipeType')
-    ingredient_count__lt = django_filters.NumberFilter(method='filter_ingredient_count_lt')
-    ingredient_count__gt = django_filters.NumberFilter(method='filter_ingredient_count_gt')
     average_rating_gte = django_filters.NumberFilter(field_name="averageRating", lookup_expr='gte')
     average_rating_lte = django_filters.NumberFilter(field_name="averageRating", lookup_expr='lte')
     rating_count_gte = django_filters.NumberFilter(field_name="ratingCount", lookup_expr='gte')
@@ -70,16 +72,6 @@ class RecipeFilterSet(filters.FilterSet):
             )
         ).order_by('-relevancy')
 
-    def filter_ingredient_count_lt(self, queryset, name, value):
-        return queryset.annotate(
-            ingredient_count=F('recipestockingredientcount__ingredientMax')
-        ).filter(ingredient_count__lte=value).distinct()
-
-    def filter_ingredient_count_gt(self, queryset, name, value):
-        return queryset.annotate(
-            ingredient_count=F('recipestockingredientcount__ingredientMax')
-        ).filter(ingredient_count__gte=value).distinct()
-
     def filter_relevancy(self, queryset, name, value):
         return queryset.annotate(
             relevancy=F('rating') * F('ratingCount')
@@ -87,7 +79,7 @@ class RecipeFilterSet(filters.FilterSet):
 
     class Meta:
         model = Recipe
-        fields = ['srch', 'tag', 'cloned_from_null', 'difficulty', 'ingredient_count__lt', 'relevancy', 'calories_gt',
+        fields = ['srch', 'tag', 'cloned_from_null', 'difficulty', 'relevancy', 'calories_gt',
                   'calories_lt', 'isPlus']
 
 
@@ -178,22 +170,9 @@ class RecipeBaseList(generics.ListAPIView):
             hellofresh_ids = queryset.values_list('recipetag__tag__helloFreshId', flat=True).distinct()
             random_hellofresh_ids = random.sample(list(hellofresh_ids), min(sample_size, len(hellofresh_ids)))
             queryset = queryset.filter(recipetag__tag__helloFreshId__in=random_hellofresh_ids)
-        elif ordering and ordering not in ['relevancy', 'availIngredients']:
+        elif ordering and ordering != 'relevancy':
             fields = ordering.split(',')
             queryset = queryset.order_by(*fields)
-        elif ordering and ordering == 'availIngredients':
-            queryset = queryset.annotate(
-                ratio=Case(
-                    When(
-                        recipestockingredientcount__stock=self.request.user.profile.stock,
-                        recipestockingredientcount__ingredientMax__gt=0,
-                        then=Cast(F('recipestockingredientcount__ingredientCount'), FloatField()) / Cast(
-                            F('recipestockingredientcount__ingredientMax'), FloatField())
-                    ),
-                    default=Value(0),
-                    output_field=FloatField()
-                )
-            ).order_by('-ratio').distinct()
         return queryset
 
 
@@ -228,6 +207,45 @@ def set_favorite(request, helloFreshId, favorite):
     }
 
     return Response(response)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def export_recipe_mealie(request, helloFreshId):
+    try:
+        recipe = Recipe.objects.get(helloFreshId=helloFreshId)
+    except Recipe.DoesNotExist:
+        return Response({'error': 'Recipe not found'}, status=404)
+
+    return HttpResponse(build_recipe_html(recipe, request.build_absolute_uri), content_type='text/html')
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_recipe_share_link(request, helloFreshId):
+    if not Recipe.objects.filter(helloFreshId=helloFreshId).exists():
+        return Response({'error': 'Recipe not found'}, status=404)
+
+    token = make_share_token(helloFreshId)
+    path = reverse('recipe-shared', kwargs={'token': token})
+    return Response({
+        'url': request.build_absolute_uri(path),
+        'expiresInSeconds': SHARE_LINK_MAX_AGE,
+    })
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_shared_recipe(request, token):
+    helloFreshId = resolve_share_token(token)
+    if helloFreshId is None:
+        return HttpResponse('Dieser Link ist ungültig oder abgelaufen.', status=404)
+    try:
+        recipe = Recipe.objects.get(helloFreshId=helloFreshId)
+    except Recipe.DoesNotExist:
+        return HttpResponse('Rezept nicht gefunden.', status=404)
+
+    return HttpResponse(build_recipe_html(recipe, request.build_absolute_uri), content_type='text/html')
 
 
 class RecipeSerializer(serializers.Serializer):

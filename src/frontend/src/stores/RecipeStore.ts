@@ -88,6 +88,28 @@ export const useRecipeStore = defineStore({
                 return jsonResponse;
             }
         },
+        async copyMealieExport(id: string): Promise<boolean> {
+            const response = await authorizedFetch(baseUrl + `/Recipe/${id}/export/mealie`, {
+                method: "GET",
+            });
+            if (!response!.ok) {
+                return false
+            }
+            const html = await response!.text();
+            await navigator.clipboard.writeText(html);
+            return true
+        },
+        async copyMealieShareLink(id: string): Promise<boolean> {
+            const response = await authorizedFetch(baseUrl + `/Recipe/${id}/share-link`, {
+                method: "GET",
+            });
+            if (!response!.ok) {
+                return false
+            }
+            const jsonResponse = await response!.json();
+            await navigator.clipboard.writeText(jsonResponse.url);
+            return true
+        },
         async fetch_base_information() {
             const response = await authorizedFetch(baseUrl + '/Recipe/BaseInformation', {
                 method: "GET",

@@ -1,7 +1,5 @@
-from threading import Thread
-
 import django_filters
-from Apps.MealManager.models import Ingredient, RecipeIngredient, Stock, Recipe, RecipeStockIngredientCount
+from Apps.MealManager.models import Ingredient, RecipeIngredient
 from Apps.MealManager.serializers import IngredientSerializer
 from django.db.models import Count
 from django_filters import rest_framework as filters
@@ -50,81 +48,6 @@ class IngredientList(generics.ListAPIView):
         return queryset
 
 
-class stockList(generics.ListAPIView):
-    permission_classes = [IsAuthenticated]
-    pagination_class = RqlPagination
-    filterset_class = IngredientFilterSet
-
-    def get_serializer_class(self):
-        return IngredientSerializer
-
-    def get_queryset(self):
-        user = self.request.user
-        if user.profile.stock:
-            return user.profile.stock.ingredients
-        else:
-            return Ingredient.objects.none()
-
-
-@api_view(['POST', 'DELETE'])
-@permission_classes([IsAuthenticated])
-def add_ingredient_to_stock(request, ingredient_id):
-    successful = None
-    ingredient = Ingredient.objects.get(helloFreshId=ingredient_id)
-    if request.method == 'POST':
-        ingredient = ingredient
-        successful = request.user.profile.stock.add(ingredient)
-    elif request.method == 'DELETE':
-        ingredient = ingredient
-        successful = request.user.profile.stock.remove(ingredient)
-
-    def update_recipes(ingredient):
-        recipes = Recipe.objects.filter(
-            helloFreshId__in=[i.helloFreshId for i in ingredient.get_related_recipes()])
-        [RecipeStockIngredientCount.updateRecipe(recipe) for recipe in recipes]
-
-    thread = Thread(target=update_recipes, args=(ingredient,))
-    thread.start()
-
-    response = {
-        "successful": successful
-    }
-    return Response(response)
-
-
-class shoppingListView(generics.ListAPIView):
-    permission_classes = [IsAuthenticated]
-    pagination_class = RqlPagination
-    filterset_class = IngredientFilterSet
-
-    def get_serializer_class(self):
-        return IngredientSerializer
-
-    def get_queryset(self):
-        user = self.request.user
-        if user.profile.stock and user.profile.stock.shoppinglist:
-            return user.profile.stock.shoppinglist.ingredients
-        else:
-            return Ingredient.objects.none()
-
-
-@api_view(['POST', 'DELETE'])
-@permission_classes([IsAuthenticated])
-def add_ingredient_to_shopping_list(request, ingredient_id):
-    successful = None
-    if request.method == 'POST':
-        ingredient = Ingredient.objects.get(helloFreshId=ingredient_id)
-        successful = request.user.profile.stock.shoppinglist.add(ingredient)
-    elif request.method == 'DELETE':
-        ingredient = Ingredient.objects.get(helloFreshId=ingredient_id)
-        successful = request.user.profile.stock.shoppinglist.remove(ingredient)
-
-    response = {
-        "successful": successful
-    }
-    return Response(response)
-
-
 @authentication_classes([SessionAuthentication, BasicAuthentication, TokenAuthentication])
 @api_view(['POST'])
 @swagger_auto_schema()
@@ -142,7 +65,6 @@ def assign_ingredient_parent(request, helloFreshId, parentId=None):
         return Response({'error': 'Can not assign a parent which is already a child'}, status=400)
 
     source.parent = parent
-    [stock.apply_parent(source) for stock in Stock.objects.all()]
     source.save()
     response = {
         'message': 'Ingredient assigned successfully',

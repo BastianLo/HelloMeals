@@ -2,7 +2,7 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from Apps.MealManager.models import Ingredient, InviteToken, Recipe, Tag
+from Apps.MealManager.models import InviteToken, Recipe, Tag
 
 from .utils import authenticated_client, create_admin, create_user
 
@@ -75,20 +75,6 @@ class DecoratorCleanupPermissionRegressionTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["username"], "regular")
 
-    def test_change_membership_requires_authentication(self):
-        response = APIClient().post("/api/Stock/1/Membership")
-        self.assertIn(response.status_code, ANON_REJECTED)
-
-    def test_remove_membership_requires_authentication(self):
-        response = APIClient().get("/api/Stock/Membership")
-        self.assertIn(response.status_code, ANON_REJECTED)
-
-    def test_add_ingredient_to_stock_requires_authentication(self):
-        ingredient = Ingredient.objects.create(helloFreshId="i1", name="Salt")
-        response = APIClient().post(f"/api/Ingredient/Stock/{ingredient.helloFreshId}")
-        self.assertIn(response.status_code, ANON_REJECTED)
-
-    def test_add_ingredient_to_shopping_list_requires_authentication(self):
-        ingredient = Ingredient.objects.create(helloFreshId="i2", name="Pepper")
-        response = APIClient().post(f"/api/Ingredient/ShoppingList/{ingredient.helloFreshId}")
+    def test_export_recipe_mealie_requires_authentication(self):
+        response = APIClient().get(f"/api/Recipe/{self.recipe.helloFreshId}/export/mealie")
         self.assertIn(response.status_code, ANON_REJECTED)

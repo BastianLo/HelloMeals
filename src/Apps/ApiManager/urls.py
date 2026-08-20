@@ -9,7 +9,7 @@ from rest_framework import permissions
 from rest_framework.routers import SimpleRouter
 from rest_framework_simplejwt.views import TokenBlacklistView
 
-from .views import scraperView, recipeView, tagView, authentification_view, ingredientView, stockView
+from .views import scraperView, recipeView, tagView, authentification_view, ingredientView
 
 router = SimpleRouter()
 router.register(r'global', CustomGlobalPreferencesViewSet, basename='global')
@@ -52,16 +52,11 @@ urlpatterns = [
     path('Recipe/BaseInformation', recipeView.RecipeBaseInformationView.as_view()),
     path('Recipe/<str:helloFreshId>', recipeView.RecipeBaseDetail.as_view()),
     path('Recipe/<str:helloFreshId>/favorite/<str:favorite>', recipeView.set_favorite),
-
-    path('Stock', stockView.StockListCreate.as_view()),
-    path('Stock/<int:id>/Membership', stockView.change_membership),
-    path('Stock/Membership', stockView.remove_membership),
+    path('Recipe/<str:helloFreshId>/export/mealie', recipeView.export_recipe_mealie),
+    path('Recipe/<str:helloFreshId>/share-link', recipeView.get_recipe_share_link),
+    path('Recipe/shared/<str:token>', recipeView.get_shared_recipe, name='recipe-shared'),
 
     path('Ingredient', ingredientView.IngredientList.as_view()),
-    path('Ingredient/Stock', ingredientView.stockList.as_view()),
-    path('Ingredient/Stock/<str:ingredient_id>', ingredientView.add_ingredient_to_stock),
-    path('Ingredient/ShoppingList', ingredientView.shoppingListView.as_view()),
-    path('Ingredient/ShoppingList/<str:ingredient_id>', ingredientView.add_ingredient_to_shopping_list),
     path('Ingredient/<str:helloFreshId>/assign/<str:parentId>', ingredientView.assign_ingredient_parent),
     path('Ingredient/<str:helloFreshId>/assign/', ingredientView.assign_ingredient_parent),
 

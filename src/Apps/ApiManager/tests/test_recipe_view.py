@@ -44,6 +44,58 @@ class RecipeBaseDetailSearchRegressionTests(TestCase):
         self.assertIsNone(response.json()["similarity"])
 
 
+class RecipeExportMealieTests(TestCase):
+    def setUp(self):
+        self.recipe = Recipe.objects.create(helloFreshId="r3", name="Export Test Recipe")
+        self.client_ = authenticated_client(create_user("export-user"))
+
+    def test_export_returns_html_with_json_ld(self):
+        response = self.client_.get(f"/api/Recipe/{self.recipe.helloFreshId}/export/mealie")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("text/html", response["Content-Type"])
+        content = response.content.decode()
+        self.assertIn('<script type="application/ld+json">', content)
+        self.assertIn('"name": "Export Test Recipe"', content)
+
+    def test_export_unknown_recipe_returns_404(self):
+        response = self.client_.get("/api/Recipe/does-not-exist/export/mealie")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_export_requires_authentication(self):
+        response = APIClient().get(f"/api/Recipe/{self.recipe.helloFreshId}/export/mealie")
+        self.assertIn(response.status_code, (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN))
+
+
+class RecipeShareLinkTests(TestCase):
+    def setUp(self):
+        self.recipe = Recipe.objects.create(helloFreshId="r4", name="Share Test Recipe")
+        self.client_ = authenticated_client(create_user("share-user"))
+
+    def test_share_link_requires_authentication(self):
+        response = APIClient().get(f"/api/Recipe/{self.recipe.helloFreshId}/share-link")
+        self.assertIn(response.status_code, (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN))
+
+    def test_share_link_unknown_recipe_returns_404(self):
+        response = self.client_.get("/api/Recipe/does-not-exist/share-link")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_share_link_points_to_a_working_public_url(self):
+        response = self.client_.get(f"/api/Recipe/{self.recipe.helloFreshId}/share-link")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        share_url = response.json()["url"]
+        self.assertIn("/api/Recipe/shared/", share_url)
+
+        # the shared URL must work for a fully anonymous client - no bearer token at all
+        path = share_url.split("/api", 1)[1]
+        anon_response = APIClient().get("/api" + path)
+        self.assertEqual(anon_response.status_code, status.HTTP_200_OK)
+        self.assertIn('"name": "Share Test Recipe"', anon_response.content.decode())
+
+    def test_shared_endpoint_rejects_invalid_token(self):
+        response = APIClient().get("/api/Recipe/shared/not-a-real-token")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
 class RecipeBaseListTests(TestCase):
     def test_requires_authentication(self):
         response = APIClient().get("/api/Recipe")

@@ -29,36 +29,12 @@ class IngredientSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
         fields = ["name", "children", "helloFreshId", "image", "HelloFreshImageUrl", "usage_count"]
 
 
-class advancedIngredientSerializer(IngredientSerializer):
-    available = serializers.SerializerMethodField()
-
-    def get_available(self, ingredient):
-        request = self.context.get('request')
-        if request.user is None or request.user.profile.stock is None:
-            return False
-        stock = request.user.profile.stock.ingredients.all()
-        ingredients = stock.filter(
-            Q(helloFreshId=ingredient.parent.helloFreshId if ingredient.parent is not None else None) | Q(
-                helloFreshId=ingredient.helloFreshId))
-        return len(ingredients) > 0
-
-    class Meta:
-        model = Ingredient
-        fields = ["name", "children", "helloFreshId", "image", "HelloFreshImageUrl", "usage_count", "available"]
-
-
 class RecipeIngredientSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
-    ingredient = advancedIngredientSerializer()
+    ingredient = IngredientSerializer()
 
     class Meta:
         model = RecipeIngredient
         exclude = ["ingredient_group"]
-
-
-class StockSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
-    class Meta:
-        model = Stock
-        fields = ["id", "name"]
 
 
 ### Utensil ###
@@ -156,7 +132,6 @@ class InviteTokenSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
 
 class RecipeBaseSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     ingredient_count = serializers.SerializerMethodField()
-    available_ingredient_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Recipe
@@ -188,13 +163,6 @@ class RecipeBaseSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     def get_ingredient_count(self, instance):
         ingredient_count = len(RecipeIngredient.objects.filter(ingredient_group__in=instance.ingredient_groups.all()))
         return ingredient_count
-
-    def get_available_ingredient_count(self, instance):
-        request = self.context.get('request')
-        if request.user.profile.stock is None:
-            return 0
-        return RecipeStockIngredientCount.get_or_create(recipe=instance,
-                                                        stock=request.user.profile.stock).ingredientCount
 
     def get_nutrients(self, instance):
         recipe_nutrients = Nutrients.objects.filter(recipe=instance).first()

@@ -122,9 +122,8 @@ let cutoff = (text: string | null, limit: number) => {
         </span>
       </div>
       <div>
-        <span class="text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded"
-              :class="{'bg-red-500': recipe.available_ingredient_count/recipe.ingredient_count === 0, 'bg-green-500': recipe.available_ingredient_count/recipe.ingredient_count > 0.5, 'bg-orange-600': recipe.available_ingredient_count/recipe.ingredient_count > 0 && recipe.available_ingredient_count/recipe.ingredient_count <= 0.5}"
-              v-text="recipe.available_ingredient_count + '/' + recipe.ingredient_count + ' Zutaten'">
+        <span class="bg-gray-600 text-white text-xs font-medium mr-2 px-2.5 py-0.5 rounded"
+              v-text="recipe.ingredient_count + ' Zutaten'">
         </span>
       </div>
     </div>

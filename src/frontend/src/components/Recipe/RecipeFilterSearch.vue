@@ -58,10 +58,6 @@ const orderings = ref([
   {
     title: "Relevanz",
     value: "relevancy"
-  },
-  {
-    title: "Zutaten",
-    value: "availIngredients"
   }
 ])
 let recipeType = ref(null as number | null)

@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from Apps.MealManager.models import Ingredient, Recipe, Stock
+from Apps.MealManager.models import Ingredient, Recipe
 
 
 class IngredientManagerTests(TestCase):
@@ -33,35 +33,6 @@ class IngredientHierarchyTests(TestCase):
     def test_get_descendants_can_exclude_self(self):
         descendants = {i.helloFreshId for i in self.parent.get_descendants(include_self=False)}
         self.assertEqual(descendants, {"c", "g"})
-
-
-class StockTests(TestCase):
-    def setUp(self):
-        self.stock = Stock.objects.create(name="Test Stock")
-        self.parent = Ingredient.objects.create(helloFreshId="p", name="Tomato")
-        self.child = Ingredient.objects.create(helloFreshId="c", name="Cherry Tomato", parent=self.parent)
-
-    def test_add_collapses_to_top_level_parent(self):
-        added = self.stock.add(self.child)
-        self.assertTrue(added)
-        self.assertIn(self.parent, self.stock.ingredients.all())
-        self.assertNotIn(self.child, self.stock.ingredients.all())
-
-    def test_add_twice_returns_false_second_time(self):
-        self.stock.add(self.child)
-        added_again = self.stock.add(self.child)
-        self.assertFalse(added_again)
-        self.assertEqual(self.stock.ingredients.count(), 1)
-
-    def test_remove_collapses_to_top_level_parent(self):
-        self.stock.add(self.child)
-        removed = self.stock.remove(self.child)
-        self.assertTrue(removed)
-        self.assertEqual(self.stock.ingredients.count(), 0)
-
-    def test_remove_when_absent_returns_false(self):
-        removed = self.stock.remove(self.child)
-        self.assertFalse(removed)
 
 
 class RecipeSourceChoicesTests(TestCase):
