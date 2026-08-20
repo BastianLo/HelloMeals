@@ -72,41 +72,16 @@ urlpatterns = [
     path('Tag/<str:helloFreshId>', tagView.TagDetail.as_view()),
 
     path('Scraper/status', scraperView.get_all_status),
-
-    path('Scraper/hellofresh/status', scraperView.get_status),
-    path('Scraper/hellofresh/start', scraperView.start_scraper),
-    path('Scraper/hellofresh/stop', scraperView.stop_scraper),
-    path('Scraper/hellofresh/restart', scraperView.restart_scraper),
-    path('Scraper/hellofresh/setprogress/<int:index>', scraperView.set_index),
-
-    path('Scraper/kitchenstories/status', scraperView.get_kitchen_stories_status),
-    path('Scraper/kitchenstories/start', scraperView.start_kitchen_stories_scraper),
-    path('Scraper/kitchenstories/stop', scraperView.stop_kitchen_stories_scraper),
-    path('Scraper/kitchenstories/restart', scraperView.restart_kitchen_stories_scraper),
-    path('Scraper/kitchenstories/setprogress/<int:index>', scraperView.set_kitchen_stories_index),
-
-    path('Scraper/chefkoch/status', scraperView.get_chefkoch_status),
-    path('Scraper/chefkoch/start', scraperView.start_chefkoch_scraper),
-    path('Scraper/chefkoch/stop', scraperView.stop_chefkoch_scraper),
-    path('Scraper/chefkoch/restart', scraperView.restart_chefkoch_scraper),
-    path('Scraper/chefkoch/setprogress/<int:index>', scraperView.set_chefkoch_index),
-
-    path('Scraper/lecker/status', scraperView.get_lecker_status),
-    path('Scraper/lecker/start', scraperView.start_lecker_scraper),
-    path('Scraper/lecker/stop', scraperView.stop_lecker_scraper),
-    path('Scraper/lecker/restart', scraperView.restart_lecker_scraper),
-    path('Scraper/lecker/setprogress/<int:index>', scraperView.set_lecker_index),
-
-    path('Scraper/eatsmarter/status', scraperView.get_es_status),
-    path('Scraper/eatsmarter/start', scraperView.start_es_scraper),
-    path('Scraper/eatsmarter/stop', scraperView.stop_es_scraper),
-    path('Scraper/eatsmarter/restart', scraperView.restart_es_scraper),
-    path('Scraper/eatsmarter/setprogress/<int:index>', scraperView.set_es_index),
-
-    path('Scraper/mob/status', scraperView.get_mob_status),
-    path('Scraper/mob/start', scraperView.start_mob_scraper),
-    path('Scraper/mob/stop', scraperView.stop_mob_scraper),
-    path('Scraper/mob/restart', scraperView.restart_mob_scraper),
-    path('Scraper/mob/setprogress/<int:index>', scraperView.set_mob_index),
-
 ]
+
+# One set of paths per registered scraper (see scraperView.SCRAPER_REGISTRY), all pointing at
+# the same generic views with the source baked in as a fixed kwarg - keeps the URL strings
+# identical to before without repeating them by hand for every source.
+for _source in scraperView.SCRAPERS:
+    urlpatterns += [
+        path(f'Scraper/{_source}/status', scraperView.get_scraper_status, {'source': _source}),
+        path(f'Scraper/{_source}/start', scraperView.start_scraper, {'source': _source}),
+        path(f'Scraper/{_source}/stop', scraperView.stop_scraper, {'source': _source}),
+        path(f'Scraper/{_source}/restart', scraperView.restart_scraper, {'source': _source}),
+        path(f'Scraper/{_source}/setprogress/<int:index>', scraperView.set_scraper_index, {'source': _source}),
+    ]

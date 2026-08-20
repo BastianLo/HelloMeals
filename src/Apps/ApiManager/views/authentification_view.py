@@ -24,6 +24,7 @@ class RefreshTokenView(TokenRefreshView):
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def current_user(request):
     user = request.user
     return Response({
@@ -75,9 +76,8 @@ class RegisterView(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
-@permission_classes([IsAuthenticated, IsAdminUser])
 class InviteListCreate(generics.ListCreateAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
@@ -93,8 +93,8 @@ class InviteListCreate(generics.ListCreateAPIView):
         return super().create(request, *args, **kwargs)
 
 
-@permission_classes([IsAuthenticated, IsAdminUser])
 class InviteDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated, IsAdminUser]
     serializer_class = InviteTokenSerializer
     lookup_field = 'id'
 

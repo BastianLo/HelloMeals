@@ -6,7 +6,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 
-@permission_classes([IsAuthenticated])
 class StockListCreate(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
@@ -21,6 +20,7 @@ class StockListCreate(generics.ListCreateAPIView):
 
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def change_membership(request, id):
     old_stock = request.user.profile.stock
     new_stock = Stock.objects.get(id=id)
@@ -43,6 +43,7 @@ def change_membership(request, id):
 
 
 @api_view(['DELETE', 'GET'])
+@permission_classes([IsAuthenticated])
 def remove_membership(request):
     response = None
     old_stock = request.user.profile.stock

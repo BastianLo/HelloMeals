@@ -26,7 +26,6 @@ class IngredientFilterSet(filters.FilterSet):
         fields = ['srch']
 
 
-@permission_classes([IsAuthenticated])
 class IngredientList(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     pagination_class = RqlPagination
@@ -51,7 +50,6 @@ class IngredientList(generics.ListAPIView):
         return queryset
 
 
-@permission_classes([IsAuthenticated])
 class stockList(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     pagination_class = RqlPagination
@@ -69,6 +67,7 @@ class stockList(generics.ListAPIView):
 
 
 @api_view(['POST', 'DELETE'])
+@permission_classes([IsAuthenticated])
 def add_ingredient_to_stock(request, ingredient_id):
     successful = None
     ingredient = Ingredient.objects.get(helloFreshId=ingredient_id)
@@ -93,7 +92,6 @@ def add_ingredient_to_stock(request, ingredient_id):
     return Response(response)
 
 
-@permission_classes([IsAuthenticated])
 class shoppingListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     pagination_class = RqlPagination
@@ -111,6 +109,7 @@ class shoppingListView(generics.ListAPIView):
 
 
 @api_view(['POST', 'DELETE'])
+@permission_classes([IsAuthenticated])
 def add_ingredient_to_shopping_list(request, ingredient_id):
     successful = None
     if request.method == 'POST':

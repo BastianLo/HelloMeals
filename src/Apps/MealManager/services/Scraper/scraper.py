@@ -1,78 +1,34 @@
 import logging
 import os
-import threading
 
 import requests
 from dynamic_preferences.registries import global_preferences_registry
 from isodate import parse_duration
 
-from .common import get_image, is_valid_iso_duration
-from .scrapeConfig import scrapeConfig
+from .baseScraper import BaseScraper
+from .common import get_image, is_valid_iso_duration, maybe_save_image
 from ...models import *
 
 global_preferences = global_preferences_registry.manager()
 
 
-# TagMerge.objects.create(source="57ebbc17b7e8697d4b3053ac", target="57ebbc17b7e8697d4b3053b5")
+class Scraper(BaseScraper):
+    config_key = "hellofresh"
 
-# TODO: for scraper functionality:
-# eg: functionality to redownload images (to improve quality)
-# Possibly increase recipe quality compared to other images
-class Scraper:
     def __init__(self):
-        self.exception = None
-        self.last_error = False
-        self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
-        self.config = scrapeConfig()
-        self.active = False
+        super().__init__()
         self.country = os.getenv('COUNTRY') if os.getenv('COUNTRY') else "DE"
         self.HELLO_FRESH_URL = f"https://www.hellofresh.de/gw/api/recipes?country={self.country}&order=-date&take=1&skip="
         self.bearer_token = None
 
-    def get_status(self):
-        return {
-            "max": self.config.hf_max_recipes,
-            "index": self.config.hf_start_index,
-            "running": self.is_running(),
-            "exception": self.exception
-        }
-
-    def work(self):
-        try:
-            while self.active and self.config.hf_start_index < self.config.hf_max_recipes:
-                self.scrape(self.config.hf_start_index)
-                self.config.set_hf_start_index(self.config.hf_start_index + 1)
-        except Exception as e:
-            self.exception = str(e)
-            self.active = False
-            self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
-            raise e
-
     def start(self):
         self.bearer_token = None
-        self.exception = None
-        self.active = True
-        if self.is_running():
-            return
-        self.work_thread.start()
+        super().start()
 
-    def stop(self):
-        if not self.active:
-            return
-        self.active = False
-        self.work_thread.join()
-        self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
-
-    def set_progress(self, index):
-        self.config.set_hf_start_index(index)
-
-    def restart(self):
-        self.stop()
-        self.config.set_hf_start_index(0)
-        self.start()
-
-    def is_running(self):
-        return self.work_thread.is_alive()
+    def work(self):
+        while self.active and self.get_index() < self.get_max():
+            self.scrape(self.get_index())
+            self.set_index(self.get_index() + 1)
 
     def bearer(self):
         if self.bearer_token is not None:
@@ -96,15 +52,17 @@ class Scraper:
             helloFreshId=recipe_json["id"],
             defaults={
                 "name": recipe_json["name"],
-                "source": 1,
+                "source": Recipe.Source.hellofresh,
                 "clonedFrom": recipe_json["clonedFrom"],
                 "videoLink": recipe_json["videoLink"],
-                "highlighted": recipe_json["highlighted"],
+                # HelloFresh's API dropped these fields at some point; keep them optional so a
+                # missing field doesn't block scraping the rest of the recipe.
+                "highlighted": recipe_json.get("highlighted"),
                 "isAddon": recipe_json["isAddon"],
-                "isDinnerToLunch": recipe_json["isDinnerToLunch"],
-                "isExcludedFromIndex": recipe_json["isExcludedFromIndex"],
-                "isPremium": recipe_json["isPremium"],
-                "author": recipe_json["author"],
+                "isDinnerToLunch": recipe_json.get("isDinnerToLunch"),
+                "isExcludedFromIndex": recipe_json.get("isExcludedFromIndex"),
+                "isPremium": recipe_json.get("isPremium"),
+                "author": recipe_json.get("author"),
                 "helloFreshActive": recipe_json["active"],
                 "headline": recipe_json["headline"],
                 "description": recipe_json["description"],
@@ -126,10 +84,7 @@ class Scraper:
                 "HelloFreshImageUrl": image_url
             }
         )
-        if (not (recipe[0].image and recipe[0].image.file)) and global_preferences['scraper__Download_Recipe_Images']:
-            image = get_image(image_url)
-            if image is not None:
-                recipe[0].image.save(str(uuid.uuid4()) + ".png", image)
+        maybe_save_image(recipe[0], image_url, 'scraper__Download_Recipe_Images')
         return recipe
 
     def create_ingredients(self, recipe_json, recipe):
@@ -156,11 +111,8 @@ class Scraper:
                     "HelloFreshImageUrl": image_url
                 }
             )[0]
-            if (not (ingredient.image and ingredient.image.file)) and global_preferences[
-                'scraper__Download_Ingredient_Images']:
-                image = get_image(image_url)
-                if image is not None:
-                    ingredient.image.save(str(uuid.uuid4()) + ".png", image)
+            if image_url is not None:
+                maybe_save_image(ingredient, image_url, 'scraper__Download_Ingredient_Images')
             # Create RecipeIngredient
             ingredient_id = ingredient_json["id"]
             ingredient_yield = [y for y in yields if y["id"] == ingredient_id][0]
@@ -273,12 +225,8 @@ class Scraper:
                     "HelloFreshImageUrl": image_url
                 }
             )[0]
-            if (not (step.image and step.image.file)) and (len(step_json["images"]) > 0) and global_preferences[
-                'scraper__Download_Process_Step_Images']:
-                try:
-                    step.image.save(str(uuid.uuid4()) + ".png", get_image(image_url))
-                except:
-                    print(f"Could not save process-step-image for step {step}")
+            if image_url is not None:
+                maybe_save_image(step, image_url, 'scraper__Download_Process_Step_Images')
 
     def scrape(self, index):
         if index % 500 == 0:
@@ -288,7 +236,7 @@ class Scraper:
         }
         response = requests.request("GET", self.HELLO_FRESH_URL + str(index), headers=headers)
         items = response.json()["items"]
-        self.config.set_hf_max_recipes(response.json()["total"])
+        self.set_max(response.json()["total"])
         for recipeJson in items:
             try:
                 recipe_id = recipeJson["id"]
@@ -311,14 +259,7 @@ class Scraper:
                 else:
                     logging.debug(f"Successfully updated recipe with id {recipe_id} (index: {index})")
             except Exception as e:
-                print(self.last_error)
-                if not self.last_error:
-                    logging.warning(f"Recipe with skip '{index}' failed. Skipping... - Error: {e}")
-                    self.last_error = True
-                    raise e
-                else:
-                    logging.error(f"Recipe with skip '{index}' failed second time. Canceling")
-                    raise e
+                self.handle_scrape_error(e, f"Recipe with skip '{index}'")
 
 
 s = Scraper()

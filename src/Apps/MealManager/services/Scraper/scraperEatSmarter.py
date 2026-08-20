@@ -1,73 +1,27 @@
 import logging
-import threading
-import uuid
 from datetime import timedelta
 
 import requests
 from dynamic_preferences.registries import global_preferences_registry
 
-from .common import get_image
-from .scrapeConfig import scrapeConfig
+from .baseScraper import BaseScraper
+from .common import maybe_save_image
 from ...models import *
 
 global_preferences = global_preferences_registry.manager()
 
 
-class KSScraper:
-    def __init__(self):
-        self.exception = None
-        self.last_error = False
-        self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
-        self.config = scrapeConfig()
-        self.active = False
-
-    def get_status(self):
-        return {
-            "max": self.config.es_max,
-            "index": self.config.es_index,
-            "running": self.is_running(),
-            "exception": self.exception
-        }
+class EatSmarterScraper(BaseScraper):
+    config_key = "eatsmarter"
 
     def work(self):
         categories = [(4161, 4), (4029, 3), (3857, 2), (3817, 1), (3855, 0)]
         for category in categories:
-            self.config.set_es_index(0)
-            self.config.set_es_max(100)
-            try:
-                while self.active and self.config.es_index < self.config.es_max:
-                    self.scrape(self.config.es_index, category)
-                    self.config.set_es_index(self.config.es_index + 1)
-            except Exception as e:
-                self.exception = str(e)
-                self.active = False
-                self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
-                raise e
-
-    def start(self):
-        self.exception = None
-        self.active = True
-        if self.is_running():
-            return
-        self.work_thread.start()
-
-    def stop(self):
-        if not self.active:
-            return
-        self.active = False
-        self.work_thread.join()
-        self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
-
-    def set_progress(self, index):
-        self.config.set_es_index(index)
-
-    def restart(self):
-        self.stop()
-        self.config.set_es_index(1)
-        self.start()
-
-    def is_running(self):
-        return self.work_thread.is_alive()
+            self.set_index(0)
+            self.set_max(100)
+            while self.active and self.get_index() < self.get_max():
+                self.scrape(self.get_index(), category)
+                self.set_index(self.get_index() + 1)
 
     def create_recipe(self, recipe_json, recipe_type):
         if recipe_json["title"] is None:
@@ -83,7 +37,7 @@ class KSScraper:
             helloFreshId="es" + str(recipe_json["id"]),
             defaults={
                 "name": recipe_json["title"],
-                "source": 5,
+                "source": Recipe.Source.eatsmarter,
                 "recipeType": recipe_type,
                 "healthScore": recipe_json["healthScore"],
                 "isPremium": recipe_json["isPremium"],
@@ -99,10 +53,7 @@ class KSScraper:
                 "HelloFreshImageUrl": image_url
             }
         )
-        if (not (recipe[0].image and recipe[0].image.file)) and global_preferences['scraper__Download_Recipe_Images']:
-            image = get_image(image_url)
-            if image is not None:
-                recipe[0].image.save(str(uuid.uuid4()) + ".png", image)
+        maybe_save_image(recipe[0], image_url, 'scraper__Download_Recipe_Images')
         return recipe
 
     def create_ingredients(self, recipe_json, recipe):
@@ -202,7 +153,7 @@ class KSScraper:
                                     headers=headers)
         items = response.json()["results"]
         if len(items) == 0:
-            self.config.set_es_max(index)
+            self.set_max(index)
             return
         for recipeJson in items:
             try:
@@ -224,16 +175,10 @@ class KSScraper:
                 else:
                     logging.debug(f"Successfully updated recipe with id {new_recipe_json['id']} (index: {index})")
             except Exception as e:
-                if not self.last_error:
-                    logging.warning(f"Recipe with skip '{index}' failed. Skipping... - Error: {e}")
-                    self.last_error = True
-                    raise e
-                else:
-                    logging.error(f"Recipe with skip '{index}' failed second time. Canceling")
-                    raise e
+                self.handle_scrape_error(e, f"Recipe with skip '{index}'")
 
 
-s = KSScraper()
+s = EatSmarterScraper()
 
 
 def get_scraper():

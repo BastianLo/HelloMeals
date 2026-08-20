@@ -32,7 +32,7 @@ class Scraper:
                 helloFreshId="y" + recipe[1],
                 defaults={
                     "name": recipe[2],
-                    "source": 6,
+                    "source": Recipe.Source.yazio,
                     "description": recipe[3],
                     "HelloFreshImageUrl": image_url,
                     "servings": recipe[8],

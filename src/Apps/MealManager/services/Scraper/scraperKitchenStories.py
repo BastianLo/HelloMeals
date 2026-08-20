@@ -1,71 +1,32 @@
 import logging
 import os
-import threading
 from datetime import timedelta
 
 import requests
 from dynamic_preferences.registries import global_preferences_registry
 
-from .common import get_image
-from .scrapeConfig import scrapeConfig
+from .baseScraper import BaseScraper
+from .common import maybe_save_image
 from ...models import *
 
 global_preferences = global_preferences_registry.manager()
 
 
-class KSScraper:
+class KSScraper(BaseScraper):
+    config_key = "kitchenstories"
+
     def __init__(self):
+        super().__init__()
         self.PAGE_SIZE = 10
         self.country = os.getenv('COUNTRY') if os.getenv('COUNTRY') else "DE"
-        self.exception = None
-        self.last_error = False
-        self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
-        self.config = scrapeConfig()
-        self.active = False
 
-    def get_status(self):
-        return {
-            "max": self.config.ks_max_page,
-            "index": self.config.ks_page,
-            "running": self.is_running(),
-            "exception": self.exception
-        }
+    def reset_progress(self):
+        self.set_index(1)
 
     def work(self):
-        try:
-            while self.active and self.config.ks_page < self.config.ks_max_page:
-                self.scrape(self.config.ks_page)
-                self.config.set_ks_page(self.config.ks_page + 1)
-        except Exception as e:
-            self.exception = str(e)
-            self.active = False
-            self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
-            raise e
-
-    def start(self):
-        self.exception = None
-        self.active = True
-        if self.is_running():
-            return
-        self.work_thread.start()
-
-    def stop(self):
-        if not self.active:
-            return
-        self.active = False
-        self.work_thread.join()
-        self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
-
-    def set_progress(self, index):
-        self.config.set_ks_page(index)
-
-    def restart(self):
-        self.stop()
-        self.config.set_ks_page(1)
-        self.start()
-
-    def is_running(self):
-        return self.work_thread.is_alive()
+        while self.active and self.get_index() < self.get_max():
+            self.scrape(self.get_index())
+            self.set_index(self.get_index() + 1)
 
     def create_recipe(self, recipe_json):
         if "tags" not in recipe_json or "amount" not in recipe_json["servings"] or "duration" not in recipe_json:
@@ -98,7 +59,7 @@ class KSScraper:
             helloFreshId=recipe_json["id"],
             defaults={
                 "name": recipe_json["title"],
-                "source": 2,
+                "source": Recipe.Source.kitchenstories,
                 "recipeType": recipe_type,
                 "clonedFrom": None,
                 "videoLink": None,
@@ -128,10 +89,7 @@ class KSScraper:
                 "HelloFreshImageUrl": image_url
             }
         )
-        if (not (recipe[0].image and recipe[0].image.file)) and global_preferences['scraper__Download_Recipe_Images']:
-            image = get_image(image_url)
-            if image is not None:
-                recipe[0].image.save(str(uuid.uuid4()) + ".png", image)
+        maybe_save_image(recipe[0], image_url, 'scraper__Download_Recipe_Images')
         return recipe
 
     def create_ingredients(self, recipe_json, recipe):
@@ -255,18 +213,14 @@ class KSScraper:
                     "HelloFreshImageUrl": image_url
                 }
             )[0]
-            if (not (step.image and step.image.file)) and global_preferences[
-                'scraper__Download_Process_Step_Images'] and image_url is not None:
-                try:
-                    step.image.save(str(uuid.uuid4()) + ".png", get_image(image_url))
-                except:
-                    print(f"Could not save process-step-image for step {step}")
+            if image_url is not None:
+                maybe_save_image(step, image_url, 'scraper__Download_Process_Step_Images')
 
     def scrape(self, index):
         response = requests.request("GET",
                                     f"https://web-bff.services.kitchenstories.io/api/recipes/?page={index}&page_size={self.PAGE_SIZE}&language={self.country}")
         items = response.json()["data"]
-        self.config.set_ks_max_page(response.json()["meta"]["pagination"]["pages"])
+        self.set_max(response.json()["meta"]["pagination"]["pages"])
         for recipeJson in items:
             try:
                 temp = self.create_recipe(recipeJson)
@@ -285,13 +239,7 @@ class KSScraper:
                 else:
                     logging.debug(f"Successfully updated recipe with id {recipeJson['id']} (index: {index})")
             except Exception as e:
-                if not self.last_error:
-                    logging.warning(f"Recipe with skip '{index}' failed. Skipping... - Error: {e}")
-                    self.last_error = True
-                    raise e
-                else:
-                    logging.error(f"Recipe with skip '{index}' failed second time. Canceling")
-                    raise e
+                self.handle_scrape_error(e, f"Recipe with skip '{index}'")
 
 
 s = KSScraper()

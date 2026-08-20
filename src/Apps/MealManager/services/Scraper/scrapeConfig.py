@@ -5,144 +5,44 @@ from HelloMeals import settings
 
 
 class ScrapeConfig:
-    def __init__(self):
-        self.path = str(settings.BASE_DIR) + "/data/config/scraper.json"
+    """Persists per-scraper progress (`index`/`max` and a few source-specific extra fields)
+    to a single JSON file, keyed by scraper name. Replaces one hand-written attribute+setter
+    pair per field with a generic get/set so every scraper reads and writes through the same
+    path - the previous per-field getters and setters used mismatched JSON keys, so a saved
+    HelloFresh/KitchenStories progress was silently never read back."""
+
+    DEFAULTS = {
+        "hellofresh": {"index": 0, "max": 1000000},
+        "kitchenstories": {"index": 1, "max": 1000000},
+        "chefkoch": {"index": 1, "max": 1000000, "main_tag_index": 0, "tag_index": 0},
+        "lecker": {"index": 0, "max": 1000000},
+        "eatsmarter": {"index": 0, "max": 100},
+        "mob": {"index": 0, "max": 1000000},
+    }
+
+    def __init__(self, path=None):
+        self.path = path or (str(settings.BASE_DIR) + "/data/config/scraper.json")
+        stored = {}
         if os.path.exists(self.path):
             with open(self.path, "r") as f:
-                self.config_data = json.load(f)
-        else:
-            self.config_data = {}
-        self.hf_start_index = self.config_data["hellofresh"][
-            "index"] if "hellofresh" in self.config_data and "index" in self.config_data[
-            "hellofresh"] else 0
-        self.hf_max_recipes = self.config_data["hellofresh"][
-            "max"] if "hellofresh" in self.config_data and "max" in self.config_data[
-            "hellofresh"] else 1000000
-        self.ks_page = self.config_data["kitchenstories"][
-            "index"] if "kitchenstories" in self.config_data and "index" in self.config_data[
-            "kitchenstories"] else 1
-        self.ks_max_page = self.config_data["kitchenstories"][
-            "max"] if "kitchenstories" in self.config_data and "max" in self.config_data[
-            "kitchenstories"] else 1000000
-        self.ck_index = self.config_data["chefkoch"][
-            "index"] if "chefkoch" in self.config_data and "index" in self.config_data[
-            "chefkoch"] else 1
-        self.ck_main_tag_index = self.config_data["chefkoch"][
-            "main_tag_index"] if "chefkoch" in self.config_data and "main_tag_index" in self.config_data[
-            "chefkoch"] else 0
-        self.ck_tag_index = self.config_data["chefkoch"][
-            "index"] if "chefkoch" in self.config_data and "index" in self.config_data[
-            "chefkoch"] else 0
-        self.ck_skip = self.config_data["chefkoch"][
-            "index"] if "chefkoch" in self.config_data and "index" in self.config_data[
-            "chefkoch"] else 1000000
-        self.lk_index = self.config_data["lecker"][
-            "index"] if "lecker" in self.config_data and "index" in self.config_data[
-            "lecker"] else 0
-        self.lk_max = self.config_data["lecker"][
-            "max"] if "lecker" in self.config_data and "max" in self.config_data[
-            "lecker"] else 1000000
-        self.es_index = self.config_data["eatsmarter"][
-            "index"] if "eatsmarter" in self.config_data and "index" in self.config_data[
-            "eatsmarter"] else 0
-        self.es_max = self.config_data["eatsmarter"][
-            "max"] if "eatsmarter" in self.config_data and "max" in self.config_data[
-            "eatsmarter"] else 100
-        self.mob_index = self.config_data["mob"][
-            "index"] if "mob" in self.config_data and "index" in self.config_data[
-            "mob"] else 0
-        self.mob_max = self.config_data["mob"][
-            "max"] if "mob" in self.config_data and "max" in self.config_data[
-            "mob"] else 1000000
+                stored = json.load(f)
+        self.data = {
+            scraper: {**fields, **stored.get(scraper, {})}
+            for scraper, fields in self.DEFAULTS.items()
+        }
 
-    def set_hf_start_index(self, start_index):
-        self.hf_start_index = start_index
-        self.save_file()
+    def get(self, scraper, field):
+        return self.data[scraper][field]
 
-    def set_hf_max_recipes(self, max_recipes):
-        self.hf_max_recipes = max_recipes
-        self.save_file()
-
-    def set_ck_index(self, index):
-        self.ck_index = index
-        self.save_file()
-
-    def set_ck_main_tag_index(self, index):
-        self.ck_main_tag_index = index
-        self.save_file()
-
-    def set_ck_tag_index(self, index):
-        self.ck_tag_index = index
-        self.save_file()
-
-    def set_ck_skip(self, skip):
-        self.ck_skip = skip
-        self.save_file()
-
-    def set_ks_page(self, page):
-        self.ks_page = page
-        self.save_file()
-
-    def set_ks_max_page(self, max_page):
-        self.ks_max_page = max_page
-        self.save_file()
-
-    def set_lk_index(self, index):
-        self.lk_index = index
-        self.save_file()
-
-    def set_lk_max(self, max):
-        self.lk_max = max
-        self.save_file()
-
-    def set_es_index(self, index):
-        self.es_index = index
-        self.save_file()
-
-    def set_es_max(self, max):
-        self.es_max = max
-        self.save_file()
-
-    def set_mob_index(self, index):
-        self.mob_index = index
-        self.save_file()
-
-    def set_mob_max(self, max):
-        self.mob_max = max
+    def set(self, scraper, field, value):
+        self.data[scraper][field] = value
         self.save_file()
 
     def save_file(self):
         if not os.path.exists(os.path.dirname(self.path)):
             os.mkdir(os.path.dirname(self.path))
         with open(self.path, "w") as f:
-            json.dump({
-                "hellofresh": {
-                    "start_index": self.hf_start_index,
-                    "max_recipes": self.hf_max_recipes,
-                },
-                "kitchenstories": {
-                    "page": self.ks_page,
-                    "max_page": self.ks_max_page,
-                },
-                "chefkoch": {
-                    "index": self.ck_index,
-                    "skip": self.ck_skip,
-                    "main_tag_index": self.ck_main_tag_index,
-                    "tag_index": self.ck_tag_index,
-                },
-                "lecker": {
-                    "index": self.lk_index,
-                    "max": self.lk_max,
-                },
-                "eatsmarter": {
-                    "index": self.es_index,
-                    "max": self.es_max,
-                },
-                "mob": {
-                    "index": self.mob_index,
-                    "max": self.mob_max,
-                },
-            }, f)
+            json.dump(self.data, f)
 
 
 s = ScrapeConfig()

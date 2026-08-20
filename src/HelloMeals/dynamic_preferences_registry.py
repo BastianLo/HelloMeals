@@ -77,7 +77,7 @@ scraper = Section('scraper')
 
 # We start with a global preference
 @global_preferences_registry.register
-class ScraperDownloadRecipeImages(FloatPreference):
+class GeneralYazioScrape(FloatPreference):
     help_text = 'Should the application look for a yazio database?'
     section = general
     name = 'General_Yazio_Scrape'
@@ -85,7 +85,7 @@ class ScraperDownloadRecipeImages(FloatPreference):
 
 
 @global_preferences_registry.register
-class ScraperDownloadRecipeImages(FloatPreference):
+class ScraperChefkochMinimumRating(FloatPreference):
     help_text = 'Minimum Rating for Chefkoch'
     section = scraper
     name = 'Chefkoch_Minimum_Rating'

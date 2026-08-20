@@ -1,70 +1,36 @@
 import logging
 import re
-import threading
 
 import requests
 from dynamic_preferences.registries import global_preferences_registry
 from isodate import parse_duration
 
-from .common import get_image, is_valid_iso_duration
-from .scrapeConfig import scrapeConfig
+from .baseScraper import BaseScraper
+from .common import maybe_save_image, is_valid_iso_duration
 from ...models import *
 
 global_preferences = global_preferences_registry.manager()
 
 
-class Scraper:
-    def __init__(self):
-        self.exception = None
-        self.last_error = False
-        self.limit = 20
-        self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
-        self.config = scrapeConfig()
-        self.active = False
+def extract_servings(recipe_yield):
+    """Lecker's recipeYield is free text like "4 Personen", not a plain number."""
+    if recipe_yield is None:
+        return None
+    match = re.search(r"\d+", str(recipe_yield))
+    return int(match.group(0)) if match else None
 
-    def get_status(self):
-        return {
-            "max": self.config.lk_max,
-            "index": self.config.lk_index,
-            "running": self.is_running(),
-            "exception": self.exception
-        }
+
+class Scraper(BaseScraper):
+    config_key = "lecker"
+
+    def __init__(self):
+        super().__init__()
+        self.limit = 20
 
     def work(self):
-        try:
-            while self.active and self.config.lk_index < self.config.lk_max:
-                self.scrape(self.config.lk_index)
-                self.config.set_lk_index(self.config.lk_index + self.limit)
-        except Exception as e:
-            self.exception = str(e)
-            self.active = False
-            self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
-            raise e
-
-    def start(self):
-        self.exception = None
-        self.active = True
-        if self.is_running():
-            return
-        self.work_thread.start()
-
-    def stop(self):
-        if not self.active:
-            return
-        self.active = False
-        self.work_thread.join()
-        self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
-
-    def set_progress(self, index):
-        self.config.set_lk_index(index)
-
-    def restart(self):
-        self.stop()
-        self.config.set_lk_index(0)
-        self.start()
-
-    def is_running(self):
-        return self.work_thread.is_alive()
+        while self.active and self.get_index() < self.get_max():
+            self.scrape(self.get_index())
+            self.set_index(self.get_index() + self.limit)
 
     def create_recipe(self, recipe_json, url, id):
         paragraphs = recipe_json["body"]["paragraphs"]
@@ -82,7 +48,7 @@ class Scraper:
             defaults={
                 "name": recipe_paragraph["name"],
                 "description": recipe_paragraph["description"],
-                "source": 4,
+                "source": Recipe.Source.lecker,
                 "websiteLink": url,
                 "prepTime": parse_duration(recipe_paragraph["cookTime"]) if recipe_paragraph[
                                                                                 "cookTime"] and is_valid_iso_duration(
@@ -97,15 +63,12 @@ class Scraper:
                 "averageRating": recipe_paragraph["aggregateRating"][
                     "ratingValue"] if "aggregateRating" in recipe_paragraph else 0,
                 "ratingCount": recipe_paragraph["aggregateRating"][
-                    "reviewCount"] if "aggregateRating" in recipe_paragraph else 0,
-                "servings": recipe_paragraph["recipeYield"],
+                    "ratingCount"] if "aggregateRating" in recipe_paragraph else 0,
+                "servings": extract_servings(recipe_paragraph.get("recipeYield")),
                 "HelloFreshImageUrl": image_url
             }
         )
-        if (not (recipe[0].image and recipe[0].image.file)) and global_preferences['scraper__Download_Recipe_Images']:
-            image = get_image(image_url)
-            if image is not None:
-                recipe[0].image.save(str(uuid.uuid4()) + ".png", image)
+        maybe_save_image(recipe[0], image_url, 'scraper__Download_Recipe_Images')
         return recipe
 
     def create_ingredients(self, recipe_json, recipe):
@@ -182,7 +145,7 @@ class Scraper:
         list_url = f"https://proxy.xceler8.io/v2/search?brand=lecker&q=(documentData.paragraphs.recipe.category:%22Hauptgericht%22)&offset={index}&limit={self.limit}&type=article"
         response = requests.request("GET", list_url)
         items = response.json()["results"]
-        self.config.set_lk_max(response.json()["total"])
+        self.set_max(response.json()["total"])
         for recipeJson in items:
             try:
                 url = f"https://proxy.xceler8.io/v2/page/lecker?url=%2F{recipeJson['url'].replace('/', '')}"
@@ -205,14 +168,7 @@ class Scraper:
                 else:
                     logging.debug(f"Successfully updated recipe with id {recipe.helloFreshId} (index: {index})")
             except Exception as e:
-                print(self.last_error)
-                if not self.last_error:
-                    logging.warning(f"Recipe with skip '{index}' failed. Skipping... - Error: {e}")
-                    self.last_error = True
-                    raise e
-                else:
-                    logging.error(f"Recipe with skip '{index}' failed second time. Canceling")
-                    raise e
+                self.handle_scrape_error(e, f"Recipe with skip '{index}'")
 
 
 s = Scraper()

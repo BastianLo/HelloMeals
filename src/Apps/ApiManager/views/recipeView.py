@@ -93,7 +93,6 @@ class RecipeFilterSet(filters.FilterSet):
 
 ### Views ###
 
-@permission_classes([IsAuthenticated])
 class RecipeFullList(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     filterset_class = RecipeFilterSet
@@ -109,8 +108,8 @@ class RecipeFullList(generics.ListAPIView):
         return recipes
 
 
-@permission_classes([IsAuthenticated])
 class RecipeFullDetail(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
     serializer_class = RecipeFullSerializer
     lookup_field = 'helloFreshId'
 
@@ -198,8 +197,8 @@ class RecipeBaseList(generics.ListAPIView):
         return queryset
 
 
-@permission_classes([IsAuthenticated])
 class RecipeBaseDetail(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
     serializer_class = RecipeBaseSerializer
     lookup_field = 'helloFreshId'
 
@@ -208,6 +207,7 @@ class RecipeBaseDetail(generics.RetrieveAPIView):
 
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def set_favorite(request, helloFreshId, favorite):
     # Find the recipe with the specified helloFreshId
     try:

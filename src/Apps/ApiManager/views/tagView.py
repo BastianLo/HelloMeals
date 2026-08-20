@@ -9,9 +9,8 @@ from util.pagination import RqlPagination
 
 ### Views ###
 
-@permission_classes([IsAuthenticated, IsAdminUser])
 class TagMergeListCreate(generics.ListCreateAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdminUser]
     pagination_class = RqlPagination
 
     def get_serializer_class(self):
@@ -24,7 +23,6 @@ class TagMergeListCreate(generics.ListCreateAPIView):
         return tag_merges
 
 
-@permission_classes([IsAuthenticated])
 class TagListCreate(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     pagination_class = RqlPagination
@@ -40,8 +38,8 @@ class TagListCreate(generics.ListCreateAPIView):
         return tags
 
 
-@permission_classes([IsAuthenticated])
 class TagDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
     serializer_class = TagSerializer
     lookup_field = 'helloFreshId'
 
@@ -49,7 +47,6 @@ class TagDetail(generics.RetrieveUpdateDestroyAPIView):
         return Tag.objects.all()
 
 
-@permission_classes([IsAuthenticated])
 class TagGroupList(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     pagination_class = RqlPagination
@@ -64,7 +61,6 @@ class TagGroupList(generics.ListAPIView):
         return tag_groups
 
 
-@permission_classes([IsAuthenticated])
 class TagGroupFullList(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     pagination_class = RqlPagination

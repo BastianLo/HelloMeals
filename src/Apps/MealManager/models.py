@@ -163,8 +163,16 @@ class IngredientGroup(models.Model):
 class Recipe(models.Model):
     helloFreshId = models.TextField(primary_key=True, max_length=255, unique=True)
 
-    # Source: 1 = HelloFresh, 2 = KitchenStories, 3 = Chefkoch, 4 = Lecker, 5 = EatSmarter, 6 = Yazio, 7 = Mob
-    source = models.IntegerField(default=1)
+    class Source(models.IntegerChoices):
+        hellofresh = 1, _("HelloFresh")
+        kitchenstories = 2, _("KitchenStories")
+        chefkoch = 3, _("Chefkoch")
+        lecker = 4, _("Lecker")
+        eatsmarter = 5, _("EatSmarter")
+        yazio = 6, _("Yazio")
+        mob = 7, _("Mob")
+
+    source = models.IntegerField(choices=Source.choices, default=Source.hellofresh)
 
     nutrients = models.ForeignKey(Nutrients, on_delete=models.SET_NULL, blank=True, null=True)
 

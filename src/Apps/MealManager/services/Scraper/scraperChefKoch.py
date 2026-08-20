@@ -1,89 +1,48 @@
 import logging
 import os
-import threading
 from datetime import timedelta
 
 import requests
 from dynamic_preferences.registries import global_preferences_registry
 
-from .common import get_image
-from .scrapeConfig import scrapeConfig
+from .baseScraper import BaseScraper
+from .common import maybe_save_image
 from ...models import *
 
 global_preferences = global_preferences_registry.manager()
 
 
-# TODO: for scraper functionality:
-# eg: functionality to redownload images (to improve quality)
-# Possibly increase recipe quality compared to other images
-class Scraper:
+class Scraper(BaseScraper):
+    config_key = "chefkoch"
+
     def __init__(self):
-        self.exception = None
-        self.last_error = False
+        super().__init__()
         self.limit = 50
-        self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
-        self.config = scrapeConfig()
-        self.active = False
         self.country = os.getenv('COUNTRY') if os.getenv('COUNTRY') else "DE"
 
-    def get_status(self):
-        return {
-            "max": self.config.ck_skip,
-            "index": self.config.ck_index,
-            "running": self.is_running(),
-            "exception": self.exception
-        }
+    def reset_progress(self):
+        self.set_index(0)
+        self.config.set(self.config_key, "main_tag_index", 0)
+        self.config.set(self.config_key, "tag_index", 0)
 
     def work(self):
         main_tags = [(11, 4), (23, 3), (90, 2), (53, 1), (21, 0)]
-        for main_tag in main_tags[self.config.ck_main_tag_index:]:
+        main_tag_index = self.config.get(self.config_key, "main_tag_index")
+        for main_tag in main_tags[main_tag_index:]:
             r = requests.request("GET",
                                  f"https://api.chefkoch.de/v2/search-gateway/recipes?tags={main_tag[0]}&minimumRating={global_preferences['scraper__Chefkoch_Minimum_Rating']}&limit=0&offset=0")
             tags = self.create_all_tags(r.json()["tagGroups"])
-            for tag in tags[self.config.ck_tag_index:]:
-                try:
-                    while self.active and (self.config.ck_index < self.config.ck_skip or self.config.ck_index == 0):
-                        self.scrape(self.config.ck_index, tag, main_tag)
-                        self.config.set_ck_index(self.config.ck_index + self.limit)
-                except Exception as e:
-                    self.exception = str(e)
-                    self.active = False
-                    self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
-                    raise e
+            tag_index = self.config.get(self.config_key, "tag_index")
+            for tag in tags[tag_index:]:
+                while self.active and (self.get_index() < self.get_max() or self.get_index() == 0):
+                    self.scrape(self.get_index(), tag, main_tag)
+                    self.set_index(self.get_index() + self.limit)
                 if not self.active:
                     return
-                self.config.set_ck_index(0)
-                self.config.set_ck_tag_index(self.config.ck_tag_index + 1)
-            self.config.set_ck_tag_index(0)
-            self.config.set_ck_main_tag_index(self.config.ck_main_tag_index + 1)
-
-    def start(self):
-        self.bearer_token = None
-        self.exception = None
-        self.active = True
-        if self.is_running():
-            return
-        self.work_thread.start()
-
-    def stop(self):
-        if not self.active:
-            return
-        self.active = False
-        self.work_thread.join()
-        self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
-
-    def set_progress(self, index):
-        self.config.set_ck_index(index)
-
-    def restart(self):
-        self.stop()
-        self.config.set_ck_index(0)
-        self.config.set_ck_main_tag_index(0)
-        self.config.set_ck_tag_index(0)
-        self.start()
-
-    def is_running(self):
-        return self.work_thread.is_alive()
+                self.set_index(0)
+                self.config.set(self.config_key, "tag_index", self.config.get(self.config_key, "tag_index") + 1)
+            self.config.set(self.config_key, "tag_index", 0)
+            self.config.set(self.config_key, "main_tag_index", self.config.get(self.config_key, "main_tag_index") + 1)
 
     def create_recipe(self, recipe_json, recipe_type):
         if recipe_json["previewImageUrlTemplate"] is None or recipe_json["rating"] is None:
@@ -95,7 +54,7 @@ class Scraper:
             helloFreshId=recipe_json["id"],
             defaults={
                 "name": recipe_json["title"],
-                "source": 3,
+                "source": Recipe.Source.chefkoch,
                 "recipeType": recipe_type,
                 # Todo: Get video link
                 # "videoLink": recipe_json["videoLink"],
@@ -116,10 +75,7 @@ class Scraper:
                 "HelloFreshImageUrl": image_url
             }
         )
-        if (not (recipe[0].image and recipe[0].image.file)) and global_preferences['scraper__Download_Recipe_Images']:
-            image = get_image(image_url)
-            if image is not None:
-                recipe[0].image.save(str(uuid.uuid4()) + ".png", image)
+        maybe_save_image(recipe[0], image_url, 'scraper__Download_Recipe_Images')
         return recipe
 
     def create_ingredients(self, recipe_json, recipe):
@@ -215,7 +171,7 @@ class Scraper:
         response = requests.request("GET", chefkoch_url)
         self.create_all_tags(response.json()["tagGroups"])
         items = response.json()["results"]
-        self.config.set_ck_skip(min(response.json()["count"], 1000))
+        self.set_max(min(response.json()["count"], 1000))
         for recipeJson in items:
             recipeJson = recipeJson["recipe"]
             try:
@@ -237,14 +193,7 @@ class Scraper:
                 else:
                     logging.debug(f"Successfully updated recipe with id {recipe_id} (index: {index})")
             except Exception as e:
-                print(self.last_error)
-                if not self.last_error:
-                    logging.warning(f"Recipe with skip '{index}' failed. Skipping... - Error: {e}")
-                    self.last_error = True
-                    raise e
-                else:
-                    logging.error(f"Recipe with skip '{index}' failed second time. Canceling")
-                    raise e
+                self.handle_scrape_error(e, f"Recipe with skip '{index}'")
 
 
 s = Scraper()

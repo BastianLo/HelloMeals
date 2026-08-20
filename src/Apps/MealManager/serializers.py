@@ -176,15 +176,13 @@ class RecipeBaseSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     def get_similarity(self, obj):
         search = self.context.get('request').query_params.get('srch')
         if search:
-            similarity = obj.similarity or obj.calculate_similarity(search)
-            return similarity
+            return getattr(obj, 'similarity', None)
         return None
 
     def get_relevancy(self, obj):
         search = self.context.get('request').query_params.get('srch')
         if search:
-            relevancy = obj.relevancy or obj.calculate_similarity(search)
-            return relevancy
+            return getattr(obj, 'relevancy', None)
         return None
 
     def get_ingredient_count(self, instance):

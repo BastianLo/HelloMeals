@@ -1,10 +1,14 @@
 import re
+import uuid
 from io import BytesIO
 from tempfile import NamedTemporaryFile
 
 import requests
 from PIL import Image
 from django.core.files.base import File
+from dynamic_preferences.registries import global_preferences_registry
+
+global_preferences = global_preferences_registry.manager()
 
 
 def is_valid_iso_duration(duration_str):
@@ -34,3 +38,15 @@ def get_image(url):
     except Exception as e:
         print(e)
         return None
+
+
+def maybe_save_image(instance, image_url, preference_key):
+    """Download and attach `image_url` to `instance.image` unless it already has one or the
+    given global preference (e.g. 'scraper__Download_Recipe_Images') disables it."""
+    if instance.image and instance.image.file:
+        return
+    if not global_preferences[preference_key]:
+        return
+    image = get_image(image_url)
+    if image is not None:
+        instance.image.save(str(uuid.uuid4()) + ".png", image)

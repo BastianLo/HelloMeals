@@ -1,15 +1,14 @@
 import json
 import logging
 import re
-import threading
 
 import requests
 from dynamic_preferences.registries import global_preferences_registry
 from isodate import parse_duration
 
 from ...models import *
-from .common import get_image, is_valid_iso_duration
-from .scrapeConfig import scrapeConfig
+from .baseScraper import BaseScraper
+from .common import is_valid_iso_duration, maybe_save_image
 
 global_preferences = global_preferences_registry.manager()
 
@@ -99,22 +98,12 @@ def flatten_instructions(instructions):
     return steps
 
 
-class Scraper:
-    def __init__(self):
-        self.exception = None
-        self.last_error = False
-        self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
-        self.config = scrapeConfig()
-        self.active = False
-        self.urls = []
+class Scraper(BaseScraper):
+    config_key = "mob"
 
-    def get_status(self):
-        return {
-            "max": self.config.mob_max,
-            "index": self.config.mob_index,
-            "running": self.is_running(),
-            "exception": self.exception
-        }
+    def __init__(self):
+        super().__init__()
+        self.urls = []
 
     def fetch_urls(self):
         urls = []
@@ -124,45 +113,14 @@ class Scraper:
                 continue
             urls += re.findall(r"<loc>(.*?)</loc>", response.text)
         self.urls = urls
-        self.config.set_mob_max(len(urls))
+        self.set_max(len(urls))
         return urls
 
     def work(self):
-        try:
-            urls = self.fetch_urls()
-            while self.active and self.config.mob_index < len(urls):
-                self.scrape(urls[self.config.mob_index], self.config.mob_index)
-                self.config.set_mob_index(self.config.mob_index + 1)
-        except Exception as e:
-            self.exception = str(e)
-            self.active = False
-            self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
-            raise e
-
-    def start(self):
-        self.exception = None
-        self.active = True
-        if self.is_running():
-            return
-        self.work_thread.start()
-
-    def stop(self):
-        if not self.active:
-            return
-        self.active = False
-        self.work_thread.join()
-        self.work_thread = threading.Thread(target=self.work, args=(), daemon=True)
-
-    def set_progress(self, index):
-        self.config.set_mob_index(index)
-
-    def restart(self):
-        self.stop()
-        self.config.set_mob_index(0)
-        self.start()
-
-    def is_running(self):
-        return self.work_thread.is_alive()
+        urls = self.fetch_urls()
+        while self.active and self.get_index() < len(urls):
+            self.scrape(urls[self.get_index()], self.get_index())
+            self.set_index(self.get_index() + 1)
 
     def fetch_recipe_json(self, url):
         response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
@@ -197,7 +155,7 @@ class Scraper:
             helloFreshId="mob" + str(recipe_json.get("identifier") or url),
             defaults={
                 "name": recipe_json["name"],
-                "source": 7,
+                "source": Recipe.Source.mob,
                 "recipeType": self.guess_recipe_type(recipe_json),
                 "author": extract_name(recipe_json.get("author")),
                 "description": recipe_json.get("description"),
@@ -212,10 +170,7 @@ class Scraper:
                 "HelloFreshImageUrl": image_url
             }
         )
-        if (not (recipe[0].image and recipe[0].image.file)) and global_preferences['scraper__Download_Recipe_Images']:
-            image = get_image(image_url)
-            if image is not None:
-                recipe[0].image.save(str(uuid.uuid4()) + ".png", image)
+        maybe_save_image(recipe[0], image_url, 'scraper__Download_Recipe_Images')
         return recipe
 
     def create_ingredients(self, recipe_json, recipe):
@@ -348,13 +303,7 @@ class Scraper:
             else:
                 logging.debug(f"Successfully updated recipe with id {recipe.helloFreshId} (index: {index})")
         except Exception as e:
-            if not self.last_error:
-                logging.warning(f"Recipe at '{url}' (index: {index}) failed. Skipping... - Error: {e}")
-                self.last_error = True
-                raise e
-            else:
-                logging.error(f"Recipe at '{url}' (index: {index}) failed second time. Canceling")
-                raise e
+            self.handle_scrape_error(e, f"Recipe at '{url}' (index: {index})")
 
 
 s = Scraper()
