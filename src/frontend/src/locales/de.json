@@ -8,7 +8,18 @@
     "favoriteRecipes": "Favoriten"
   },
   "settings": {
-    "navLabel": "Einstellungen"
+    "navLabel": "Einstellungen",
+    "general": {
+      "title": "Allgemeine Einstellungen"
+    },
+    "preferences": {
+      "general__General_Yazio_Scrape": "Soll die Anwendung nach einer Yazio-Datenbank suchen?",
+      "scraper__Chefkoch_Minimum_Rating": "Mindestbewertung für Chefkoch-Rezepte",
+      "scraper__Download_Recipe_Images": "Bilder für Rezepte herunterladen",
+      "scraper__Download_Ingredient_Images": "Bilder für Zutaten herunterladen",
+      "scraper__Download_Process_Step_Images": "Bilder für Arbeitsschritte herunterladen",
+      "recipe__Hide_Recipes_Without_Image": "Rezepte ohne Bild aus der Rezeptliste ausblenden (verbessert die Rezeptequalität)"
+    }
   },
   "auth": {
     "login": {

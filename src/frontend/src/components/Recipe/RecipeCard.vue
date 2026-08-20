@@ -29,7 +29,7 @@ let cutoff = (text: string | null, limit: number) => {
   <Observer @intersect="visible=true"/>
   <div
       class="increaseOnHover min-h-full max-w-sm border rounded-lg shadow bg-gray-800 border-gray-700 flex flex-col justify-stretch">
-    <router-link :to="recipe.helloFreshId">
+    <router-link :to="'/Recipe/' + recipe.helloFreshId">
       <div>
         <div class="flex flex-col relative">
           <svg v-if="recipe.isPlus" class="absolute ml-2 mt-2" width="64" height="24" viewBox="0 0 64 24" fill="none"
@@ -128,7 +128,7 @@ let cutoff = (text: string | null, limit: number) => {
       </div>
     </div>
     <div class="p-5">
-      <router-link :to="recipe.helloFreshId">
+      <router-link :to="'/Recipe/' + recipe.helloFreshId">
         <h5 class="mb-2 text-2xl font-bold tracking-tight text-white"
             v-text="recipe.name"></h5>
       </router-link>

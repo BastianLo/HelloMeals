@@ -17,13 +17,36 @@ export const useRecipeFilterStore = defineStore({
         srch: '',
         favorited: null as boolean | null,
 
+        difficulty: null as number | null,
+        rating_gte: "0",
+        // kept as plain minutes for a friendly UI; converted to an ISO-8601 duration
+        // ("PT<n>M") only when building the actual API query, see get_query()
+        prep_time_minutes: "",
+
         ordering: null as string | null,
 
 
         page: "1",
         page_size: "24",
     }),
-    getters: {},
+    getters: {
+        // number of filters currently narrowing the result set, excluding pagination/sort -
+        // used to badge the filter button so it's obvious something is active
+        active_filter_count(state): number {
+            let count = 0
+            if (state.calories_lt !== "2000" || state.calories_gt !== "0") count++
+            if (state.protein_lt !== "200" || state.protein_gt !== "0") count++
+            if (state.carbs_lt !== "200" || state.carbs_gt !== "0") count++
+            if (state.fat_lt !== "200" || state.fat_gt !== "0") count++
+            if (state.recipeType !== null) count++
+            if (state.sources.length > 0) count++
+            if (state.difficulty !== null) count++
+            if (state.rating_gte !== "0") count++
+            if (state.prep_time_minutes !== "") count++
+            if (state.favorited) count++
+            return count
+        },
+    },
     actions: {
         reset() {
             this.calories_lt = "2000"
@@ -37,6 +60,10 @@ export const useRecipeFilterStore = defineStore({
             this.recipeType = null
             this.sources = []
             this.srch = ''
+            this.favorited = null
+            this.difficulty = null
+            this.rating_gte = "0"
+            this.prep_time_minutes = ""
 
             this.ordering = null
 
@@ -53,9 +80,21 @@ export const useRecipeFilterStore = defineStore({
             this.carbs_gt = parsedUrl.searchParams.get('carbs_gt') || "0"
             this.fat_lt = parsedUrl.searchParams.get('fat_lt') || "200"
             this.fat_gt = parsedUrl.searchParams.get('fat_gt') || "0"
-            this.recipeType = parsedUrl.searchParams.get('recipeType') as number | null
+            const recipeTypeParam = parsedUrl.searchParams.get('recipeType')
+            this.recipeType = recipeTypeParam !== null ? parseInt(recipeTypeParam) : null
             this.sources = (parsedUrl.searchParams.get('source') || '').split(",").filter(s => s !== '').map(s => parseInt(s))
             this.srch = parsedUrl.searchParams.get('srch') || ''
+
+            const favoritedParam = parsedUrl.searchParams.get('favorited')
+            if (favoritedParam !== null) {
+                this.favorited = favoritedParam === 'true'
+            }
+
+            const difficultyParam = parsedUrl.searchParams.get('difficulty')
+            this.difficulty = difficultyParam ? parseInt(difficultyParam) : null
+            this.rating_gte = parsedUrl.searchParams.get('average_rating_gte') || "0"
+            const prepTimeParam = parsedUrl.searchParams.get('prep_time_lte')
+            this.prep_time_minutes = prepTimeParam ? (prepTimeParam.match(/PT(\d+)M/)?.[1] || '') : ''
 
             this.ordering = parsedUrl.searchParams.get('ordering')
 
@@ -82,7 +121,7 @@ export const useRecipeFilterStore = defineStore({
                 query.fat_lt = this.fat_lt
             if (this.fat_gt && this.fat_gt !== "0")
                 query.fat_gt = this.fat_gt
-            if (this.recipeType)
+            if (this.recipeType !== null)
                 query.recipeType = this.recipeType.toString()
             if (this.sources.length)
                 query.source = this.sources.join(",")
@@ -92,6 +131,12 @@ export const useRecipeFilterStore = defineStore({
                 query.srch = this.srch
             if (this.favorited)
                 query.favorited = this.favorited.toString()
+            if (this.difficulty)
+                query.difficulty = this.difficulty.toString()
+            if (this.rating_gte && this.rating_gte !== "0")
+                query.average_rating_gte = this.rating_gte
+            if (this.prep_time_minutes)
+                query.prep_time_lte = `PT${this.prep_time_minutes}M`
             return query
         },
         get_query_string() {

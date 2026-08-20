@@ -1,5 +1,32 @@
 {
   "main": {
     "hello": "Hello World!"
+  },
+  "recipe": {
+    "navLabel": "Recipes",
+    "allRecipes": "All Recipes",
+    "favoriteRecipes": "Favorites"
+  },
+  "settings": {
+    "navLabel": "Settings",
+    "general": {
+      "title": "General Settings"
+    },
+    "preferences": {
+      "general__General_Yazio_Scrape": "Should the application look for a Yazio database?",
+      "scraper__Chefkoch_Minimum_Rating": "Minimum rating for Chefkoch recipes",
+      "scraper__Download_Recipe_Images": "Download images for recipes",
+      "scraper__Download_Ingredient_Images": "Download images for ingredients",
+      "scraper__Download_Process_Step_Images": "Download images for process steps",
+      "recipe__Hide_Recipes_Without_Image": "Hide recipes without an image from the recipe list (improves recipe quality)"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in to your account",
+      "button": "Sign in"
+    },
+    "username": "Username",
+    "password": "Password"
   }
 }

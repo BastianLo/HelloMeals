@@ -1,4 +1,5 @@
 from django.test import TestCase
+from dynamic_preferences.registries import global_preferences_registry
 from rest_framework import status
 from rest_framework.test import APIClient
 
@@ -64,6 +65,41 @@ class RecipeExportMealieTests(TestCase):
     def test_export_requires_authentication(self):
         response = APIClient().get(f"/api/Recipe/{self.recipe.helloFreshId}/export/mealie")
         self.assertIn(response.status_code, (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN))
+
+
+class HideRecipesWithoutImagePreferenceTests(TestCase):
+    """Regression/feature coverage for the admin toggle that filters image-less recipes out of
+    the recipe list to improve overall recipe quality. Default must stay False (off)."""
+
+    def setUp(self):
+        self.client_ = authenticated_client(create_user("quality-user"))
+        self.preferences = global_preferences_registry.manager()
+        self.addCleanup(lambda: self.preferences.__setitem__('recipe__Hide_Recipes_Without_Image', False))
+
+        Recipe.objects.create(
+            helloFreshId="with-image", name="Mit Bild", averageRating=4, ratingCount=10,
+            image="images/recipes/with-image.jpg",
+        )
+        Recipe.objects.create(
+            helloFreshId="without-image", name="Ohne Bild", averageRating=4, ratingCount=10,
+        )
+
+    def test_default_is_false_and_does_not_filter(self):
+        self.assertFalse(self.preferences['recipe__Hide_Recipes_Without_Image'])
+        response = self.client_.get("/api/Recipe")
+        ids = {r["helloFreshId"] for r in response.json()["results"]}
+        self.assertIn("with-image", ids)
+        self.assertIn("without-image", ids)
+
+    def test_enabling_preference_hides_recipes_without_image(self):
+        self.preferences['recipe__Hide_Recipes_Without_Image'] = True
+
+        response = self.client_.get("/api/Recipe")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        ids = {r["helloFreshId"] for r in response.json()["results"]}
+        self.assertIn("with-image", ids)
+        self.assertNotIn("without-image", ids)
 
 
 class RecipeShareLinkTests(TestCase):

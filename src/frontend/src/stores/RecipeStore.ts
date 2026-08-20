@@ -21,16 +21,11 @@ export const useRecipeStore = defineStore({
     }),
     getters: {},
     actions: {
-        async fetch_recipes(keep_url_params: boolean = true, parseUrlParams: boolean = true) {
-            let apiUrl = baseUrl + '/Recipe'
+        async fetch_recipes(parseUrlParams: boolean = true) {
             if (parseUrlParams)
                 this.recipeFilterStore.parse_query(window.location.href)
             await useCommonStore().router.push({query: this.recipeFilterStore.get_query()})
-            if (keep_url_params) {
-                apiUrl += '?' + this.recipeFilterStore.get_query_string()
-            } else {
-                apiUrl += '?favorited=' + this.recipeFilterStore.favorited
-            }
+            const apiUrl = baseUrl + '/Recipe?' + this.recipeFilterStore.get_query_string()
             await this.fetch_recipes_by_url(apiUrl)
         },
         async fetch_recipes_by_url(url: string) {
@@ -57,6 +52,25 @@ export const useRecipeStore = defineStore({
                 } as Navigation;
                 this.navigation = new Navigation(nav)
             }
+        },
+        async fetch_recipe_list(params: Record<string, string>): Promise<Recipe[]> {
+            // Independent of fetch_recipes/fetch_recipes_by_url on purpose: those mutate the
+            // shared `recipes` list, the URL query string and RecipeFilterStore, which the
+            // homepage's several independent preview rows (new/popular/favorites/...) must not
+            // stomp on each other's state to fetch in parallel.
+            const query = new URLSearchParams(params).toString();
+            const response = await authorizedFetch(baseUrl + '/Recipe?' + query, {
+                method: "GET",
+            });
+            if (!response!.ok) {
+                return []
+            }
+            const jsonResponse = await response!.json();
+            return (jsonResponse.results || []).map((recipeData: any) => {
+                const recipe = new Recipe();
+                Object.assign(recipe, recipeData);
+                return recipe;
+            });
         },
         async fetch_recipes_detail(id: string, resetRecipe: boolean = true) {
             if (resetRecipe)

@@ -33,7 +33,7 @@
       <div class="border-t bg-gray-700 border-gray-600">
         <div class="grid h-16 max-w-lg mx-auto font-medium" :class="'grid-cols-2'">
           <RouterLink v-for="item in menuItems" :to="{name:item.href}"
-                      :class="{'bg-gray-800' : path.includes(item.path)}"
+                      :class="{'bg-gray-800' : isActive(item)}"
                       class="inline-flex flex-col items-center justify-center px-5 md:hover:bg-gray-600 group border-x border-gray-600">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" :fill="item.fill ? 'currentcolor' : 'none'"
                  :stroke="item.fill ? 'none' : 'currentColor'"
@@ -43,7 +43,7 @@
                   :d="item.svg"></path>
             </svg>
             <span v-text="item.name"
-                  :class="{'text-blue-500' : path.includes(item.path), 'text-gray-400' : !path.includes(item.path)}"
+                  :class="{'text-blue-500' : isActive(item), 'text-gray-400' : !isActive(item)}"
                   class="text-sm"></span>
           </RouterLink>
         </div>
@@ -61,6 +61,9 @@ import {storeToRefs} from "pinia";
 import AlertBanner from "@/components/common/AlertBanner.vue";
 import router from "@/router";
 import {ref} from "vue";
+import {useI18n} from "vue-i18n";
+
+const {t} = useI18n()
 
 
 const path = ref("/");
@@ -69,16 +72,25 @@ router.afterEach((to) => {
 });
 
 let commonStore = storeToRefs(useCommonStore())
+
+const isActive = (item: { path: string }) => {
+  if (item.path === '/Recipe') {
+    // the homepage ("/") *is* the recipe start page now, so both should highlight this tab
+    return path.value === '/' || path.value.startsWith('/Recipe')
+  }
+  return path.value.includes(item.path)
+}
+
 const menuItems = [
   {
-    name: 'Rezepte',
+    name: t('recipe.navLabel'),
     fill: true,
-    href: 'RecipeIndex',
+    href: 'home',
     path: '/Recipe', //For highlighting
     svg: 'M3.375 3C2.339 3 1.5 3.84 1.5 4.875v.75c0 1.036.84 1.875 1.875 1.875h17.25c1.035 0 1.875-.84 1.875-1.875v-.75C22.5 3.839 21.66 3 20.625 3H3.375z M3.087 9l.54 9.176A3 3 0 006.62 21h10.757a3 3 0 002.995-2.824L20.913 9H3.087zm6.163 3.75A.75.75 0 0110 12h4a.75.75 0 010 1.5h-4a.75.75 0 01-.75-.75z'
   },
   {
-    name: 'Einstellungen',
+    name: t('settings.navLabel'),
     path: '/Settings', //For highlighting
     href: 'SettingsIndex',
     fill: true,

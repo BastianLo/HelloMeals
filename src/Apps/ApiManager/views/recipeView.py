@@ -5,6 +5,7 @@ from Apps.MealManager.models import Recipe, Ingredient
 from Apps.MealManager.serializers import RecipeFullSerializer, RecipeBaseSerializer
 from Apps.MealManager.services.mealie_export import build_recipe_html
 from Apps.MealManager.services.recipe_share import SHARE_LINK_MAX_AGE, make_share_token, resolve_share_token
+from dynamic_preferences.registries import global_preferences_registry
 from django.contrib.postgres.search import TrigramSimilarity
 from django.db.models import F, FloatField, ExpressionWrapper, Q
 from django.db.models.functions import Coalesce
@@ -20,6 +21,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from util.pagination import RqlPagination
+
+global_preferences = global_preferences_registry.manager()
 
 
 ### Filter Sets ###
@@ -161,6 +164,8 @@ class RecipeBaseList(generics.ListAPIView):
         queryset = self.filter_source(queryset)
         queryset = queryset.filter(clonedFrom__isnull=True)
         queryset = queryset.exclude(Q(headline__contains="Inhalt"))
+        if global_preferences['recipe__Hide_Recipes_Without_Image']:
+            queryset = queryset.exclude(Q(image='') | Q(image__isnull=True))
         queryset = queryset.annotate(relevance=F('averageRating') * F('ratingCount')).exclude(relevance=0)
         queryset = self.filter_relevancy(queryset)
         ordering = self.request.query_params.get('ordering', None)

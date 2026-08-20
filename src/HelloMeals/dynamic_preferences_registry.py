@@ -73,6 +73,7 @@ class CustomGlobalPreferencesViewSet(GlobalPreferencesViewSet):
 
 general = Section('general')
 scraper = Section('scraper')
+recipe = Section('recipe')
 
 
 # We start with a global preference
@@ -113,6 +114,14 @@ class ScraperDownloadProcessStepImages(BooleanPreference):
     help_text = 'Download images for process steps'
     section = scraper
     name = 'Download_Process_Step_Images'
+    default = False
+
+
+@global_preferences_registry.register
+class RecipeHideRecipesWithoutImage(BooleanPreference):
+    help_text = 'Rezepte ohne Bild aus der Rezeptliste ausblenden (verbessert die Rezeptequalität)'
+    section = recipe
+    name = 'Hide_Recipes_Without_Image'
     default = False
 
 

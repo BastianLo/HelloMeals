@@ -7,7 +7,7 @@ const router = createRouter({
         {
             path: '/',
             name: 'home',
-            component: () => import('../views/HomeView.vue')
+            component: () => import('../views/Recipe/RecipeIndex.vue')
         },
         {
             path: '/auth',
@@ -27,9 +27,7 @@ const router = createRouter({
         },
         {
             path: '/Recipe',
-            name: 'RecipeIndex',
-            component: () => import('../views/Recipe/RecipeIndex.vue'),
-            children: []
+            redirect: '/'
         },
         {
             path: '/Recipe/All',
@@ -70,6 +68,11 @@ const router = createRouter({
             path: '/Settings/Admin/Invites',
             name: 'SettingsAdminInvites',
             component: () => import('../views/Settings/Admin/SettingsAdminInvites.vue')
+        },
+        {
+            path: '/Settings/Admin/General',
+            name: 'SettingsAdminGeneral',
+            component: () => import('../views/Settings/Admin/SettingsAdminGeneral.vue')
         },
         {
             path: '/Settings/Admin/Grouping',
