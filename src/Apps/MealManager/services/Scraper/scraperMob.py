@@ -81,6 +81,19 @@ def extract_name(entity):
     return None
 
 
+def extract_page_nutrition(html_text):
+    """Mob's own schema.org JSON-LD never carries real nutrition values (only servingSize) -
+    the actual calories/macros live in the page's Next.js __NEXT_DATA__ payload instead."""
+    match = re.search(r'<script id="__NEXT_DATA__" type="application/json">(.*?)</script>', html_text, re.DOTALL)
+    if not match:
+        return None
+    try:
+        next_data = json.loads(match.group(1))
+    except json.JSONDecodeError:
+        return None
+    return (next_data.get("props") or {}).get("pageProps", {}).get("recipe")
+
+
 def flatten_instructions(instructions):
     steps = []
     if instructions is None:
@@ -122,17 +135,19 @@ class Scraper(BaseScraper):
             self.scrape(urls[self.get_index()], self.get_index())
             self.set_index(self.get_index() + 1)
 
-    def fetch_recipe_json(self, url):
+    def fetch_recipe_page(self, url):
         response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
         blocks = re.findall(r'<script type="application/ld\+json">(.*?)</script>', response.text, re.DOTALL)
+        recipe_json = None
         for block in blocks:
             try:
                 data = json.loads(block)
             except json.JSONDecodeError:
                 continue
             if data.get("@type") == "Recipe":
-                return data
-        return None
+                recipe_json = data
+                break
+        return recipe_json, extract_page_nutrition(response.text)
 
     def guess_recipe_type(self, recipe_json):
         categories = (recipe_json.get("recipeCategory") or "").lower()
@@ -202,19 +217,29 @@ class Scraper(BaseScraper):
                 }
             )[0]
 
-    def create_nutrients(self, recipe_json, recipe):
-        nutrient_json = recipe_json.get("nutrition")
-        if not nutrient_json:
+    def create_nutrients(self, recipe, page_nutrition):
+        if not page_nutrition:
+            return
+        calories = page_nutrition.get("calories")
+        fat = page_nutrition.get("fat")
+        saturated_fat = page_nutrition.get("saturatedFat")
+        carbs = page_nutrition.get("carbohydrates")
+        sugar = page_nutrition.get("sugars")
+        protein = page_nutrition.get("protein")
+        sodium = page_nutrition.get("sodium")
+        if all(v is None for v in (calories, fat, saturated_fat, carbs, sugar, protein, sodium)):
             return
         nutrient = Nutrients.objects.update_or_create(
             id=recipe.helloFreshId + "nutrients",
             defaults={
-                "energyKcal": extract_number(nutrient_json.get("calories")),
-                "fat": extract_number(nutrient_json.get("fatContent")),
-                "fatSaturated": extract_number(nutrient_json.get("saturatedFatContent")),
-                "carbs": extract_number(nutrient_json.get("carbohydrateContent")),
-                "sugar": extract_number(nutrient_json.get("sugarContent")),
-                "protein": extract_number(nutrient_json.get("proteinContent")),
+                "energyKcal": calories,
+                "fat": fat,
+                "fatSaturated": saturated_fat,
+                "carbs": carbs,
+                "sugar": sugar,
+                "protein": protein,
+                # UK/EU food-labelling convention: salt (g) = sodium (mg) * 2.5 / 1000
+                "salt": round(sodium * 2.5 / 1000) if sodium is not None else None,
             }
         )[0]
         recipe.nutrients = nutrient
@@ -284,7 +309,7 @@ class Scraper(BaseScraper):
 
     def scrape(self, url, index):
         try:
-            recipe_json = self.fetch_recipe_json(url)
+            recipe_json, page_nutrition = self.fetch_recipe_page(url)
             if recipe_json is None:
                 logging.warning(f"Skipping url {url} (index: {index}) - no Recipe JSON-LD found")
                 return
@@ -294,7 +319,7 @@ class Scraper(BaseScraper):
                 return
             recipe, created = temp
             self.create_ingredients(recipe_json, recipe)
-            self.create_nutrients(recipe_json, recipe)
+            self.create_nutrients(recipe, page_nutrition)
             self.create_tags(recipe_json, recipe)
             self.create_work_steps(recipe_json, recipe)
             self.last_error = False

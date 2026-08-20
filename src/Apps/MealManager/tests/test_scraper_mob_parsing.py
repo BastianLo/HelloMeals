@@ -1,9 +1,12 @@
+import json
+
 from django.test import SimpleTestCase
 
 from Apps.MealManager.services.Scraper.scraperMob import (
     extract_image,
     extract_name,
     extract_number,
+    extract_page_nutrition,
     flatten_instructions,
     parse_amount,
     parse_ingredient,
@@ -91,6 +94,32 @@ class ExtractNameTests(SimpleTestCase):
 
     def test_none(self):
         self.assertIsNone(extract_name(None))
+
+
+class ExtractPageNutritionTests(SimpleTestCase):
+    """Mob's schema.org JSON-LD never carries real nutrition values (only servingSize) - the
+    actual calories/macros are only available in the page's Next.js __NEXT_DATA__ payload."""
+
+    def _html_with_next_data(self, recipe_payload):
+        next_data = {"props": {"pageProps": {"recipe": recipe_payload}}}
+        return (
+            '<html><head><script id="__NEXT_DATA__" type="application/json">'
+            + json.dumps(next_data)
+            + "</script></head><body></body></html>"
+        )
+
+    def test_extracts_recipe_nutrition_dict(self):
+        html = self._html_with_next_data({"calories": 834, "fat": 40, "protein": 32})
+        result = extract_page_nutrition(html)
+        self.assertEqual(result["calories"], 834)
+        self.assertEqual(result["protein"], 32)
+
+    def test_missing_next_data_script_returns_none(self):
+        self.assertIsNone(extract_page_nutrition("<html><body>No data here</body></html>"))
+
+    def test_malformed_next_data_returns_none(self):
+        html = '<html><head><script id="__NEXT_DATA__" type="application/json">not json</script></head></html>'
+        self.assertIsNone(extract_page_nutrition(html))
 
 
 class FlattenInstructionsTests(SimpleTestCase):
